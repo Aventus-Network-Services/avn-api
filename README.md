@@ -6,7 +6,7 @@ Before running the API you must have an account on the AvN holding a minimum 100
 export SURI=<mnemonic OR secret seed>
 ```
 examples: \
-`export SURI=caution juice atom organ advance problem want pledge someone senior holiday very`
+`export SURI=caution juice atom organ advance problem want pledge someone senior holiday very` \
 `export SURI=0xc8fa03532fb22ee1f7f6908b9c02b4e72483f0dbd66e4cd456b8f34c6230b849`
 
 **Note:** It is important to keep the mnemonic/seed safe and never expose it elsewhere. If this data is compromised you could lose all your account's funds.
