@@ -55,7 +55,7 @@ async function main() {
 
   // Poll on the status of the AVT transfer
   for (i = 0; i < 10; i++) {
-    status = await api.poll.requestState(invalidRequestId)
+    let status = await api.poll.requestState(requestId)
     if (status === 'Rejected') break
     console.log(`Current status: ${status}`)
     await helper.sleep(3000)
