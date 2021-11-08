@@ -33,37 +33,37 @@ const MY_ACCOUNT = '5Gv8Y...'
 
 
 async function main() {
-    const api = new AvnApi(AVN_GATEWAY_ENDPOINT)
-    await api.init()
+  const api = new AvnApi(AVN_GATEWAY_ENDPOINT)
+  await api.init()
 
-    // Get the current total AVT supply of the AvN
-    console.log(await api.query.getTotalAvt())
+  // Get the current total AVT supply of the AvN
+  console.log(await api.query.getTotalAvt())
 
-    // Get the AVT balance of an account
-    console.log(await api.query.getAvtBalance(MY_ACCOUNT))
+  // Get the AVT balance of an account
+  console.log(await api.query.getAvtBalance(MY_ACCOUNT))
 
-    // Get the ERC-20/ERC-777 token balance of an account
-    const someOtherAccount = '5DAgx...'
-    const token = '0x7e5bb...'
-    console.log(await api.query.getTokenBalance(someOtherAccount, token))
+  // Get the ERC-20/ERC-777 token balance of an account
+  const someOtherAccount = '5DAgx...'
+  const token = '0x7e5bb...'
+  console.log(await api.query.getTokenBalance(someOtherAccount, token))
 
-    // Transfer some AVT
-    const sender = MY_ACCOUNT
-    const recipient = someOtherAccount
-    const amount = '100'
-    const requestId = await api.send.transferAvt(AVN_RELAYER, sender, recipient, amount)
+  // Transfer some AVT
+  const sender = MY_ACCOUNT
+  const recipient = someOtherAccount
+  const amount = '100'
+  const requestId = await api.send.transferAvt(AVN_RELAYER, sender, recipient, amount)
 
-    // Poll on the status of the AVT transfer
-    for (i = 0; i < 10; i++) {
-        status = await api.poll.requestState(invalidRequestId)
-        if (status === 'Rejected') break
-        console.log(`Current status: ${status}`)
-        await helper.sleep(3000)
-      }
+  // Poll on the status of the AVT transfer
+  for (i = 0; i < 10; i++) {
+    status = await api.poll.requestState(invalidRequestId)
+    if (status === 'Rejected') break
+    console.log(`Current status: ${status}`)
+    await helper.sleep(3000)
+  }
 
-    // Transfer some tokens  
-    await api.send.transferToken(AVN_RELAYER, sender, recipient, token, amount)
-    // Poll for status or wait and check the balance
+  // Transfer some tokens  
+  await api.send.transferToken(AVN_RELAYER, sender, recipient, token, amount)
+  // Poll for status or wait and check the balance
 }
 
 (async () => await main())()
