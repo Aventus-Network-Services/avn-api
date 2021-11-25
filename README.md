@@ -42,6 +42,10 @@ async function main() {
   // Get the AVT balance of an account
   console.log(await api.query.getAvtBalance(MY_ACCOUNT))
 
+  // Get the current AVT fees a relayer charges for proxying transactions
+  console.log(await api.query.getRelayerFees(AVN_RELAYER)) // default
+  console.log(await api.query.getRelayerFees(AVN_RELAYER, MY_ACCOUNT)) // user specific
+
   // Get the ERC-20/ERC-777 token balance of an account
   const someOtherAccount = '5DAgx...'
   const token = '0x7e5bb...'
