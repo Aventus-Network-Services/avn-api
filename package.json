@@ -1,6 +1,6 @@
 {
   "name": "avn-api",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "An API for interacting with the Aventus AvN layer 2 blockchain",
   "main": "index.js",
   "author": "Aventus Network Services",
@@ -15,6 +15,7 @@
     "@polkadot/types": "^3.0.1",
     "@polkadot/util-crypto": "5.9.2",
     "axios": "^0.21.4",
+    "bn.js": "^5.2.0",
     "uuid": "^8.3.2"
   }
 }

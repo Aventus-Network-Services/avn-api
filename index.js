@@ -5,6 +5,7 @@ const Query = require('./lib/query.js')
 const Send = require('./lib/send.js')
 const Poll = require('./lib/poll.js')
 const Awt = require('./lib/awt.js')
+const Utils = require('./lib/utils.js')
 const version = require('./package.json').version
 
 function AvnApi(gateway) {
@@ -28,6 +29,7 @@ AvnApi.prototype.init = async function() {
   this.send = new Send(avnApi, this.query, avtContractAddress)
   this.poll = new Poll(avnApi)
   this.awt = Awt
+  this.utils = Utils
 }
 
 function setupAxios(awtTokenManager) {

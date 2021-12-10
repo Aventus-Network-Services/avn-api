@@ -28,6 +28,9 @@ const AVN_GATEWAY_ENDPOINT = 'https://xyz...'
 // The AvN address of the relayer you will be using, as supplied by Aventus:
 const AVN_RELAYER = '5FbUQ...'
 
+// The Authority required for minting NFTs, as supplied by Aventus:
+const AVN_AUTHORITY = '0xab01...'
+
 // The AvN address of the account set as SURI in your environment:
 const MY_ACCOUNT = '5Gv8Y...'
 
@@ -35,6 +38,9 @@ const MY_ACCOUNT = '5Gv8Y...'
 async function main() {
   const api = new AvnApi(AVN_GATEWAY_ENDPOINT)
   await api.init()
+
+  // Generate a new AvN account (local generation of keypair only)
+  const account = api.utils.generateNewAccount()
 
   // Get the current total AVT supply of the AvN
   console.log(await api.query.getTotalAvt())
@@ -55,26 +61,71 @@ async function main() {
   const sender = MY_ACCOUNT
   const recipient = someOtherAccount
   const amount = '100'
-  const requestId = await api.send.transferAvt(AVN_RELAYER, sender, recipient, amount)
+  let requestId = await api.send.transferAvt(AVN_RELAYER, sender, recipient, amount)
 
   // Poll on the status of the AVT transfer
-  for (i = 0; i < 10; i++) {
-    let status = await api.poll.requestState(requestId)
-    console.log(`Current status: ${status}`)
-    if (status === 'Processed' || status === 'Rejected') break
-    await sleep(3000)
-  }
+  await pollTransactionStatus(api, requestId)
 
-  // Transfer some tokens  
-  await api.send.transferToken(AVN_RELAYER, sender, recipient, token, amount)
-  // Poll for status or wait and check the balance
+  // Transfer some ERC-20/ERC-777 tokens  
+  requestId = await api.send.transferToken(AVN_RELAYER, sender, recipient, token, amount)
+  await pollTransactionStatus(api, requestId)
+
+  // Mint an NFT with royalties
+  const externalRef = 'my-unique-nft' + new Date().toISOString()
+  const royalties = [
+    {
+      recipient_t1_address: '0xf8f77...',
+      rate: {
+        parts_per_million: 10000
+      }
+    },
+    {
+      recipient_t1_address: '0xE566A...',
+      rate: {
+        parts_per_million: 20000
+      }
+    }
+  ]
+  requestId = await api.send.mintSingleNft(relayer, sender, externalRef, royalties, AVN_AUTHORITY)
+  await pollTransactionStatus(api, requestId)
+
+  // Get the ID of the freshly minted NFT
+  let nftId = await api.query.getNftId(externalRef)
+
+  // List the NFT for sale in fiat
+  requestId = await api.send.listNftOpenForSale(relayer, sender, nftId, 'Fiat')
+  await pollTransactionStatus(api, requestId)
+
+  // Transfer a sold NFT
+  requestId = await api.send.transferFiatNft(relayer, sender, recipient, nftId)
+  await pollTransactionStatus(api, requestId)
+
+  // Or cancel the listing
+  requestId = await api.send.cancelListFiatNft(relayer, sender, nftId)
+  await pollTransactionStatus(api, requestId)
 }
 
 (async () => await main())()
 
+
+async function pollTransactionStatus(api, requestId) {
+  for (i = 0; i < 10; i++) {
+    await sleep(3000)
+    const status = await api.poll.requestState(requestId)
+    if (status === 'Processed') {
+      console.log('Transaction processed')
+      break
+    } else if (status === 'Rejected') {
+      console.log('Transaction failed')
+      break
+    }
+  }
+}
+
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
+
 ```
 
 ## Further information
