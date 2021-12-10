@@ -86,22 +86,22 @@ async function main() {
       }
     }
   ]
-  requestId = await api.send.mintSingleNft(relayer, sender, externalRef, royalties, AVN_AUTHORITY)
+  requestId = await api.send.mintSingleNft(AVN_RELAYER, sender, externalRef, royalties, AVN_AUTHORITY)
   await pollTransactionStatus(api, requestId)
 
   // Get the ID of the freshly minted NFT
   let nftId = await api.query.getNftId(externalRef)
 
   // List the NFT for sale in fiat
-  requestId = await api.send.listNftOpenForSale(relayer, sender, nftId, 'Fiat')
+  requestId = await api.send.listNftOpenForSale(AVN_RELAYER, sender, nftId, 'Fiat')
   await pollTransactionStatus(api, requestId)
 
   // Transfer a sold NFT
-  requestId = await api.send.transferFiatNft(relayer, sender, recipient, nftId)
+  requestId = await api.send.transferFiatNft(AVN_RELAYER, sender, recipient, nftId)
   await pollTransactionStatus(api, requestId)
 
   // Or cancel the listing
-  requestId = await api.send.cancelListFiatNft(relayer, sender, nftId)
+  requestId = await api.send.cancelListFiatNft(AVN_RELAYER, sender, nftId)
   await pollTransactionStatus(api, requestId)
 }
 
