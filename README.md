@@ -40,7 +40,7 @@ async function main() {
   await api.init()
 
   // Generate a new AvN account (local generation of keypair only)
-  const account = api.utils.generateNewAccount()
+  console.log(api.utils.generateNewAccount())
 
   // Get the current total AVT supply of the AvN
   console.log(await api.query.getTotalAvt())
