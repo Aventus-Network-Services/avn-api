@@ -14,7 +14,7 @@ function AvnApi(gateway) {
   this.awtToken
 }
 
-AvnApi.prototype.init = async function() {
+AvnApi.prototype.init = async function () {
   await cryptoWaitReady()
 
   awtToken = Awt.generateAwtToken(process.env.SURI)

@@ -58,16 +58,15 @@ async function main() {
   console.log(await api.query.getTokenBalance(someOtherAccount, token))
 
   // Transfer some AVT
-  const sender = MY_ACCOUNT
   const recipient = someOtherAccount
   const amount = '100'
-  let requestId = await api.send.transferAvt(AVN_RELAYER, sender, recipient, amount)
+  let requestId = await api.send.transferAvt(AVN_RELAYER, recipient, amount)
 
   // Poll on the status of the AVT transfer
   await pollTransactionStatus(api, requestId)
 
   // Transfer some ERC-20/ERC-777 tokens  
-  requestId = await api.send.transferToken(AVN_RELAYER, sender, recipient, token, amount)
+  requestId = await api.send.transferToken(AVN_RELAYER, recipient, token, amount)
   await pollTransactionStatus(api, requestId)
 
   // Mint an NFT with royalties
@@ -86,22 +85,22 @@ async function main() {
       }
     }
   ]
-  requestId = await api.send.mintSingleNft(AVN_RELAYER, sender, externalRef, royalties, AVN_AUTHORITY)
+  requestId = await api.send.mintSingleNft(AVN_RELAYER, externalRef, royalties, AVN_AUTHORITY)
   await pollTransactionStatus(api, requestId)
 
   // Get the ID of the freshly minted NFT
   let nftId = await api.query.getNftId(externalRef)
 
   // List the NFT for sale in fiat
-  requestId = await api.send.listNftOpenForSale(AVN_RELAYER, sender, nftId, 'Fiat')
+  requestId = await api.send.listFiatNftForSale(AVN_RELAYER, nftId)
   await pollTransactionStatus(api, requestId)
 
   // Transfer a sold NFT
-  requestId = await api.send.transferFiatNft(AVN_RELAYER, sender, recipient, nftId)
+  requestId = await api.send.transferFiatNft(AVN_RELAYER, recipient, nftId)
   await pollTransactionStatus(api, requestId)
 
   // Or cancel the listing
-  requestId = await api.send.cancelListFiatNft(AVN_RELAYER, sender, nftId)
+  requestId = await api.send.cancelFiatNftListing(AVN_RELAYER, nftId)
   await pollTransactionStatus(api, requestId)
 }
 
