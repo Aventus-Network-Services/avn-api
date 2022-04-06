@@ -68,8 +68,8 @@ async function main() {
   await pollTransactionStatus(api, requestId);
 
   // Confirm a lift of tokens from layer 1
-  const ethLiftTxHash = '0x64fb8991712d7fafec06610103dd207338c125ad126b310654711461b2378f64';
-  requestId = await api.send.confirmLift(AVN_RELAYER, ethLiftTxHash);
+  const ethereumTransactionHashForLift = '0x64fb8991712d7fafec06610103dd207338c125ad126b310654711461b2378f64';
+  requestId = await api.send.confirmLift(AVN_RELAYER, ethereumTransactionHashForLift);
   await pollTransactionStatus(api, requestId);
 
   // Lower some tokens to layer1
@@ -81,17 +81,19 @@ async function main() {
   // ***** NFT operations *****
   // Mint a new NFT with royalties
   const externalRef = 'my-unique-nft' + new Date().toISOString();
+  const primaryRoyaltyRecipientEthereumAddress = '0xFf5b32E6CaA7bB4C5716bC9119a908dDA4AF224B';
+  const secondaryRoyaltyRecipientEthereumAddress = '0xAcb816F1dB1324e90be79Ac589762a5A6DAfb99E';
   const royalties = [
     {
-      recipient_t1_address: '0xf8f77...',
+      recipient_t1_address: primaryRoyaltyRecipientEthereumAddress,
       rate: {
-        parts_per_million: 10000
+        parts_per_million: 50000 // 5%
       }
     },
     {
-      recipient_t1_address: '0xE566A...',
+      recipient_t1_address: secondaryRoyaltyRecipientEthereumAddress,
       rate: {
-        parts_per_million: 20000
+        parts_per_million: 20000 // 2%
       }
     }
   ];
