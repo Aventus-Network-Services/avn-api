@@ -19,7 +19,7 @@ $ npm i avn-api
 const AvnApi = require('avn-api');
 
 // The AvN gateway endpoint, as supplied by Aventus:
-const AVN_GATEWAY_URL = 'testnet.gateway.aventus.io';
+const AVN_GATEWAY_URL = 'https://testnet.gateway.aventus.io';
 
 // The AvN address of the relayer you will be using, as supplied by Aventus:
 const AVN_RELAYER = '5EkagVbzi1wjADSL5S4YPY8ELpNdPgJRuJPQMgER2SuDCDkN';
