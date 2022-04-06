@@ -35,7 +35,7 @@ async function main() {
   const api = new AvnApi(AVN_GATEWAY_URL); // If no URL is passed API will run in offline mode, exposing just its core utilities
   await api.init();
 
-  // Generate a new AvN account (account generation is local and works offline)
+  // Generate a new AvN account (account generation is local and also works offline)
   console.log(api.utils.generateNewAccount());
 
   // Get the total amount of AVT held on the AvN
