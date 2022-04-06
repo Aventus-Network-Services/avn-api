@@ -32,7 +32,7 @@ const MY_ACCOUNT = '5FTZCCeUux5fo1F3vZh45kk3cMc7Qu3KqsRkFMig1KoJ9pdk';
 
 
 async function main() {
-  const api = new AvnApi(AVN_GATEWAY_URL); // If no URL is passed the API will run in offline mode, exposing just its utilities
+  const api = new AvnApi(AVN_GATEWAY_URL); // If no URL is passed API will run in offline mode, exposing just its core utilities
   await api.init();
 
   // Generate a new AvN account (account generation is local and works offline)
