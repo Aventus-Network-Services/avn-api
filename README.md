@@ -2,7 +2,7 @@
 
 ## Prerequisites
 To use the AvN gateway you must hold a minimum 1 AVT in your AvN account. Set this account's mnemonic or secret seed as the "SURI" environment variable, eg: \
-`export SURI=history mule trend shove lawsuit spray fall tongue patient social ribbon tooth` \
+`export SURI="history mule trend shove lawsuit spray fall tongue patient social ribbon tooth"` \
 `export SURI=0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f`
 
 **Note:** Keep your mnemonic/seed secret and never expose it elsewhere. If compromised you could lose all your account's funds.
