@@ -79,6 +79,9 @@ async function main() {
   await pollTransactionStatus(api, requestId);
 
   // ***** NFT operations *****
+  // Get all theNFTs currently owned by an account
+  console.log(await api.query.getOwnedNfts(MY_ACCOUNT));
+
   // Mint a new NFT with royalties
   const externalRef = 'my-unique-nft' + new Date().toISOString();
   const primaryRoyaltyRecipientEthereumAddress = '0xFf5b32E6CaA7bB4C5716bC9119a908dDA4AF224B';
@@ -110,6 +113,7 @@ async function main() {
   // Transfer a sold NFT
   requestId = await api.send.transferFiatNft(AVN_RELAYER, recipientPublicKey, nftId);
   await pollTransactionStatus(api, requestId);
+  console.log(await api.query.getNftOwner(nftId)); // Confirm the new owner
 
   // Or cancel the listing
   requestId = await api.send.cancelFiatNftListing(AVN_RELAYER, nftId);
