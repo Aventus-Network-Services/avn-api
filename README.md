@@ -60,16 +60,16 @@ async function main() {
   const someToken = '0x3B00Ef435fA4FcFF5C209a37d1f3dcff37c705aD';
   console.log(await api.query.getTokenBalance(someAccount, someToken));
 
-  // Transfer some AVT (AvN accounts can be supplied as either address or public key):
+  // Transfer 1 AVT (AvN accounts can be supplied as either address or public key):
   const recipientPublicKey = '0xc8e823c9e91db0c829ee8da22f883f6f0eaeae026a598057a552d59865ba9e29';
-  const avtAmount = '100';
+  const avtAmount = '1000000000000000000';
   let requestId = await api.send.transferAvt(AVN_RELAYER, recipientPublicKey, avtAmount);
 
   // Poll the status of the AVT transfer:
   await pollTransactionStatus(api, requestId);
 
-  // Transfer some ERC-20 or ERC-777 tokens:
-  const tokenAmount = '200';  
+  // Transfer 2 18dp ERC-20 or ERC-777 tokens:
+  const tokenAmount = '2000000000000000000';  
   requestId = await api.send.transferToken(AVN_RELAYER, recipientPublicKey, someToken, tokenAmount);
   await pollTransactionStatus(api, requestId);
 
@@ -78,9 +78,9 @@ async function main() {
   requestId = await api.send.confirmLift(AVN_RELAYER, ethereumTransactionHashForLift);
   await pollTransactionStatus(api, requestId);
 
-  // Lower some tokens to layer1:
+  // Lower 3 tokens to layer1:
   const recipientEthereumAddress = '0xfA2Fafc874336F12C80E89e72c8C499cCaba7a46';
-  const lowerAmount = '300';
+  const lowerAmount = '3000000000000000000';
   requestId = await api.send.lowerToken(AVN_RELAYER, recipientEthereumAddress, someToken, lowerAmount);
   await pollTransactionStatus(api, requestId);
 
