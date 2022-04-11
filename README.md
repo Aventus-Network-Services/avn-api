@@ -42,6 +42,9 @@ async function main() {
   // const api = new AvnApi(null, options);
   await api.init();
 
+  // View API version, gateway (if connected), and all available functions:
+  console.log(api);
+
   // Return your account's address:
   const MY_ADDRESS = api.utils.myAddress();
 
