@@ -126,8 +126,11 @@ async function main() {
   await pollTransactionStatus(api, requestId);
 
   // ***** Staking operations *****
-  // Get any staker's staking account information:
+  // Get an account's staking information:
   console.log(await api.query.getAccountInfo(MY_ADDRESS));
+
+  // See the AvN's current staking statistics (eg: total staked, average staked):
+  console.log(await api.query.getStakingStats());
 
   // Stake 1 AVT (locks up an amount of stake to begin earning rewards):
   const amountToStake = '1000000000000000000';
