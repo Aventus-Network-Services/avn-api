@@ -85,7 +85,7 @@ async function main() {
 
   // Confirm a lift of tokens from layer 1:
   const ethereumTransactionHashForLift = '0x64fb8991712d7fafec06610103dd207338c125ad126b310654711461b2378f64';
-  requestId = await api.send.confirmLift(AVN_RELAYER, ethereumTransactionHashForLift);
+  requestId = await api.send.confirmTokenLift(AVN_RELAYER, ethereumTransactionHashForLift);
   await confirmTransaction(api, requestId);
 
   // Lower three tokens to layer 1:
