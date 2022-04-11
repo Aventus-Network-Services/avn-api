@@ -61,6 +61,7 @@ async function main() {
   console.log(await api.query.getRelayerFees(AVN_RELAYER, MY_ADDRESS)); // user specific fees
   console.log(await api.query.getRelayerFees(AVN_RELAYER, MY_ADDRESS, 'proxyTokenTransfer')); // for a specific transaction type
 
+  // ******* TOKEN OPERATIONS *******
   // Get the ERC-20 or ERC-777 token balance of an account:
   const someAccount = '5Gc8PokrcM6BsRPhJ63oHAiZhdm1L26wg7iekBE1FMbaUBde';
   const someToken = '0x3B00Ef435fA4FcFF5C209a37d1f3dcff37c705aD';
@@ -90,7 +91,7 @@ async function main() {
   requestId = await api.send.lowerToken(AVN_RELAYER, recipientEthereumAddress, someToken, lowerAmount);
   await confirmTransaction(api, requestId);
 
-  // ***** NFT operations *****
+  // ******* NFT OPERATIONS *******
   // Get all the NFTs currently owned by an account:
   console.log(await api.query.getOwnedNfts(MY_ADDRESS));
 
@@ -131,7 +132,7 @@ async function main() {
   requestId = await api.send.cancelFiatNftListing(AVN_RELAYER, nftId);
   await confirmTransaction(api, requestId);
 
-  // ***** Staking operations *****
+  // ******* STAKING OPERATIONS *******
   // Get an account's staking information:
   console.log(await api.query.getAccountInfo(MY_ADDRESS));
 
@@ -158,13 +159,14 @@ async function main() {
   requestId = await api.send.withdrawUnlocked(AVN_RELAYER);
   await confirmTransaction(api, requestId);
 
-  // ***** Account operations *****
+  // ******* ACCOUNT OPERATIONS *******
   // Generate a new AvN account (account generation is local and will also work offline):
   const newAccount = api.utils.generateNewAccount();
   console.log(newAccount);
 
   // Set the new account as the api user:
   api.setSURI(newAccount.seed);
+  // Get its address and public key (seed and mnemonic are not stored and cannot be returned)
   console.log(api.utils.myAddress(), api.utils.myPublicKey());
 }
 
