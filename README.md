@@ -184,7 +184,7 @@ async function confirmTransaction(api, requestId) {
     if (polledState.status === 'Processed') {
       console.log('Transaction processed');
       break;
-    } else if (status === 'Rejected') {
+    } else if (polledState.status === 'Rejected') {
       console.log('Transaction failed');
       break;
     }
