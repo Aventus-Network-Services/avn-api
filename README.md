@@ -48,6 +48,12 @@ async function main() {
   // Return your account's address:
   const MY_ADDRESS = api.utils.myAddress();
 
+  // Get information about the connected chain:
+  console.log(await api.query.getChainInfo());
+
+  // Get the chain's latest finalized block number:
+  console.log(await api.query.getCurrentBlock());
+
   // Get various Aventus contract addresses:
   console.log('AVT token:', await api.query.getAvtContractAddress());
   console.log('AVN tier1:', await api.query.getAvnContractAddress());
@@ -65,9 +71,15 @@ async function main() {
   console.log(await api.query.getRelayerFees(AVN_RELAYER, MY_ADDRESS, 'proxyTokenTransfer')); // for a specific transaction type
 
   // ******* TOKEN OPERATIONS *******
-  // Get the ERC-20 or ERC-777 token balance of an account:
   const someAccount = '5Gc8PokrcM6BsRPhJ63oHAiZhdm1L26wg7iekBE1FMbaUBde';
   const someToken = '0x3B00Ef435fA4FcFF5C209a37d1f3dcff37c705aD';
+  const PSUEDO_ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
+
+  // Get the total amount of a token currently locked in the AvN:
+  console.log('Total ETH:', await api.query.getTotalToken(PSUEDO_ETH_ADDRESS));
+  console.log('Total Some Token:', await api.query.getTotalToken(someToken));
+
+  // Get the ERC-20 or ERC-777 token balance of an account:
   console.log(await api.query.getTokenBalance(someAccount, someToken));
 
   // Transfer one AVT (AvN accounts can be supplied as either address or public key):
@@ -83,16 +95,14 @@ async function main() {
   requestId = await api.send.transferToken(AVN_RELAYER, recipientPublicKey, someToken, tokenAmount);
   await confirmTransaction(api, requestId);
 
-  // Confirm a lift of tokens from layer 1:
-  const ethereumTransactionHashForLift = '0x64fb8991712d7fafec06610103dd207338c125ad126b310654711461b2378f64';
-  requestId = await api.send.confirmTokenLift(AVN_RELAYER, ethereumTransactionHashForLift);
-  await confirmTransaction(api, requestId);
-
   // Lower three tokens to layer 1:
   const recipientEthereumAddress = '0xfA2Fafc874336F12C80E89e72c8C499cCaba7a46';
   const lowerAmount = '3000000000000000000';
   requestId = await api.send.lowerToken(AVN_RELAYER, recipientEthereumAddress, someToken, lowerAmount);
-  await confirmTransaction(api, requestId);
+  const transactionInfo = await confirmTransaction(api, requestId);
+
+  // Get the summary range (and Ethereum txHash of the published summary if available) that a block is included in:
+  console.log(await api.query.getSummaryData(transactionInfo.blockNumber));
 
   // ******* NFT OPERATIONS *******
   // Get all the NFTs currently owned by an account:
@@ -180,10 +190,10 @@ async function confirmTransaction(api, requestId) {
   for (i = 0; i < 10; i++) {
     await sleep(3000);
     // Poll transaction status by request ID:
-    const polledState = await api.poll.requestState(requestId);
+    let polledState = await api.poll.requestState(requestId);
     if (polledState.status === 'Processed') {
       console.log('Transaction processed');
-      break;
+      return polledState;
     } else if (polledState.status === 'Rejected') {
       console.log('Transaction failed');
       break;
