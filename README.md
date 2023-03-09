@@ -39,7 +39,7 @@ const AVN_AUTHORITY = '0xD3372...';
 
 async function main() {
   const options = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f'};
-  // For split fee functionality we must specify the payer in the options object.
+  // For split fee functionality we can specify the payer in the options object.
   const splitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', payerAddress: PAYER };
   // If a default payer account is added we can simply set the hasPayer flag to true.
   const defaultSplitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', hasPayer: true };
