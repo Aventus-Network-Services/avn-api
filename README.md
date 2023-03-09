@@ -31,12 +31,22 @@ const AVN_GATEWAY_URL = 'https://...';
 // The AvN address of the relayer you will be using, as supplied by Aventus:
 const AVN_RELAYER = '5Ekag...';
 
+// The AvN address of the payer you will be using:
+const PAYER = '5G7B3...';
+
 // The Ethereum address of the Authority required for minting NFTs, as supplied by Aventus:
 const AVN_AUTHORITY = '0xD3372...';
 
 async function main() {
   const options = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f'};
+  // For split fee functionality we can specify the payer in the options object.
+  const splitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', payerAddress: PAYER };
+  // If a default payer account is added we can simply set the hasPayer flag to true.
+  const defaultSplitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', hasPayer: true };
+
   const api = new AvnApi(AVN_GATEWAY_URL, options);
+  const splitFeesApi = new AvnApi(AVN_GATEWAY_URL, splitFeeOptions);
+  const defaultSplitFeesApi = new AvnApi(AVN_GATEWAY_URL, defaultSplitFeeOptions);
   // If no URL is passed the API will run in offline mode, exposing core utilities:
   // const api = new AvnApi(); // OR:
   // const api = new AvnApi(null, options);
@@ -91,7 +101,7 @@ async function main() {
   await confirmTransaction(api, requestId);
 
   // Transfer two 18dp ERC-20 or ERC-777 tokens:
-  const tokenAmount = '2000000000000000000';  
+  const tokenAmount = '2000000000000000000';
   requestId = await api.send.transferToken(AVN_RELAYER, recipientPublicKey, someToken, tokenAmount);
   await confirmTransaction(api, requestId);
 
@@ -143,6 +153,27 @@ async function main() {
 
   // Or cancel the listing:
   requestId = await api.send.cancelFiatNftListing(AVN_RELAYER, nftId);
+  await confirmTransaction(api, requestId);
+
+  // ******* BATCH NFT OPERATIONS *******
+  // Create nft batch
+  const totalSupply = 5; // number of nfts available to mint in this batch
+  requestId = await api.send.createNftBatch(AVN_RELAYER, totalSupply, royalties, AVN_AUTHORITY);
+  await confirmTransaction(api, requestId);
+
+  // Mint Batch nft
+  const index = 1; // Index of the nft within the batch
+  const owner = '5G7B3...'; // New owner address
+  const batchId = "batch_id"; // string representing the batch Id
+  requestId = await api.send.mintBatchNft(AVN_RELAYER, batchId, index, owner, externalRef);
+  await confirmTransaction(api, requestId);
+
+  // List Fiat nft Batch for sale
+  requestId = await api.send.listFiatNftBatchForSale(AVN_RELAYER, batchId);
+  await confirmTransaction(api, requestId);
+
+  // End nft Batch sale
+  requestId = await api.send.endNftBatchSale(AVN_RELAYER, batchId);
   await confirmTransaction(api, requestId);
 
   // ******* STAKING OPERATIONS *******
