@@ -7,7 +7,6 @@ const Poll = require('./lib/poll.js');
 const Proxy = require('./lib/proxy.js');
 const Awt = require('./lib/awt.js');
 const Utils = require('./lib/utils.js');
-const common = require('./lib/common.js');
 const version = require('./package.json').version;
 
 function AvnApi(gateway, options) {
@@ -39,18 +38,11 @@ AvnApi.prototype.init = async function () {
   this.signer = () => Utils.getSigner(getSuri());
   this.myAddress = () => this.signer().address;
   this.myPublicKey = () => Utils.convertToPublicKeyIfNeeded(this.myAddress());
-  try {
-    common.validateAccount(this.options.relayer);
-    this.relayer = this.options.relayer;
-  } catch {
-    throw new Error('Invalid relayer');
-  }
 
   if (this.gateway) {
     this.awtToken = Awt.generateAwtToken(this.options);
 
     const avnApi = {
-      relayer: () => this.relayer,
       gateway: this.gateway,
       signer: () => this.signer(),
       hasSplitFeeToken: () => this.hasSplitFeeToken(),
