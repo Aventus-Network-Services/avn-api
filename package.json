@@ -1,6 +1,6 @@
 {
   "name": "avn-api",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "An API for interacting with the Aventus AvN layer 2 blockchain",
   "main": "index.js",
   "author": "Aventus Network Services",
