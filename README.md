@@ -111,8 +111,11 @@ async function main() {
   requestId = await api.send.lowerToken(recipientEthereumAddress, someToken, lowerAmount);
   const transactionInfo = await confirmTransaction(api, requestId);
 
-  // Get the summary range (and Ethereum txHash of the published summary if available) that a block is included in:
-  console.log(await api.query.getSummaryData(transactionInfo.blockNumber));
+  // Get all available lowers and the data to complete them
+  // by Ethereum recipient address:
+  console.log(await await api.query.getOutstandingLowersForAccount(recipientEthereumAddress));
+  // or by AvN sender address:
+  console.log(await await api.query.getOutstandingLowersForAccount(MY_ADDRESS));
 
   // ******* NFT OPERATIONS *******
   // Get all the NFTs currently owned by an account:
