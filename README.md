@@ -25,16 +25,13 @@ $ npm i avn-api
 ```javascript
 const AvnApi = require('avn-api');
 
-// The AvN gateway endpoint, as supplied by Aventus:
+// The AvN gateway endpoint:
 const AVN_GATEWAY_URL = 'https://...';
-
-// The AvN address of the relayer you will be using, as supplied by Aventus:
-const AVN_RELAYER = '5Ekag...';
 
 // The AvN address of the payer you will be using:
 const PAYER = '5G7B3...';
 
-// The Ethereum address of the Authority required for minting NFTs, as supplied by Aventus:
+// The Ethereum address of an Authority required for minting NFTs, as supplied by Aventus:
 const AVN_AUTHORITY = '0xD3372...';
 
 async function main() {
@@ -43,6 +40,8 @@ async function main() {
   const splitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', payerAddress: PAYER };
   // If a default payer account is added we can simply set the hasPayer flag to true.
   const defaultSplitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', hasPayer: true };
+  // Relayer defaults to Aventus if none is passed
+  const relayerOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', relayer: '5FgyN...' };
 
   const api = new AvnApi(AVN_GATEWAY_URL, options);
   const splitFeesApi = new AvnApi(AVN_GATEWAY_URL, splitFeeOptions);
@@ -76,9 +75,10 @@ async function main() {
   console.log(await api.query.getAvtBalance(MY_ADDRESS));
 
   // Get the AVT fees a relayer charges for processing transactions:
-  console.log(await api.query.getRelayerFees(AVN_RELAYER)); // default fees for any user
-  console.log(await api.query.getRelayerFees(AVN_RELAYER, MY_ADDRESS)); // user specific fees
-  console.log(await api.query.getRelayerFees(AVN_RELAYER, MY_ADDRESS, 'proxyTokenTransfer')); // for a specific transaction type
+  const relayer = api.relayer; // get the relayer currently being used
+  console.log(await api.query.getRelayerFees(relayer)); // default fees for any user
+  console.log(await api.query.getRelayerFees(relayer, MY_ADDRESS)); // user specific fees
+  console.log(await api.query.getRelayerFees(relayer, MY_ADDRESS, 'proxyTokenTransfer')); // for a specific transaction type
 
   // ******* TOKEN OPERATIONS *******
   const someAccount = '5Gc8PokrcM6BsRPhJ63oHAiZhdm1L26wg7iekBE1FMbaUBde';
@@ -95,20 +95,20 @@ async function main() {
   // Transfer one AVT (AvN accounts can be supplied as either address or public key):
   const recipientPublicKey = '0xc8e823c9e91db0c829ee8da22f883f6f0eaeae026a598057a552d59865ba9e29';
   const avtAmount = '1000000000000000000';
-  let requestId = await api.send.transferAvt(AVN_RELAYER, recipientPublicKey, avtAmount);
+  let requestId = await api.send.transferAvt(recipientPublicKey, avtAmount);
 
   // Poll the status of the AVT transfer:
   await confirmTransaction(api, requestId);
 
   // Transfer two 18dp ERC-20 or ERC-777 tokens:
   const tokenAmount = '2000000000000000000';
-  requestId = await api.send.transferToken(AVN_RELAYER, recipientPublicKey, someToken, tokenAmount);
+  requestId = await api.send.transferToken(recipientPublicKey, someToken, tokenAmount);
   await confirmTransaction(api, requestId);
 
   // Lower three tokens to layer 1:
   const recipientEthereumAddress = '0xfA2Fafc874336F12C80E89e72c8C499cCaba7a46';
   const lowerAmount = '3000000000000000000';
-  requestId = await api.send.lowerToken(AVN_RELAYER, recipientEthereumAddress, someToken, lowerAmount);
+  requestId = await api.send.lowerToken(recipientEthereumAddress, someToken, lowerAmount);
   const transactionInfo = await confirmTransaction(api, requestId);
 
   // Get the summary range (and Ethereum txHash of the published summary if available) that a block is included in:
@@ -136,44 +136,44 @@ async function main() {
       }
     }
   ];
-  requestId = await api.send.mintSingleNft(AVN_RELAYER, externalRef, royalties, AVN_AUTHORITY);
+  requestId = await api.send.mintSingleNft(externalRef, royalties, AVN_AUTHORITY);
   await confirmTransaction(api, requestId);
 
   // Get the ID of the freshly minted NFT:
   let nftId = await api.query.getNftId(externalRef);
 
   // List the NFT for sale in fiat:
-  requestId = await api.send.listFiatNftForSale(AVN_RELAYER, nftId);
+  requestId = await api.send.listFiatNftForSale(nftId);
   await confirmTransaction(api, requestId);
 
   // Transfer a sold NFT:
-  requestId = await api.send.transferFiatNft(AVN_RELAYER, recipientPublicKey, nftId);
+  requestId = await api.send.transferFiatNft(recipientPublicKey, nftId);
   await confirmTransaction(api, requestId);
   console.log(await api.query.getNftOwner(nftId)); // Confirm the new owner
 
   // Or cancel the listing:
-  requestId = await api.send.cancelFiatNftListing(AVN_RELAYER, nftId);
+  requestId = await api.send.cancelFiatNftListing(nftId);
   await confirmTransaction(api, requestId);
 
   // ******* BATCH NFT OPERATIONS *******
   // Create nft batch
   const totalSupply = 5; // number of nfts available to mint in this batch
-  requestId = await api.send.createNftBatch(AVN_RELAYER, totalSupply, royalties, AVN_AUTHORITY);
+  requestId = await api.send.createNftBatch(totalSupply, royalties, AVN_AUTHORITY);
   await confirmTransaction(api, requestId);
 
   // Mint Batch nft
   const index = 1; // Index of the nft within the batch
   const owner = '5G7B3...'; // New owner address
   const batchId = "batch_id"; // string representing the batch Id
-  requestId = await api.send.mintBatchNft(AVN_RELAYER, batchId, index, owner, externalRef);
+  requestId = await api.send.mintBatchNft(batchId, index, owner, externalRef);
   await confirmTransaction(api, requestId);
 
   // List Fiat nft Batch for sale
-  requestId = await api.send.listFiatNftBatchForSale(AVN_RELAYER, batchId);
+  requestId = await api.send.listFiatNftBatchForSale(batchId);
   await confirmTransaction(api, requestId);
 
   // End nft Batch sale
-  requestId = await api.send.endNftBatchSale(AVN_RELAYER, batchId);
+  requestId = await api.send.endNftBatchSale(batchId);
   await confirmTransaction(api, requestId);
 
   // ******* STAKING OPERATIONS *******
@@ -185,22 +185,22 @@ async function main() {
 
   // Stake one AVT (locks up an amount of stake to begin earning rewards):
   const amountToStake = '1000000000000000000';
-  requestId = await api.send.stake(AVN_RELAYER, amountToStake);
+  requestId = await api.send.stake(amountToStake);
   await confirmTransaction(api, requestId);
 
   // Collect any rewards due (pays out the next 250 unpaid stakers for the staking era - callable until that era is emptied):
   let era = await api.query.getActiveEra();
   let previousEra = era - 1;
-  requestId = await api.send.payoutStakers(AVN_RELAYER, previousEra); // era is optional, if left the latest active era is used
+  requestId = await api.send.payoutStakers(previousEra); // era is optional, if left the latest active era is used
   await confirmTransaction(api, requestId);
 
   // Unstake half an AVT (unstaked funds no longer accrue rewards and are unlocked after a period of 7 days):
   const amountToUnstake = '500000000000000000';
-  requestId = await api.send.unstake(AVN_RELAYER, amountToUnstake);
+  requestId = await api.send.unstake(amountToUnstake);
   await confirmTransaction(api, requestId);
 
   // Withdraws all previously unlocked AVT back to the user's free AVT balance:
-  requestId = await api.send.withdrawUnlocked(AVN_RELAYER);
+  requestId = await api.send.withdrawUnlocked();
   await confirmTransaction(api, requestId);
 
   // ******* ACCOUNT OPERATIONS *******
