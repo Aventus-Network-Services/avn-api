@@ -7,6 +7,7 @@ const Poll = require('./lib/poll.js');
 const Proxy = require('./lib/proxy.js');
 const Awt = require('./lib/awt.js');
 const Utils = require('./lib/utils.js');
+const common = require('./lib/common.js');
 const version = require('./package.json').version;
 
 function AvnApi(gateway, options) {
@@ -21,28 +22,29 @@ AvnApi.prototype.init = async function () {
   this.setSURI = suri => {
     this.options.suri = suri;
     this.awtToken = this.gateway ? Awt.generateAwtToken(this.options) : undefined;
-    console.info(" - Suri updated");
-  }
+    console.info(' - Suri updated');
+  };
 
   this.awt = Awt;
   this.proxy = Proxy;
   this.utils = Utils;
 
+  // TODO: do we want to allow changing SURI on the fly?
   const getSuri = () => {
     this.options.suri = this.options.suri ?? process.env.AVN_SURI;
     return this.options.suri;
   };
 
-  if (!getSuri()) throw new Error('Suri is not defined');
-
-  this.signer = () => Utils.getSigner(getSuri());
-  this.myAddress = () => this.signer().address;
-  this.myPublicKey = () => Utils.convertToPublicKeyIfNeeded(this.myAddress());
-
   if (this.gateway) {
+    if (!getSuri()) throw new Error('Suri is not defined');
+
+    this.signer = () => Utils.getSigner(getSuri());
+    this.myAddress = () => this.signer().address;
+    this.myPublicKey = () => Utils.convertToPublicKeyIfNeeded(this.myAddress());
     this.awtToken = Awt.generateAwtToken(this.options);
 
     const avnApi = {
+      relayer: () => this.relayer,
       gateway: this.gateway,
       signer: () => this.signer(),
       hasSplitFeeToken: () => this.hasSplitFeeToken(),
@@ -62,12 +64,13 @@ AvnApi.prototype.init = async function () {
     this.query = new Query(avnApi);
     this.send = new Send(avnApi, this.query);
     this.poll = new Poll(avnApi);
+    this.relayer = common.validateAccount(this.options.relayer ?? (await this.query.getDefaultRelayer()));
   }
 };
 
 AvnApi.prototype.hasSplitFeeToken = function () {
   if (!this.options) return false;
-  if (this.options.hasPayer === true) return true
+  if (this.options.hasPayer === true) return true;
 
   return !!this.options.payerAddress;
 };

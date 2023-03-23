@@ -1,23 +1,16 @@
 {
   "name": "avn-api",
-  "version": "0.8.2",
-  "description": "An API for interacting with the Aventus AvN layer 2 blockchain",
+  "version": "1.0.0",
+  "description": "API wrapper around JSON-RPC calls to the AvN",
   "main": "index.js",
   "author": "Aventus Network Services",
-  "license": "Apache-2",
-  "homepage": "https://aventus-network-services.github.io/avn-gateway-docs/",
-  "repository": {
-   "type": "git",
-   "url": "https://github.com/Aventus-Network-Services/avn-api.git"
- },
+  "license": "ISC",
   "dependencies": {
-    "@polkadot/keyring": "5.9.2",
-    "@polkadot/types": "^3.0.1",
-    "@polkadot/util-crypto": "5.9.2",
+    "@polkadot/keyring": "^5.9.2",
+    "@polkadot/types": "^3.11.1",
+    "@polkadot/util-crypto": "^5.9.2",
     "axios": "^0.21.4",
-    "bn.js": "^5.2.0",
+    "bn.js": "^5.2.1",
     "uuid": "^8.3.2"
   }
 }
-
-
