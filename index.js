@@ -63,7 +63,7 @@ AvnApi.prototype.init = async function () {
 
   this.signer = () => (apiHasRemoteSigner(this.options) ? this.options.signer : Utils.getSigner(this.options.suri));
   this.myAddress = () => this.signer().address;
-  this.myPublicKey = () => Utils.convertToPublicKeyIfNeeded(this.myAddress());
+  this.myPublicKey = () => this.signer().publicKey;
 
   if (this.gateway) {
     this.awtToken = await Awt.generateAwtToken(this.options, this.signer());
