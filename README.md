@@ -35,6 +35,7 @@ const PAYER = '5G7B3...';
 const AVN_AUTHORITY = '0xD3372...';
 
 async function main() {
+  // ******* OPTIONS *******
   const options = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f'};
   // For split fee functionality we can specify the payer in the options object.
   const splitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', payerAddress: PAYER };
@@ -43,6 +44,20 @@ async function main() {
   // Relayer defaults to Aventus if none is passed
   const relayerOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', relayer: '5FgyN...' };
 
+  // A remote signer and a user can be passed in instead of a suri. This function must be able to sign and return a signature
+  async function signData(encodedDataToSign, signerAccount) {
+    // Example:
+    //   Make an http call to a KMS to sign encodedData using signerAccount
+    //   and return the signature
+  }
+  const signerAccount = "5Gc8PokrcM6BsRPhJ63oHAiZhdm1L26wg7iekBE1FMbaUBde";
+
+  const remoteSignerOptions = {
+        sign: data => signData(data, signerAccount),
+        address: signerAccount
+  }
+
+  // ******* API SETUP *******
   const api = new AvnApi(AVN_GATEWAY_URL, options);
   const splitFeesApi = new AvnApi(AVN_GATEWAY_URL, splitFeeOptions);
   const defaultSplitFeesApi = new AvnApi(AVN_GATEWAY_URL, defaultSplitFeeOptions);

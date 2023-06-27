@@ -19,29 +19,54 @@ function AvnApi(gateway, options) {
 
 AvnApi.prototype.init = async function () {
   await cryptoWaitReady();
-  this.setSURI = suri => {
+  // TODO: do we want to allow changing SURI on the fly?
+  const setupSigner = () => {
+    this.options.suri = this.options.suri || process.env.AVN_SURI;
+
+    const hasRemoteSigner = apiHasRemoteSigner(this.options);
+    if (hasRemoteSigner === true) {
+      this.options.signer.publicKey = Utils.convertToPublicKeyBytes(this.options.signer.address);
+    }
+
+    if (!this.options.suri && !hasRemoteSigner) {
+      throw new Error('Invalid signer. Please pass a SURI, set AVN_SURI environment variable or specify a remote signer');
+    }
+  };
+
+  this.setSURI = async suri => {
+    if (!suri) throw new Error('Suri is a mandatory field');
     this.options.suri = suri;
-    this.awtToken = this.gateway ? Awt.generateAwtToken(this.options) : undefined;
+    this.options.signer = undefined;
+    this.awtToken = this.gateway ? await Awt.generateAwtToken(this.options, this.signer()) : undefined;
     console.info(' - Suri updated');
+  };
+
+  this.setSigner = async signer => {
+    if (!signer || !signer.address || typeof signer.sign !== 'function') {
+      throw new Error('Signer must be an object with a sign function and an address function');
+    }
+
+    this.options.suri = undefined;
+
+    signer.publicKey = Utils.convertToPublicKeyBytes(signer.address);
+
+    this.options.signer = signer;
+    this.awtToken = this.gateway ? await Awt.generateAwtToken(this.options, signer) : undefined;
+    console.info('\t - Signer updated');
   };
 
   this.awt = Awt;
   this.proxy = Proxy;
   this.utils = Utils;
 
-  // TODO: do we want to allow changing SURI on the fly?
-  const getSuri = () => {
-    this.options.suri = this.options.suri ?? process.env.AVN_SURI;
-    return this.options.suri;
-  };
+  setupSigner();
+
+  this.signer = () => (apiHasRemoteSigner(this.options) ? this.options.signer : Utils.getSigner(this.options.suri));
+  this.myAddress = () => this.signer().address;
+  this.myPublicKey = () => Utils.convertToHexIfNeeded(this.signer().publicKey);
 
   if (this.gateway) {
-    if (!getSuri()) throw new Error('Suri is not defined');
-
-    this.signer = () => Utils.getSigner(getSuri());
-    this.myAddress = () => this.signer().address;
-    this.myPublicKey = () => Utils.convertToPublicKeyIfNeeded(this.myAddress());
-    this.awtToken = Awt.generateAwtToken(this.options);
+    this.awtToken = await Awt.generateAwtToken(this.options, this.signer());
 
     const avnApi = {
       relayer: () => this.relayer,
@@ -49,10 +74,10 @@ AvnApi.prototype.init = async function () {
       signer: () => this.signer(),
       hasSplitFeeToken: () => this.hasSplitFeeToken(),
       uuid: () => uuidv4(),
-      axios: () => {
+      axios: async () => {
         if (!Awt.tokenAgeIsValid(this.awtToken)) {
           console.log(' - Awt token has expired, refreshing');
-          this.awtToken = Awt.generateAwtToken(this.options);
+          this.awtToken = await Awt.generateAwtToken(this.options, this.signer());
         }
 
         // Add any middlewares here to configure global axios behaviours
@@ -64,7 +89,7 @@ AvnApi.prototype.init = async function () {
     this.query = new Query(avnApi);
     this.send = new Send(avnApi, this.query);
     this.poll = new Poll(avnApi);
-    this.relayer = common.validateAccount(this.options.relayer ?? (await this.query.getDefaultRelayer()));
+    this.relayer = common.validateAccount(this.options.relayer || (await this.query.getDefaultRelayer()));
   }
 };
 
@@ -74,5 +99,11 @@ AvnApi.prototype.hasSplitFeeToken = function () {
 
   return !!this.options.payerAddress;
 };
+
+function apiHasRemoteSigner(options) {
+  if (!options.signer) return false;
+
+  return !!options.signer.address && typeof options.signer.sign === 'function';
+}
 
 module.exports = AvnApi;
