@@ -20,6 +20,9 @@ function AvnApi(gateway, options) {
 AvnApi.prototype.init = async function () {
   await cryptoWaitReady();
   // TODO: do we want to allow changing SURI on the fly?
+
+  console.log("the update works");
+
   const setupSigner = () => {
     this.options.suri = this.options.suri || process.env.AVN_SURI;
 
