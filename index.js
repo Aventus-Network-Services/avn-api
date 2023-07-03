@@ -38,6 +38,9 @@ AvnApi.prototype.init = async function () {
 
   this.setSURI = async suri => {
     if (!suri) throw new Error('Suri is a mandatory field');
+
+    console.log("SETTING SURI");
+
     this.options.suri = suri;
     this.options.signer = undefined;
     this.awtToken = this.gateway ? await Awt.generateAwtToken(this.options, this.signer()) : undefined;
