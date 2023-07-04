@@ -15,6 +15,7 @@ function AvnApi(gateway, options) {
   this.awtToken;
   if (gateway) this.gateway = gateway;
   this.options = options || {};
+  this.utils = Utils;
 }
 
 AvnApi.prototype.init = async function () {
@@ -57,7 +58,6 @@ AvnApi.prototype.init = async function () {
 
   this.awt = Awt;
   this.proxy = Proxy;
-  this.utils = Utils;
 
   setupSigner();
 
