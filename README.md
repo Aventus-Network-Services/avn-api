@@ -70,7 +70,7 @@ async function main() {
   console.log(api);
 
   // Return your account's address:
-  const MY_ADDRESS = api.utils.myAddress();
+  const MY_ADDRESS = api.myAddress();
 
   // Get information about the connected chain:
   console.log(await api.query.getChainInfo());
@@ -229,7 +229,7 @@ async function main() {
   // Set the new account as the api user (also works offline):
   api.setSURI(newAccount.seed);
   // Get its address and public key (seed and mnemonic are not stored and cannot be returned)
-  console.log(api.utils.myAddress(), api.utils.myPublicKey());
+  console.log(api.myAddress(), api.myPublicKey());
 }
 
 (async () => await main())()
