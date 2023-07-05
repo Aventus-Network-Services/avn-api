@@ -45,15 +45,14 @@ async function main() {
   const relayerOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', relayer: '5FgyN...' };
 
   // A remote signer and a user can be passed in instead of a suri. This function must be able to sign and return a signature
-  async function signData(encodedDataToSign, signerAccount) {
+  async function signData(encodedDataToSign, signerAddress) {
     // Example:
     //   Make an http call to a KMS to sign encodedData using signerAccount
     //   and return the signature
   }
-  const signerAccount = "5Gc8PokrcM6BsRPhJ63oHAiZhdm1L26wg7iekBE1FMbaUBde";
 
   const remoteSignerOptions = {
-        sign: data => signData(data, signerAccount),
+        sign: (data, signerAddress) => signData(data, signerAddress),
         address: signerAccount
   }
 
