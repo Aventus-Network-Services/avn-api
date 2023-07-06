@@ -58,12 +58,9 @@ AvnApi.prototype.init = async function () {
       throw new Error('Signer must be an object with a sign function and an address function');
     }
 
-    console.info('\t - Setting signer: ', this.options.signer.address);
     this.options.suri = undefined;
 
     updateRemoteSignFunction(signer);
-
-    console.info('\t - New signer: ', this.options.signer.sign.toString());
 
     this.awtToken = this.gateway ? await Awt.generateAwtToken(this.options, this.options.signer) : undefined;
     console.info('\t - Signer updated');
