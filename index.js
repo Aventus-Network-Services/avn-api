@@ -65,7 +65,7 @@ AvnApi.prototype.init = async function () {
 
     console.info('\t - New signer: ', this.options.signer.sign.toString());
 
-    this.awtToken = this.gateway ? await Awt.generateAwtToken(this.options, signer) : undefined;
+    this.awtToken = this.gateway ? await Awt.generateAwtToken(this.options, this.options.signer) : undefined;
     console.info('\t - Signer updated');
   };
 
