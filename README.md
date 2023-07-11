@@ -128,8 +128,8 @@ async function main() {
   // Get all available lowers and the data to complete them
   // by Ethereum recipient address:
   console.log(await await api.query.getOutstandingLowersForAccount(recipientEthereumAddress));
-  // or by AvN sender address:
-  console.log(await await api.query.getOutstandingLowersForAccount(MY_ADDRESS));
+  // or by AvN sender public key:
+  console.log(await await api.query.getOutstandingLowersForAccount(publicKey));
 
   // ******* NFT OPERATIONS *******
   // Get all the NFTs currently owned by an account:
