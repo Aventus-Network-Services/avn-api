@@ -11,7 +11,7 @@ const common = require('./lib/common.js');
 const version = require('./package.json').version;
 
 class AvnApi {
-    SetupMode = {
+    static SetupMode = {
         SingleUser: 'singleUser',
         MultiUser: 'multiUser'
     };
