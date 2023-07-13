@@ -9,7 +9,11 @@ const Awt = require('./lib/awt.js');
 const Utils = require('./lib/utils.js');
 const common = require('./lib/common.js');
 const version = require('./package.json').version;
-const nodeUtil = require('util');
+
+const SetupMode = {
+    SingleUser: 'singleUser',
+    MultiUser: 'multiUser'
+}
 
 function AvnApi(gateway, options) {
   this.version = version;
@@ -17,6 +21,8 @@ function AvnApi(gateway, options) {
   if (gateway) this.gateway = gateway;
   this.options = options || {};
   this.utils = Utils;
+  this.awt = Awt;
+  this.proxy = Proxy;
 }
 
 AvnApi.prototype.init = async function () {
@@ -66,9 +72,6 @@ AvnApi.prototype.init = async function () {
     console.info('\t - Signer updated');
   };
 
-  this.awt = Awt;
-  this.proxy = Proxy;
-
   setupSigner();
 
   this.signer = () => (apiHasRemoteSigner(this.options) ? this.options.signer : Utils.getSigner(this.options.suri));
@@ -76,18 +79,17 @@ AvnApi.prototype.init = async function () {
   this.myPublicKey = () => Utils.convertToHexIfNeeded(this.signer().publicKey);
 
   if (this.gateway) {
-    this.awtToken = await Awt.generateAwtToken(this.options, this.signer());
+    //this.awtToken = await Awt.generateAwtToken(this.options, this.signer());
 
     const avnApi = {
       relayer: () => this.relayer,
       gateway: this.gateway,
-      signer: () => this.signer(),
       hasSplitFeeToken: () => this.hasSplitFeeToken(),
       uuid: () => uuidv4(),
-      axios: async () => {
+      axios: async (signer) => {
         if (!Awt.tokenAgeIsValid(this.awtToken)) {
           console.log(' - Awt token has expired, refreshing');
-          this.awtToken = await Awt.generateAwtToken(this.options, this.signer());
+          this.awtToken = await Awt.generateAwtToken(this.options, signer);
         }
 
         // Add any middlewares here to configure global axios behaviours
@@ -96,9 +98,23 @@ AvnApi.prototype.init = async function () {
       }
     };
 
-    this.query = new Query(avnApi);
-    this.send = new Send(avnApi, this.query);
-    this.poll = new Poll(avnApi);
+    if (this.options.setupMode === SetupMode.MultiUser) {
+        this.query = (signer) => new Query(avnApi, signer);
+        this.send = (signer) => new Send(avnApi, this.query, signer);
+        this.poll = (signer) => new Poll(avnApi, signer);
+    } else {
+        //avnApi.signer = () => this.signer(),
+        this.query = new Query(avnApi, this.signer());
+        this.send = new Send(avnApi, this.query, this.signer());
+        this.poll = new Poll(avnApi, this.signer());
+    }
+
+
+
+
+
+
+
     this.relayer = common.validateAccount(this.options.relayer || (await this.query.getDefaultRelayer()));
   }
 };
