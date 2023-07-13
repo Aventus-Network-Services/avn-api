@@ -24,6 +24,7 @@ class AvnApi {
     constructor(gateway, options) {
         validateOptions(options)
 
+        this.options = options;
         this.version = version;
         this.awtToken;
         this.gateway = gateway;
