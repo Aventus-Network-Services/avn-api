@@ -60,7 +60,7 @@ class AvnApi {
                 axios: async (signer) => {
                     if (!Awt.tokenAgeIsValid(this.awtToken)) {
                         console.log(' - Awt token has expired, refreshing');
-                        this.awtToken = await Awt.generateAwtToken(this.options, { sign: signFunc, signerAddress: signer });
+                        this.awtToken = await Awt.generateAwtToken(this.options, { sign: signFunc, address: signer });
                     }
 
                     // Add any middlewares here to configure global axios behaviours
