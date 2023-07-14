@@ -58,10 +58,12 @@ class AvnApi {
                 hasSplitFeeToken: () => this.hasSplitFeeToken(),
                 uuid: () => uuidv4(),
                 axios: async (signer) => {
+                    console.log("pre AWT: ", this.awtToken);
                     if (!Awt.tokenAgeIsValid(this.awtToken)) {
                         console.log(' - Awt token has expired, refreshing');
                         this.awtToken = await Awt.generateAwtToken(this.options, { sign: signFunc, address: signer });
                     }
+                    console.log("post AWT: ", this.awtToken);
 
                     // Add any middlewares here to configure global axios behaviours
                     Axios.defaults.headers.common = { Authorization: `bearer ${this.awtToken}` };
