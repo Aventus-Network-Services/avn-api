@@ -76,7 +76,7 @@ class AvnApi {
                     }
                     return this.relayer;
                 },
-                sign: (data, signerAddress) => signFunc(data, signerAddress)
+                sign: async (data, signerAddress) => await signFunc(data, signerAddress)
             };
 
             if(this.options.setupMode === AvnApi.SetupMode.SingleUser) {
