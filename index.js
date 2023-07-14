@@ -80,9 +80,15 @@ class AvnApi {
                 await this.initSingleUserMode()
             }
 
-            this.query = (signerAddress) => new Query(avnApi, signerAddress);
-            this.send = (signerAddress) => new Send(avnApi, this.query, signerAddress);
-            this.poll = (signerAddress) => new Poll(avnApi, signerAddress);
+            if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
+                this.query = () => new Query(avnApi, this.signer.address);
+                this.send = () => new Send(avnApi, this.query, this.signer.address);
+                this.poll = () => new Poll(avnApi, this.signer.address);
+            } else {
+                this.query = (signerAddress) => new Query(avnApi, signerAddress);
+                this.send = (signerAddress) => new Send(avnApi, this.query, signerAddress);
+                this.poll = (signerAddress) => new Poll(avnApi, signerAddress);
+            }
         }
     }
 
