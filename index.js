@@ -77,7 +77,7 @@ class AvnApi {
             };
 
             if(this.options.setupMode === AvnApi.SetupMode.SingleUser) {
-                await initSingleUserMode()
+                await this.initSingleUserMode()
             }
 
             this.query = (signerAddress) => new Query(avnApi, signerAddress);
