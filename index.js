@@ -49,7 +49,7 @@ class AvnApi {
                 console.log("SignFunc: ", data, signerAddress)
                 if(this.options.signingMode === AvnApi.SigningMode.RemoteSigner) {
                     console.log("remote sign")
-                    return this.options.sign(data, signerAddress)
+                    return await this.options.sign(data, signerAddress)
                 } else if(this.options.signingMode === AvnApi.SigningMode.SuriBased) {
                     console.log("suri sign")
                     return this.signer.sign(data)
