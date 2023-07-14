@@ -48,9 +48,9 @@ class AvnApi {
             const signFunc = async (data, signerAddress) => {
                 console.log("SignFunc: ", data, signerAddress)
                 if(this.options.signingMode === AvnApi.SigningMode.RemoteSigner) {
-                    this.options.sign(data, signerAddress)
+                    return this.options.sign(data, signerAddress)
                 } else if(this.options.signingMode === AvnApi.SigningMode.SuriBased) {
-                    this.signer.sign(data)
+                    return this.signer.sign(data)
                 }
             };
 
@@ -76,7 +76,7 @@ class AvnApi {
                     }
                     return this.relayer;
                 },
-                sign: signFunc
+                sign: (data, signerAddress) => signFunc(data, signerAddress)
             };
 
             if(this.options.setupMode === AvnApi.SetupMode.SingleUser) {
