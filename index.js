@@ -83,8 +83,7 @@ class AvnApi {
             if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
                 this.query = () => new Query(
                     avnApi,
-                    new Awt(avnApi, this.signer.address, this.options),
-                    this.signer.address
+                    new Awt(avnApi, this.signer.address, this.options)
                 );
                 this.send = () => new Send(
                     avnApi,
@@ -94,14 +93,12 @@ class AvnApi {
                 );
                 this.poll = () => new Poll(
                     avnApi,
-                    new Awt(avnApi, this.signer.address, this.options),
-                    this.signer.address
+                    new Awt(avnApi, this.signer.address, this.options)
                 );
             } else {
                 this.query = (signerAddress) => new Query(
                     avnApi,
-                    new Awt(avnApi, signerAddress, this.options),
-                    signerAddress
+                    new Awt(avnApi, signerAddress, this.options)
                 );
                 this.send = (signerAddress) => new Send(
                     avnApi,
@@ -111,8 +108,7 @@ class AvnApi {
                 );
                 this.poll = (signerAddress) => new Poll(
                     avnApi,
-                    new Awt(avnApi, signerAddress, this.options),
-                    signerAddress
+                    new Awt(avnApi, signerAddress, this.options)
                 );
             }
         }
