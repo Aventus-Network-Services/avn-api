@@ -59,6 +59,7 @@ class AvnApi {
                 hasSplitFeeToken: () => this.hasSplitFeeToken(),
                 uuid: () => uuidv4(),
                 axios: (token) => {
+                    console.log("Axio called with token: ", token)
                     // Add any middlewares here to configure global axios behaviours
                     Axios.defaults.headers.common = { Authorization: `bearer ${token}` };
                     return Axios;
