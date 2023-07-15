@@ -26,10 +26,8 @@ class AvnApi {
 
         this.options = options;
         this.version = version;
-        this.awtToken;
         this.gateway = gateway;
         this.utils = Utils;
-        this.awt = Awt;
         this.proxy = Proxy;
 
         if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
@@ -60,16 +58,9 @@ class AvnApi {
                 gateway: this.gateway,
                 hasSplitFeeToken: () => this.hasSplitFeeToken(),
                 uuid: () => uuidv4(),
-                axios: async (signer) => {
-                    console.log("pre AWT: ", this.awtToken);
-                    if (!Awt.tokenAgeIsValid(this.awtToken)) {
-                        console.log(' - Awt token has expired, refreshing');
-                        this.awtToken = await Awt.generateAwtToken(this.options, { sign: signFunc, address: signer });
-                    }
-                    console.log("post AWT: ", this.awtToken);
-
+                axios: (token) => {
                     // Add any middlewares here to configure global axios behaviours
-                    Axios.defaults.headers.common = { Authorization: `bearer ${this.awtToken}` };
+                    Axios.defaults.headers.common = { Authorization: `bearer ${token}` };
                     return Axios;
                 },
                 relayer: async (signer) => {
@@ -86,12 +77,12 @@ class AvnApi {
             }
 
             if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
-                this.query = () => new Query(avnApi, this.signer.address);
-                this.send = () => new Send(avnApi, this.query, this.signer.address);
+                this.query = () => new Query(avnApi, new Awt(api, signer, options), this.signer.address);
+                this.send = () => new Send(avnApi, new Query(avnApi, this.signer.address), this.signer.address);
                 this.poll = () => new Poll(avnApi, this.signer.address);
             } else {
-                this.query = (signerAddress) => new Query(avnApi, signerAddress);
-                this.send = (signerAddress) => new Send(avnApi, this.query, signerAddress);
+                this.query = (signerAddress) => new Query(avnApi, new Awt(api, signer, options), signerAddress);
+                this.send = (signerAddress) => new Send(avnApi, new Query(avnApi, signerAddress), signerAddress);
                 this.poll = (signerAddress) => new Poll(avnApi, signerAddress);
             }
         }
@@ -99,19 +90,9 @@ class AvnApi {
 
     async initSingleUserMode() {
         if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
-            this.setSURI = async (suri) => {
-                if (!suri) throw new Error('Suri is a mandatory field');
-                this.options.suri = suri;
-
-                this.signer = Utils.getSigner(suri);
-                this.myAddress = this.signer.address;
-                this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
-
-                this.awtToken = this.gateway ? await Awt.generateAwtToken(this.options, this.signer) : undefined;
-                console.info(' - Suri updated');
-            };
-
-            await this.setSURI(this.options.suri)
+            this.signer = Utils.getSigner(suri);
+            this.myAddress = this.signer.address;
+            this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
         }
     }
 
