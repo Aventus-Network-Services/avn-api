@@ -44,7 +44,6 @@ class AvnApi {
 
         if (this.gateway) {
             const signFunc = async (data, signerAddress) => {
-                console.log("SignFunc: ", data, signerAddress)
                 if(this.options.signingMode === AvnApi.SigningMode.RemoteSigner) {
                     //console.log("remote sign")
                     return await this.options.signer.sign(data, signerAddress)
