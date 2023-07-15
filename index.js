@@ -73,7 +73,11 @@ class AvnApi {
             };
 
             if(this.options.setupMode === AvnApi.SetupMode.SingleUser) {
-                await this.initSingleUserMode()
+                if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
+                    this.signer = Utils.getSigner(this.options.suri);
+                    this.myAddress = this.signer.address;
+                    this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
+                }
             }
 
             if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
@@ -85,14 +89,6 @@ class AvnApi {
                 this.send = (signerAddress) => new Send(avnApi, new Query(avnApi, signerAddress), signerAddress);
                 this.poll = (signerAddress) => new Poll(avnApi, signerAddress);
             }
-        }
-    }
-
-    async initSingleUserMode() {
-        if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
-            this.signer = Utils.getSigner(suri);
-            this.myAddress = this.signer.address;
-            this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
         }
     }
 
