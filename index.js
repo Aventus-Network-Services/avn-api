@@ -103,7 +103,7 @@ class AvnApi {
                 );
                 this.send = (signerAddress) => new Send(
                     avnApi,
-                    this.query(),
+                    this.query(signerAddress),
                     new Awt(avnApi, signerAddress, this.options),
                     signerAddress
                 );
