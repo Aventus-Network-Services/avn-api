@@ -81,13 +81,39 @@ class AvnApi {
             }
 
             if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
-                this.query = () => new Query(avnApi, new Awt(avnApi, this.signer.address, this.options), this.signer.address);
-                this.send = () => new Send(avnApi, new Query(avnApi, this.signer.address), this.signer.address);
-                this.poll = () => new Poll(avnApi, this.signer.address);
+                this.query = () => new Query(
+                    avnApi,
+                    new Awt(avnApi, this.signer.address, this.options),
+                    this.signer.address
+                );
+                this.send = () => new Send(
+                    avnApi,
+                    new Query(avnApi, this.signer.address),
+                    new Awt(avnApi, this.signer.address, this.options),
+                    this.signer.address
+                );
+                this.poll = () => new Poll(
+                    avnApi,
+                    new Awt(avnApi, this.signer.address, this.options),
+                    this.signer.address
+                );
             } else {
-                this.query = (signerAddress) => new Query(avnApi, new Awt(avnApi, signerAddress, this.options), signerAddress);
-                this.send = (signerAddress) => new Send(avnApi, new Query(avnApi, signerAddress), signerAddress);
-                this.poll = (signerAddress) => new Poll(avnApi, signerAddress);
+                this.query = (signerAddress) => new Query(
+                    avnApi,
+                    new Awt(avnApi, signerAddress, this.options),
+                    signerAddress
+                );
+                this.send = (signerAddress) => new Send(
+                    avnApi,
+                    new Query(avnApi, signerAddress),
+                    new Awt(avnApi, signerAddress, this.options),
+                    signerAddress
+                );
+                this.poll = (signerAddress) => new Poll(
+                    avnApi,
+                    new Awt(avnApi, signerAddress, this.options),
+                    signerAddress
+                );
             }
         }
     }
