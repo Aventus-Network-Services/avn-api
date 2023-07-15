@@ -88,7 +88,7 @@ class AvnApi {
                 );
                 this.send = () => new Send(
                     avnApi,
-                    new Query(avnApi, this.signer.address),
+                    this.query(),
                     new Awt(avnApi, this.signer.address, this.options),
                     this.signer.address
                 );
@@ -105,7 +105,7 @@ class AvnApi {
                 );
                 this.send = (signerAddress) => new Send(
                     avnApi,
-                    new Query(avnApi, signerAddress),
+                    this.query(),
                     new Awt(avnApi, signerAddress, this.options),
                     signerAddress
                 );
