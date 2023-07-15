@@ -81,6 +81,7 @@ class AvnApi {
             }
 
             if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
+                console.log("SuriBased signer: ",this.signer.address);
                 this.query = () => new Query(
                     avnApi,
                     new Awt(avnApi, this.signer.address, this.options)
