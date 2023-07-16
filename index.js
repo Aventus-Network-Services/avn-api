@@ -27,8 +27,7 @@ class AvnApi {
     constructor(gateway, options) {
         validateOptions(options)
 
-        // Prevent the suri from leaking if object is printed
-        this.options = Object.assign({}, options, { suri: options.suri ? "****" : undefined });
+        this.options = options;
         this.version = version;
         this.gateway = gateway;
         this.utils = Utils;
@@ -36,6 +35,8 @@ class AvnApi {
 
         if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
             this.#suri = options.suri || process.env.AVN_SURI;
+            // Prevent the suri from leaking if object is printed
+            delete this.options.suri;
         }
     }
 
