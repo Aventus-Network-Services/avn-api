@@ -8,7 +8,7 @@ const Proxy = require('./lib/proxy.js');
 const Awt = require('./lib/awt.js');
 const Utils = require('./lib/utils.js');
 const common = require('./lib/common.js');
-const version = require('./package.json').version;options
+const version = require('./package.json').version;
 
 class AvnApi {
     static SetupMode = {
