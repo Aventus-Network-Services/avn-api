@@ -8,7 +8,7 @@ const Proxy = require('./lib/proxy.js');
 const Awt = require('./lib/awt.js');
 const Utils = require('./lib/utils.js');
 const common = require('./lib/common.js');
-const version = require('./package.json').version;
+const version = require('./package.json').version;options
 
 class AvnApi {
     static SetupMode = {
@@ -24,14 +24,14 @@ class AvnApi {
     constructor(gateway, options) {
         validateOptions(options)
 
-        this.options = options;
+        this.#options = options;
         this.version = version;
         this.gateway = gateway;
         this.utils = Utils;
         this.proxy = Proxy;
 
-        if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
-            this.options.suri = this.options.suri || process.env.AVN_SURI;
+        if (this.#options.signingMode === AvnApi.SigningMode.SuriBased) {
+            this.#options.suri = this.#options.suri || process.env.AVN_SURI;
         }
     }
 
@@ -41,8 +41,8 @@ class AvnApi {
         if (this.gateway) {
             const avnApi = this.#buildApi();
 
-            if(this.options.setupMode === AvnApi.SetupMode.SingleUser &&
-                this.options.signingMode === AvnApi.SigningMode.SuriBased)
+            if(this.#options.setupMode === AvnApi.SetupMode.SingleUser &&
+                this.#options.signingMode === AvnApi.SigningMode.SuriBased)
             {
                 this.#applySuriBasedSingleUserSetup(avnApi)
             } else {
@@ -64,14 +64,14 @@ class AvnApi {
             },
             relayer: async (signer) => {
                 if (!this.relayer) {
-                    this.relayer = !!this.options.relayer || (await this.query(signer).getDefaultRelayer());
+                    this.relayer = !!this.#options.relayer || (await this.query(signer).getDefaultRelayer());
                 }
                 return this.relayer;
             },
             sign: async (data, signerAddress) => {
-                if(this.options.signingMode === AvnApi.SigningMode.RemoteSigner) {
-                    return await this.options.signer.sign(data, signerAddress)
-                } else if(this.options.signingMode === AvnApi.SigningMode.SuriBased) {
+                if(this.#options.signingMode === AvnApi.SigningMode.RemoteSigner) {
+                    return await this.#options.signer.sign(data, signerAddress)
+                } else if(this.#options.signingMode === AvnApi.SigningMode.SuriBased) {
                     return this.signer.sign(data)
                 }
             }
@@ -82,26 +82,26 @@ class AvnApi {
 
     #applySuriBasedSingleUserSetup(avnApi) {
         // Additional properties
-        this.signer = Utils.getSigner(this.options.suri);
+        this.signer = Utils.getSigner(this.#options.suri);
         this.myAddress = this.signer.address;
         this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
 
         // Standard functions
         this.query = () => new Query(
             avnApi,
-            new Awt(avnApi, this.signer.address, this.options)
+            new Awt(avnApi, this.signer.address, this.#options)
         );
 
         this.send = () => new Send(
             avnApi,
             this.query(),
-            new Awt(avnApi, this.signer.address, this.options),
+            new Awt(avnApi, this.signer.address, this.#options),
             this.signer.address
         );
 
         this.poll = () => new Poll(
             avnApi,
-            new Awt(avnApi, this.signer.address, this.options)
+            new Awt(avnApi, this.signer.address, this.#options)
         );
     }
 
@@ -109,27 +109,27 @@ class AvnApi {
         // Standard functions
         this.query = (signerAddress) => new Query(
             avnApi,
-            new Awt(avnApi, signerAddress, this.options)
+            new Awt(avnApi, signerAddress, this.#options)
         );
 
         this.send = (signerAddress) => new Send(
             avnApi,
             this.query(signerAddress),
-            new Awt(avnApi, signerAddress, this.options),
+            new Awt(avnApi, signerAddress, this.#options),
             signerAddress
         );
 
         this.poll = (signerAddress) => new Poll(
             avnApi,
-            new Awt(avnApi, signerAddress, this.options)
+            new Awt(avnApi, signerAddress, this.#options)
         );
     }
 
     #hasSplitFeeToken() {
-        if (!this.options) return false;
-        if (this.options.hasPayer === true) return true;
+        if (!this.#options) return false;
+        if (this.#options.hasPayer === true) return true;
 
-        return !!this.options.payerAddress;
+        return !!this.#options.payerAddress;
     }
 }
 
