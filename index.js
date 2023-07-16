@@ -28,7 +28,7 @@ class AvnApi {
         validateOptions(options)
 
         // Prevent the suri from leaking if object is printed
-        this.options = Object.assign({}, options, { suri: "****" });
+        this.options = Object.assign({}, options, { suri: options.suri ? "****" : undefined });
         this.version = version;
         this.gateway = gateway;
         this.utils = Utils;
