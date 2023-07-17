@@ -211,6 +211,13 @@ async function main() {
   requestId = await api.send.payoutStakers(previousEra); // era is optional, if left the latest active era is used
   await confirmTransaction(api, requestId);
 
+  // See the amount of staking rewards earned over all time:
+  console.log(await api.query.getStakerRewardsEarned(MY_ADDRESS));
+  // Or during a period of time:
+  const fromTimestamp = 1672531200; // 1st Jan 2023
+  const toTimestamp = 	1685574000; // 1st Jun 2023
+  console.log(await api.query.getStakerRewardsEarned(api.myPublicKey(), fromTimestamp, toTimestamp));
+
   // Unstake half an AVT (unstaked funds no longer accrue rewards and are unlocked after a period of 7 days):
   const amountToUnstake = '500000000000000000';
   requestId = await api.send.unstake(amountToUnstake);
