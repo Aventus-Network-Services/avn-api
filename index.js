@@ -56,9 +56,17 @@ class AvnApi {
             if(this.options.setupMode === AvnApi.SetupMode.SingleUser &&
                 this.options.signingMode === AvnApi.SigningMode.SuriBased)
             {
-                this.#applySuriBasedSingleUserSetup(avnApi)
+                //this.#applySuriBasedSingleUserSetup(avnApi)
+                // Set additional properties
+                this.signer = Utils.getSigner(this.#suri);
+                this.myAddress = this.signer.address;
+                this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
+
+                // Set apis
+                this.apis = () => this.#setStandardFunctions2(avnApi, this.signer.address, this.options)
             } else {
-                this.#setStandardFunctions(avnApi)
+                this.apis = (signerAddress) => this.#setStandardFunctions2(avnApi, signerAddress, this.options)
+                //this.#setStandardFunctions(avnApi)
             }
         }
     }
@@ -69,7 +77,7 @@ class AvnApi {
             hasSplitFeeToken: () => this.#hasSplitFeeToken(),
             uuid: () => uuidv4(),
             axios: (token) => {
-                console.log(`Axios called with token: ${token.substring(0, 8) + "..." + token.substring(token.length - (8))}`)
+                //console.log(`Axios called with token: ${token.substring(0, 8) + "..." + token.substring(token.length - (8))}`)
                 // Add any middlewares here to configure global axios behaviours
                 Axios.defaults.headers.common = { Authorization: `bearer ${token}` };
                 return Axios;
@@ -93,49 +101,61 @@ class AvnApi {
         return avnApi;
     }
 
-    #applySuriBasedSingleUserSetup(avnApi) {
-        // Additional properties
-        this.signer = Utils.getSigner(this.#suri);
-        this.myAddress = this.signer.address;
-        this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
+    // #applySuriBasedSingleUserSetup(avnApi) {
+    //     // Additional properties
+    //     this.signer = Utils.getSigner(this.#suri);
+    //     this.myAddress = this.signer.address;
+    //     this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
 
+    //     // Standard functions
+    //     this.apis = () => this.#setStandardFunctions2(avnApi, this.signer.address, this.options)
+    //     // this.query = () => new Query(
+    //     //     avnApi,
+    //     //     new Awt(avnApi, this.signer.address, this.options)
+    //     // );
+
+    //     // this.send = () => new Send(
+    //     //     avnApi,
+    //     //     this.query(),
+    //     //     new Awt(avnApi, this.signer.address, this.options),
+    //     //     this.signer.address
+    //     // );
+
+    //     // this.poll = () => new Poll(
+    //     //     avnApi,
+    //     //     new Awt(avnApi, this.signer.address, this.options)
+    //     // );
+    // }
+
+    // #setStandardFunctions(avnApi) {
+    //     // Standard functions
+    //     this.query = (signerAddress) => new Query(
+    //         avnApi,
+    //         new Awt(avnApi, signerAddress, this.options)
+    //     );
+
+    //     this.send = (signerAddress) => new Send(
+    //         avnApi,
+    //         this.query(signerAddress),
+    //         new Awt(avnApi, signerAddress, this.options),
+    //         signerAddress
+    //     );
+
+    //     this.poll = (signerAddress) => new Poll(
+    //         avnApi,
+    //         new Awt(avnApi, signerAddress, this.options)
+    //     );
+    // }
+
+    #setStandardFunctions2(avnApi, signerAddress) {
         // Standard functions
-        this.query = () => new Query(
-            avnApi,
-            new Awt(avnApi, this.signer.address, this.options)
-        );
-
-        this.send = () => new Send(
-            avnApi,
-            this.query(),
-            new Awt(avnApi, this.signer.address, this.options),
-            this.signer.address
-        );
-
-        this.poll = () => new Poll(
-            avnApi,
-            new Awt(avnApi, this.signer.address, this.options)
-        );
-    }
-
-    #setStandardFunctions(avnApi) {
-        // Standard functions
-        this.query = (signerAddress) => new Query(
-            avnApi,
-            new Awt(avnApi, signerAddress, this.options)
-        );
-
-        this.send = (signerAddress) => new Send(
-            avnApi,
-            this.query(signerAddress),
-            new Awt(avnApi, signerAddress, this.options),
-            signerAddress
-        );
-
-        this.poll = (signerAddress) => new Poll(
-            avnApi,
-            new Awt(avnApi, signerAddress, this.options)
-        );
+        const awt = new Awt(avnApi, signerAddress, this.options);
+        const query = new Query(avnApi, awt);
+        return {
+            query: query,
+            send: new Send(avnApi, query, awt, signerAddress),
+            poll: new Poll(avnApi, awt)
+        }
     }
 
     async #buildNonceCache() {
