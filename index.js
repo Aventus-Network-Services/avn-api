@@ -4,6 +4,7 @@ const Axios = require('axios');
 const Query = require('./lib/query.js');
 const Send = require('./lib/send.js');
 const Poll = require('./lib/poll.js');
+const InMemoryNonceCacheProvider = require('./lib/inMemoryNonceCacheProvider.js');
 const Proxy = require('./lib/proxy.js');
 const Awt = require('./lib/awt.js');
 const Utils = require('./lib/utils.js');
@@ -19,6 +20,11 @@ class AvnApi {
     static SigningMode = {
         SuriBased: 'suriBased',
         RemoteSigner: 'remoteSigner'
+    };
+
+    static NonceCacheType = {
+        Local: 'local',
+        Remote: 'remote'
     };
 
     // Private field to store suri if provided by caller.
@@ -79,7 +85,8 @@ class AvnApi {
                 } else if(this.options.signingMode === AvnApi.SigningMode.SuriBased) {
                     return this.signer.sign(data)
                 }
-            }
+            },
+            nonceCache: this.#buildNonceCache()
         };
 
         return avnApi;
@@ -130,6 +137,12 @@ class AvnApi {
         );
     }
 
+    #buildNonceCache() {
+        return this.options.nonceCacheType === AvnApi.NonceCacheType.Local
+            ? new InMemoryNonceCacheProvider()
+            : this.options.cacheProvider;
+    }
+
     #hasSplitFeeToken() {
         if (!this.options) return false;
         if (this.options.hasPayer === true) return true;
@@ -143,6 +156,17 @@ function validateOptions(options) {
 
     if (options.relayer) {
         common.validateAccount(options.relayer);
+    }
+
+    if (options.nonceCacheType === AvnApi.NonceCacheType.Remote) {
+        if(!options.cacheProvider
+            || typeof options.cacheProvider.connect !== 'function'
+            || typeof options.cacheProvider.resetNonce !== 'function'
+            || typeof options.cacheProvider.getNonce !== 'function'
+            || typeof options.cacheProvider.getNonceAndIncrement !== 'function')
+        {
+            throw new error("You must specify a cache provider interface with a 'connect', 'resetNonce', 'getNonce' and 'getNonceAndIncrement' functions");
+        }
     }
 
     switch(options.signingMode) {
