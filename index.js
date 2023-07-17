@@ -138,9 +138,9 @@ class AvnApi {
     }
 
     #buildNonceCache() {
-        return this.options.nonceCacheType === AvnApi.NonceCacheType.Local
-            ? new InMemoryNonceCacheProvider()
-            : this.options.cacheProvider;
+        return this.options.nonceCacheType === AvnApi.NonceCacheType.Remote
+            ? this.options.cacheProvider
+            : new InMemoryNonceCacheProvider();
     }
 
     #hasSplitFeeToken() {
