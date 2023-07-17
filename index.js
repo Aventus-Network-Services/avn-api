@@ -143,7 +143,9 @@ class AvnApi {
             ? new ProxyNonceCache(this.options.cacheProvider)
             : new ProxyNonceCache(new InMemoryNonceCacheProvider());
 
-        return await cache.init();
+        await cache.init();
+
+        return cache;
     }
 
     #hasSplitFeeToken() {
