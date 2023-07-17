@@ -4,6 +4,7 @@ const Axios = require('axios');
 const Query = require('./lib/query.js');
 const Send = require('./lib/send.js');
 const Poll = require('./lib/poll.js');
+const ProxyNonceCache = require('./lib/ProxyNonceCache.js');
 const InMemoryNonceCacheProvider = require('./lib/inMemoryNonceCacheProvider.js');
 const Proxy = require('./lib/proxy.js');
 const Awt = require('./lib/awt.js');
@@ -139,8 +140,8 @@ class AvnApi {
 
     #buildNonceCache() {
         return this.options.nonceCacheType === AvnApi.NonceCacheType.Remote
-            ? this.options.cacheProvider
-            : new InMemoryNonceCacheProvider();
+            ? new ProxyNonceCache(this.options.cacheProvider)
+            : new ProxyNonceCache(new InMemoryNonceCacheProvider());
     }
 
     #hasSplitFeeToken() {
