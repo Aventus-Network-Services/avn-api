@@ -84,7 +84,7 @@ class AvnApi {
             },
             relayer: async (signer) => {
                 if (!this.relayer) {
-                    this.relayer = !!this.options.relayer || (await this.query(signer).getDefaultRelayer());
+                    this.relayer = !!this.options.relayer || (await this.apis(signer).query.getDefaultRelayer());
                 }
                 return this.relayer;
             },
