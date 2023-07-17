@@ -56,17 +56,15 @@ class AvnApi {
             if(this.options.setupMode === AvnApi.SetupMode.SingleUser &&
                 this.options.signingMode === AvnApi.SigningMode.SuriBased)
             {
-                //this.#applySuriBasedSingleUserSetup(avnApi)
                 // Set additional properties
                 this.signer = Utils.getSigner(this.#suri);
                 this.myAddress = this.signer.address;
                 this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
 
                 // Set apis
-                this.apis = () => this.#setStandardFunctions2(avnApi, this.signer.address, this.options)
+                this.apis = () => this.#setStandardFunctions(avnApi, this.signer.address, this.options)
             } else {
-                this.apis = (signerAddress) => this.#setStandardFunctions2(avnApi, signerAddress, this.options)
-                //this.#setStandardFunctions(avnApi)
+                this.apis = (signerAddress) => this.#setStandardFunctions(avnApi, signerAddress, this.options)
             }
         }
     }
@@ -101,53 +99,7 @@ class AvnApi {
         return avnApi;
     }
 
-    // #applySuriBasedSingleUserSetup(avnApi) {
-    //     // Additional properties
-    //     this.signer = Utils.getSigner(this.#suri);
-    //     this.myAddress = this.signer.address;
-    //     this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
-
-    //     // Standard functions
-    //     this.apis = () => this.#setStandardFunctions2(avnApi, this.signer.address, this.options)
-    //     // this.query = () => new Query(
-    //     //     avnApi,
-    //     //     new Awt(avnApi, this.signer.address, this.options)
-    //     // );
-
-    //     // this.send = () => new Send(
-    //     //     avnApi,
-    //     //     this.query(),
-    //     //     new Awt(avnApi, this.signer.address, this.options),
-    //     //     this.signer.address
-    //     // );
-
-    //     // this.poll = () => new Poll(
-    //     //     avnApi,
-    //     //     new Awt(avnApi, this.signer.address, this.options)
-    //     // );
-    // }
-
-    // #setStandardFunctions(avnApi) {
-    //     // Standard functions
-    //     this.query = (signerAddress) => new Query(
-    //         avnApi,
-    //         new Awt(avnApi, signerAddress, this.options)
-    //     );
-
-    //     this.send = (signerAddress) => new Send(
-    //         avnApi,
-    //         this.query(signerAddress),
-    //         new Awt(avnApi, signerAddress, this.options),
-    //         signerAddress
-    //     );
-
-    //     this.poll = (signerAddress) => new Poll(
-    //         avnApi,
-    //         new Awt(avnApi, signerAddress, this.options)
-    //     );
-    // }
-
-    #setStandardFunctions2(avnApi, signerAddress) {
+    #setStandardFunctions(avnApi, signerAddress) {
         // Standard functions
         const awt = new Awt(avnApi, signerAddress, this.options);
         const query = new Query(avnApi, awt);
@@ -164,14 +116,12 @@ class AvnApi {
             : new ProxyNonceCache(new InMemoryNonceCacheProvider());
 
         await cache.init();
-
         return cache;
     }
 
     #hasSplitFeeToken() {
         if (!this.options) return false;
         if (this.options.hasPayer === true) return true;
-
         return !!this.options.payerAddress;
     }
 }
