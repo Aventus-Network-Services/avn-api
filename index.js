@@ -51,7 +51,7 @@ class AvnApi {
         await cryptoWaitReady();
 
         if (this.gateway) {
-            const avnApi = this.#buildApi();
+            const avnApi = await this.#buildApi();
 
             if(this.options.setupMode === AvnApi.SetupMode.SingleUser &&
                 this.options.signingMode === AvnApi.SigningMode.SuriBased)
@@ -63,7 +63,7 @@ class AvnApi {
         }
     }
 
-    #buildApi() {
+    async #buildApi() {
         const avnApi = {
             gateway: this.gateway,
             hasSplitFeeToken: () => this.#hasSplitFeeToken(),
@@ -87,7 +87,7 @@ class AvnApi {
                     return this.signer.sign(data)
                 }
             },
-            nonceCache: this.#buildNonceCache()
+            nonceCache: await this.#buildNonceCache()
         };
 
         return avnApi;
@@ -138,10 +138,12 @@ class AvnApi {
         );
     }
 
-    #buildNonceCache() {
-        return this.options.nonceCacheType === AvnApi.NonceCacheType.Remote
+    async #buildNonceCache() {
+        const cache = this.options.nonceCacheType === AvnApi.NonceCacheType.Remote
             ? new ProxyNonceCache(this.options.cacheProvider)
             : new ProxyNonceCache(new InMemoryNonceCacheProvider());
+
+        return await cache.init();
     }
 
     #hasSplitFeeToken() {
