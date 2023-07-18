@@ -80,9 +80,9 @@ class AvnApi {
                 Axios.defaults.headers.common = { Authorization: `bearer ${token}` };
                 return Axios;
             },
-            relayer: async (signer) => {
+            relayer: async (queryApi) => {
                 if (!this.relayer) {
-                    this.relayer = !!this.options.relayer || (await this.apis(signer).query.getDefaultRelayer());
+                    this.relayer = !!this.options.relayer || (await queryApi.getDefaultRelayer());
                 }
                 return this.relayer;
             },
