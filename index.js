@@ -8,6 +8,7 @@ const ProxyNonceCache = require('./lib/ProxyNonceCache.js');
 const InMemoryNonceCacheProvider = require('./lib/inMemoryNonceCacheProvider.js');
 const Proxy = require('./lib/proxy.js');
 const Awt = require('./lib/awt.js');
+const Apis = require('./lib/apis.js');
 const Utils = require('./lib/utils.js');
 const common = require('./lib/common.js');
 const version = require('./package.json').version;
@@ -62,9 +63,9 @@ class AvnApi {
                 this.myPublicKey = Utils.convertToHexIfNeeded(Utils.convertToPublicKeyBytes(this.myAddress));
 
                 // Set apis
-                this.apis = () => this.#setStandardFunctions(avnApi, this.signer.address, this.options)
+                this.apis = () => this.#setStandardApiProperties(avnApi, this.signer.address, this.options)
             } else {
-                this.apis = (signerAddress) => this.#setStandardFunctions(avnApi, signerAddress, this.options)
+                this.apis = (signerAddress) => this.#setStandardApiProperties(avnApi, signerAddress, this.options)
             }
         }
     }
@@ -99,15 +100,16 @@ class AvnApi {
         return avnApi;
     }
 
-    #setStandardFunctions(avnApi, signerAddress) {
+    #setStandardApiProperties(avnApi, signerAddress) {
         // Standard functions
         const awt = new Awt(avnApi, signerAddress, this.options);
-        const query = new Query(avnApi, awt);
-        return {
-            query: query,
-            send: new Send(avnApi, query, awt, signerAddress),
-            poll: new Poll(avnApi, awt)
-        }
+        // const query = new Query(avnApi, awt);
+        // return {
+        //     query: query,
+        //     send: new Send(avnApi, query, awt, signerAddress),
+        //     poll: new Poll(avnApi, awt)
+        // }
+        return new Apis(avnApi, awt, signerAddress);
     }
 
     async #buildNonceCache() {
