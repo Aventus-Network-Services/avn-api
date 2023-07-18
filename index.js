@@ -33,6 +33,11 @@ class AvnApi {
     #suri = undefined;
 
     constructor(gateway, options) {
+        // Set default values
+        options = options || {}
+        options.setupMode = options.setupMode || AvnApi.SetupMode.SingleUser;
+        options.signingMode = options.signingMode || AvnApi.SigningMode.SuriBased;
+
         validateOptions(options)
 
         this.options = options;
