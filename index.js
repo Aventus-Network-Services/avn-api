@@ -1,9 +1,6 @@
 const { cryptoWaitReady } = require('@polkadot/util-crypto');
 const { v4: uuidv4 } = require('uuid');
 const Axios = require('axios');
-const Query = require('./lib/query.js');
-const Send = require('./lib/send.js');
-const Poll = require('./lib/poll.js');
 const ProxyNonceCache = require('./lib/ProxyNonceCache.js');
 const InMemoryNonceCacheProvider = require('./lib/inMemoryNonceCacheProvider.js');
 const Proxy = require('./lib/proxy.js');
