@@ -7,6 +7,7 @@ const Poll = require('./lib/poll.js');
 const ProxyNonceCache = require('./lib/ProxyNonceCache.js');
 const InMemoryNonceCacheProvider = require('./lib/inMemoryNonceCacheProvider.js');
 const Proxy = require('./lib/proxy.js');
+const AwtUtils = require('./lib/awtUtils.js');
 const Awt = require('./lib/awt.js');
 const Utils = require('./lib/utils.js');
 const common = require('./lib/common.js');
@@ -38,6 +39,7 @@ class AvnApi {
         this.version = version;
         this.gateway = gateway;
         this.utils = Utils;
+        this.awtUtils = AwtUtils;
         this.proxy = Proxy;
 
         if (this.options.signingMode === AvnApi.SigningMode.SuriBased) {
