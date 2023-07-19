@@ -1,11 +1,15 @@
 'use strict';
 
-const common = require('./common.js');
-const utils = require('./utils.js');
-const AwtUtils = require('./awtUtils.js');
+import AwtUtils from './awtUtils';
+import { AvnApiConfig } from '../interfaces';
 
-class Awt {
-    constructor(api, signerAddress, options) {
+export class Awt {
+    private splitFeeOptions: { hasPayer: boolean; payerAddress: string; };
+    private signerAddress: string;
+    private apiSigner: AvnApiConfig["sign"];
+    private awtToken: string;
+
+    constructor(api: AvnApiConfig, signerAddress: string, options) {
         this.splitFeeOptions = {
             hasPayer: options.hasPayer,
             payerAddress: options.payerAddress
@@ -28,6 +32,3 @@ class Awt {
         return this.awtToken;
     }
 }
-
-
-module.exports = Awt;

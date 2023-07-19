@@ -1,5 +1,7 @@
-const common = require('./common.js');
-const BN = require('bn.js');
+import common = require('../utils/common');
+import { NonceType } from '../interfaces/index';
+import { Query } from '../apis/query';
+import { INonceCacheProvider } from './index';
 
 const TX_PROCESSING_TIME_MS = 120000;
 const NONCE_LOCK_POLL_INTERVAL_MS = 500;
@@ -9,17 +11,18 @@ const EXPIRY_UPDATE_ENUM = {
     UpdateExpiry: true
 }
 
-class ProxyNonceCache {
-    constructor(cacheProvider) {
+export class ProxyNonceCache {
+    private cacheProvider: INonceCacheProvider;
+
+    constructor(cacheProvider: INonceCacheProvider) {
         this.cacheProvider = cacheProvider;
     }
 
-    async init() {
+    public async init() {
         this.cacheProvider = await this.cacheProvider.connect();
     }
 
-    async getNonceAndIncrement(signerAddress, nonceType, queryApi) {
-        common.validateNonceType(nonceType);
+    public async getNonceAndIncrement(signerAddress: string, nonceType: NonceType, queryApi: Query) {
         signerAddress = common.convertToPublicKeyIfNeeded(signerAddress);
 
         let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
@@ -33,11 +36,11 @@ class ProxyNonceCache {
             } else {
                 if(cachedNonceInfo.lockAquired === false) {
                     console.log(`Nonce for ${signerAddress}, ${nonceType} is locked, waiting for it to be released...`);
-                    await this.#waitForLock(signerAddress, nonceType);
+                    await this.waitForLock(signerAddress, nonceType);
                     cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
                 }
 
-                return await this.#validateNonceAndIncrement(signerAddress, nonceType, cachedNonceInfo.data, queryApi);
+                return await this.validateNonceAndIncrement(signerAddress, nonceType, cachedNonceInfo.data, queryApi);
             }
         } catch (err) {
             console.error(`Error getting nonce from cache: `, err.toString())
@@ -48,17 +51,17 @@ class ProxyNonceCache {
         }
     }
 
-    async #validateNonceAndIncrement(signerAddress, nonceType, nonceData, queryApi) {
+    private async validateNonceAndIncrement(signerAddress: string, nonceType: string, nonceData, queryApi): Promise<number> {
         const nonceIsExpired = Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
         if (nonceIsExpired) {
-            return await this.#refreshNonceFromChain(signerAddress, nonceType, nonceData, queryApi);
+            return await this.refreshNonceFromChain(signerAddress, nonceType, nonceData, queryApi);
         } else {
             return (await this.cacheProvider.incrementNonce(signerAddress, nonceType, EXPIRY_UPDATE_ENUM.UpdateExpiry)).nonce;
         }
     }
 
-    async #refreshNonceFromChain(signerAddress, nonceType, nonceData, queryApi) {
+    private async refreshNonceFromChain(signerAddress: string, nonceType: string, nonceData, queryApi): Promise<number> {
         const nonceFromChain = parseInt(await queryApi.getNonce(signerAddress, nonceType));
         if (nonceData.nonce === nonceFromChain) {
             // The chain should always be nonce + 1 so do not reset yet, instead:
@@ -75,12 +78,12 @@ class ProxyNonceCache {
             return incrementedNonce;
         } else {
             await this.cacheProvider.setNonce(signerAddress, nonceType, nonceFromChain);
-            return nonceFromChain.toString()
+            return parseInt(nonceFromChain.toString())
         }
     }
 
     // We wait for a maximum of MAX_NONCE_LOCK_TIME_MS until a nonce lock is released
-    async #waitForLock(signerAddress, nonceType) {
+    private async waitForLock(signerAddress: string, nonceType: string) {
         for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
             await common.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
             // check if lock is released
@@ -94,5 +97,3 @@ class ProxyNonceCache {
         await this.cacheProvider.unlockNonce(signerAddress, nonceType)
     }
 }
-
-module.exports = ProxyNonceCache;

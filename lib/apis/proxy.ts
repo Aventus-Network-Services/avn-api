@@ -1,35 +1,55 @@
 'use strict';
 
-const common = require('./common.js');
-const utils = require('./utils.js');
-const { u8aConcat } = require('@polkadot/util');
-
-// signing object contains functions called by passing transaction type and the arguments to sign to generateProxySignature
-const generateProxySignature = async (api, signerAddress, transactionType, proxyArgs) =>
-  await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
-
-const signing = {
-  proxyAvtTransfer: async proxyArgs => await signProxyTokenTransfer(proxyArgs),
-  proxyTokenTransfer: async proxyArgs => await signProxyTokenTransfer(proxyArgs),
-  proxyConfirmTokenLift: async proxyArgs => await signProxyConfirmTokenLift(proxyArgs),
-  proxyTokenLower: async proxyArgs => await signProxyTokenLower(proxyArgs),
-  proxyCreateNftBatch: async proxyArgs => await signProxyCreateNftBatch(proxyArgs),
-  proxyMintSingleNft: async proxyArgs => await signProxyMintSingleNft(proxyArgs),
-  proxyMintBatchNft: async proxyArgs => await signProxyMintBatchNft(proxyArgs),
-  proxyListNftOpenForSale: async proxyArgs => await signProxyListNftOpenForSale(proxyArgs),
-  proxyListNftBatchForSale: async proxyArgs => await signProxyListNftBatchForSale(proxyArgs),
-  proxyTransferFiatNft: async proxyArgs => await signProxyTransferFiatNft(proxyArgs),
-  proxyCancelListFiatNft: async proxyArgs => await signProxyCancelListFiatNft(proxyArgs),
-  proxyStakeAvt: async proxyArgs => await signProxyNominate(proxyArgs),
-  proxyEndNftBatchSale: async proxyArgs => await signProxyEndNftBatchSale(proxyArgs),
-  proxyIncreaseStake: async proxyArgs => await signProxyIncreaseStake(proxyArgs),
-  proxyUnstake: async proxyArgs => await signProxyUnstake(proxyArgs),
-  proxyWithdrawUnlocked: async proxyArgs => await signProxyWithdrawUnlocked(proxyArgs),
-  proxyScheduleLeaveNominators: async proxyArgs => await signProxyScheduleLeaveNominators(proxyArgs),
-  proxyExecuteLeaveNominators: async proxyArgs => await signProxyExecuteLeaveNominators(proxyArgs)
-};
+import common = require('../utils/common');
+import { AvnApiConfig, Royalty } from '../interfaces';
+import utils from '../utils/utils';
+import { u8aConcat } from '@polkadot/util';
+import { createTypeUnsafe } from '@polkadot/types';
 
 const numTypes = ['AccountId', 'Balance', 'BalanceOf', 'EraIndex', 'u8', 'u32', 'u64', 'u128', 'U256', 'H160', 'H256'];
+
+const signing = {
+    proxyAvtTransfer: async proxyArgs => await signProxyTokenTransfer(proxyArgs),
+    proxyTokenTransfer: async proxyArgs => await signProxyTokenTransfer(proxyArgs),
+    proxyConfirmTokenLift: async proxyArgs => await signProxyConfirmTokenLift(proxyArgs),
+    proxyTokenLower: async proxyArgs => await signProxyTokenLower(proxyArgs),
+    proxyCreateNftBatch: async proxyArgs => await signProxyCreateNftBatch(proxyArgs),
+    proxyMintSingleNft: async proxyArgs => await signProxyMintSingleNft(proxyArgs),
+    proxyMintBatchNft: async proxyArgs => await signProxyMintBatchNft(proxyArgs),
+    proxyListNftOpenForSale: async proxyArgs => await signProxyListNftOpenForSale(proxyArgs),
+    proxyListNftBatchForSale: async proxyArgs => await signProxyListNftBatchForSale(proxyArgs),
+    proxyTransferFiatNft: async proxyArgs => await signProxyTransferFiatNft(proxyArgs),
+    proxyCancelListFiatNft: async proxyArgs => await signProxyCancelListFiatNft(proxyArgs),
+    proxyStakeAvt: async proxyArgs => await signProxyNominate(proxyArgs),
+    proxyEndNftBatchSale: async proxyArgs => await signProxyEndNftBatchSale(proxyArgs),
+    proxyIncreaseStake: async proxyArgs => await signProxyIncreaseStake(proxyArgs),
+    proxyUnstake: async proxyArgs => await signProxyUnstake(proxyArgs),
+    proxyWithdrawUnlocked: async proxyArgs => await signProxyWithdrawUnlocked(proxyArgs),
+    proxyScheduleLeaveNominators: async proxyArgs => await signProxyScheduleLeaveNominators(proxyArgs),
+    proxyExecuteLeaveNominators: async proxyArgs => await signProxyExecuteLeaveNominators(proxyArgs)
+};
+
+// signing object contains functions called by passing transaction type and the arguments to sign to generateProxySignature
+export const generateProxySignature = async (api: AvnApiConfig, signerAddress: string, transactionType: common.TxType, proxyArgs: any) =>
+    await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
+
+export async function generateFeePaymentSignature({ relayer, proxySignature, relayerFee, paymentNonce }, signerAddress: string, api: AvnApiConfig) {
+    relayer = common.convertToPublicKeyIfNeeded(relayer);
+    const user = common.convertToPublicKeyIfNeeded(signerAddress);
+
+    const proxyProofData = [{ AccountId: user }, { AccountId: relayer }, { MultiSignature: { Sr25519: proxySignature } }];
+
+    const orderedData = [
+        { Text: 'authorization for proxy payment' },
+        { SkipEncode: encodeOrderedData(proxyProofData) },
+        { AccountId: relayer },
+        { Balance: relayerFee },
+        { u64: paymentNonce }
+    ];
+
+    const encodedDataToSign = encodeOrderedData(orderedData);
+    return await signData(api, signerAddress, encodedDataToSign);
+}
 
 async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce, signerAddress, api }) {
   relayer = common.convertToPublicKeyIfNeeded(relayer);
@@ -291,51 +311,28 @@ async function signProxyExecuteLeaveNominators({ relayer, nonce, signerAddress, 
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function generateFeePaymentSignature({ relayer, proxySignature, relayerFee, paymentNonce }, signerAddress, api) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
-  const user = common.convertToPublicKeyIfNeeded(signerAddress);
-
-  const proxyProofData = [{ AccountId: user }, { AccountId: relayer }, { MultiSignature: { Sr25519: proxySignature } }];
-
-  const orderedData = [
-    { Text: 'authorization for proxy payment' },
-    { SkipEncode: encodeOrderedData(proxyProofData) },
-    { AccountId: relayer },
-    { Balance: relayerFee },
-    { u64: paymentNonce }
-  ];
-
-  const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
-}
-
-function encodeOrderedData(data) {
-  const encodedDataToSign = data.map(d => {
+function encodeOrderedData(data: any[]) {
+  const encodedDataToSign = data.map((d: { [s: string]: unknown; } | ArrayLike<unknown>) => {
     const [type, value] = Object.entries(d)[0];
-    return type === 'SkipEncode' ? value : common.registry.createType(type, value).toU8a(numTypes.includes(type));
+    return type === 'SkipEncode' ? value : common.registry.createType((type as any), value).toU8a(numTypes.includes(type));
   });
   return u8aConcat(...encodedDataToSign);
 }
 
-function encodeRoyalties(royalties) {
+function encodeRoyalties(royalties: Royalty[]) {
   const encodedRoyalties = royalties.map(r => {
     const orderedData = [{ H160: r.recipient_t1_address }, { u32: r.rate.parts_per_million }];
     return encodeOrderedData(orderedData);
   });
 
-  const encodedResult = common.createTypeUnsafe(common.registry, 'Vec<(H160, u32)>', [encodedRoyalties]);
+  const encodedResult = createTypeUnsafe(common.registry, 'Vec<(H160, u32)>', [encodedRoyalties]);
   return encodedResult.toU8a(false);
 }
 
 // the response to sign() can come from a remote signer so
 // handle hex and bytes return types here.
-async function signData(api, signerAddress, encodedDataToSign) {
+async function signData(api: AvnApiConfig, signerAddress: string, encodedDataToSign: string | Uint8Array) {
   encodedDataToSign = utils.convertToHexIfNeeded(encodedDataToSign);
   const signature = await api.sign(encodedDataToSign, signerAddress);
   return utils.convertToHexIfNeeded(signature);
 }
-
-module.exports = {
-  generateProxySignature,
-  generateFeePaymentSignature
-};
