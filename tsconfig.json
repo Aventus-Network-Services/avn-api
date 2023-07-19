@@ -4,6 +4,7 @@
             "es5",
             "es6"
         ],
+        "declaration": true,
         "allowJs": true,
         "target": "ES6",
         "module": "commonjs",
