@@ -2,7 +2,7 @@
   "name": "avn-api",
   "version": "2.3.0",
   "description": "API wrapper around JSON-RPC calls to the AvN",
-  "main": "lib/index.ts",
+  "main": "build/index.js",
   "author": "Aventus Network Services",
   "license": "ISC",
   "dependencies": {
@@ -23,6 +23,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepack": "npm run build",
     "lint": "eslint . --ext .ts"
  }
 }
