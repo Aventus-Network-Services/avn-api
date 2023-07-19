@@ -15,6 +15,10 @@ import * as common from './utils/common';
 import {AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer} from './interfaces'
 import { NonceCacheType } from './caching';
 
+
+export * from './interfaces';
+export * from './caching/index';
+
 class AvnApi {
     // Private field to store suri if provided by caller.
     private suri = undefined;
