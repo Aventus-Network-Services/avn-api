@@ -91,7 +91,11 @@ class AvnApi {
                 return this.relayer;
             },
             sign: async (data: string, signerAddress: string) => {
-                return await this.options.signer.sign(data, signerAddress)
+                if(this.options.signingMode === SigningMode.RemoteSigner) {
+                    return await this.options.signer.sign(data, signerAddress)
+                } else if(this.options.signingMode === SigningMode.SuriBased) {
+                    return this.signer.sign(data, this.signer.address)
+                }
             },
             nonceCache: await this.buildNonceCache()
         };

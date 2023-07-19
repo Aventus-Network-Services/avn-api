@@ -37,7 +37,7 @@ export interface Signer {
 export interface AvnApiOptions {
     gateway?: string,
     relayer?: string,
-    signer?: any,
+    signer?: Signer,
     suri?: string,
     signingMode? :SigningMode,
     setupMode? : SetupMode,
