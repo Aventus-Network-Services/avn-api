@@ -19,7 +19,7 @@ import { NonceCacheType } from './caching';
 export * from './interfaces';
 export * from './caching/index';
 
-class AvnApi {
+export class AvnApi {
     // Private field to store suri if provided by caller.
     private suri = undefined;
     private options: AvnApiOptions;
@@ -181,5 +181,3 @@ function validateOptions(options) {
             throw new Error("setup mode must be defined")
     }
 }
-
-module.exports = AvnApi;
