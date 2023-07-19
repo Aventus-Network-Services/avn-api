@@ -89,7 +89,7 @@ class AvnApi {
             },
             relayer: async (queryApi) => {
                 if (!this.relayer) {
-                    this.relayer = !!this.options.relayer || (await queryApi.getDefaultRelayer());
+                    this.relayer = this.options.relayer || (await queryApi.getDefaultRelayer());
                 }
                 return this.relayer;
             },
