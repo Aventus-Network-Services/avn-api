@@ -1,6 +1,6 @@
 'use strict';
 
-import { AccountUtils, TxType, Utils } from '../utils';
+import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt/awt.js';
 import { AvnApiConfig, NonceType } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
@@ -35,7 +35,7 @@ export class Query {
     this.nftsMap = {};
   }
 
-  async postRequest(api: AvnApiConfig, method: string, params = {}, handler = 'query') {
+  async postRequest(api: AvnApiConfig, method: string, params: object = {}, handler = 'query') {
     const endpoint = api.gateway + `/${handler}`;
     const awtToken = await this.awtManager.getToken();
     const response = await api
@@ -53,7 +53,7 @@ export class Query {
     throw new Error(`Error processing query. Response: ${JSON.stringify(response.data)}`);
   }
 
-  async getRequest(api: AvnApiConfig, params, handler = 'query') {
+  async getRequest(api: AvnApiConfig, params: { account: string }, handler = 'query') {
     const endpoint = api.gateway + `/${handler}?account=${params.account}`;
     const awtToken = await this.awtManager.getToken();
     const response = await api.axios(awtToken).get(endpoint);
@@ -73,28 +73,28 @@ export class Query {
     return await this.postRequest(this.api, 'getDefaultRelayer');
   }
 
-  async getAvtContractAddress() {
+  async getAvtContractAddress(): Promise<string> {
     if (this.contracts.avt === undefined) {
       this.contracts.avt = await this.postRequest(this.api, 'getAvtContractAddress');
     }
     return this.contracts.avt;
   }
 
-  async getAvnContractAddress() {
+  async getAvnContractAddress(): Promise<string> {
     if (this.contracts.avn === undefined) {
       this.contracts.avn = await this.postRequest(this.api, 'getAvnContractAddress');
     }
     return this.contracts.avn;
   }
 
-  async getNftContractAddress() {
+  async getNftContractAddress(): Promise<string[]> {
     if (this.contracts.nfts === undefined || this.contracts.nfts.length == 0) {
       this.contracts.nfts = await this.postRequest(this.api, 'getNftContractAddress');
     }
     return this.contracts.nfts;
   }
 
-  async getTotalAvt() {
+  async getTotalAvt(): Promise<string> {
     return await this.postRequest(this.api, 'getTotalAvt');
   }
 
@@ -103,30 +103,30 @@ export class Query {
     return await this.postRequest(this.api, 'getAvtBalance', { accountId: accountAddress });
   }
 
-  async getTotalToken(token: string) {
+  async getTotalToken(token: string): Promise<string> {
     Utils.validateEthereumAddress(token);
     return await this.postRequest(this.api, 'getTotalToken', { token });
   }
 
-  async getTokenBalance(accountAddress: string, token: string) {
+  async getTokenBalance(accountAddress: string, token: string): Promise<string> {
     Utils.validateAccount(accountAddress);
     Utils.validateEthereumAddress(token);
 
     return await this.postRequest(this.api, 'getTokenBalance', { accountId: accountAddress, token });
   }
 
-  async getNonce(accountAddress: string, nonceType: NonceType) {
+  async getNonce(accountAddress: string, nonceType: NonceType): Promise<string> {
     Utils.validateAccount(accountAddress);
 
     return await this.postRequest(this.api, 'getNonce', { accountId: accountAddress, nonceType });
   }
 
-  async getNftNonce(nftId: string) {
+  async getNftNonce(nftId: string): Promise<string> {
     nftId = Utils.validateNftId(nftId);
     return await this.postRequest(this.api, 'getNftNonce', { nftId });
   }
 
-  async getNftId(externalRef: string) {
+  async getNftId(externalRef: string): Promise<string> {
     Utils.validateStringIsPopulated(externalRef);
 
     if (!this.nftsMap[externalRef]) {
@@ -136,7 +136,7 @@ export class Query {
     return this.nftsMap[externalRef];
   }
 
-  async getNftOwner(nftId: string) {
+  async getNftOwner(nftId: string): Promise<string> {
     nftId = Utils.validateNftId(nftId);
     return await this.postRequest(this.api, 'getNftOwner', { nftId });
   }
@@ -151,7 +151,7 @@ export class Query {
     return await this.postRequest(this.api, 'getAccountInfo', { accountId: accountAddress });
   }
 
-  async getStakingStatus(stakerAddress: string) {
+  async getStakingStatus(stakerAddress: string): Promise<StakingStatus> {
     Utils.validateAccount(stakerAddress);
     return await this.postRequest(this.api, 'getStakingStatus', { accountId: stakerAddress });
   }
@@ -160,11 +160,11 @@ export class Query {
     return await this.postRequest(this.api, 'getValidatorsToNominate');
   }
 
-  async getMinTotalNominatorStake() {
+  async getMinTotalNominatorStake(): Promise<string> {
     return await this.postRequest(this.api, 'getMinTotalNominatorStake');
   }
 
-  async getActiveEra() {
+  async getActiveEra(): Promise<string> {
     return await this.postRequest(this.api, 'getActiveEra');
   }
 
@@ -183,7 +183,7 @@ export class Query {
     return await this.postRequest(this.api, 'getRelayerFees', { relayer: relayerAddress, user: userAddress, transactionType });
   }
 
-  async getCurrentBlock() {
+  async getCurrentBlock(): Promise<string> {
     return await this.postRequest(this.api, 'getCurrentBlock');
   }
 

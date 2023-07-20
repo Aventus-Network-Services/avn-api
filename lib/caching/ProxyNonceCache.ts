@@ -1,6 +1,6 @@
 import { NonceType } from '../interfaces/index';
 import { Query } from '../apis/query';
-import { INonceCacheProvider } from './index';
+import { INonceCacheProvider, NonceData } from './index';
 import { AccountUtils, Utils } from '../utils';
 
 const TX_PROCESSING_TIME_MS = 120000;
@@ -22,7 +22,7 @@ export class ProxyNonceCache {
     this.cacheProvider = await this.cacheProvider.connect();
   }
 
-  public async getNonceAndIncrement(signerAddress: string, nonceType: NonceType, queryApi: Query) {
+  public async getNonceAndIncrement(signerAddress: string, nonceType: NonceType, queryApi: Query): Promise<number> {
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
     let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
@@ -32,7 +32,7 @@ export class ProxyNonceCache {
         const nonceFromChain = parseInt(await queryApi.getNonce(signerAddress, nonceType));
         await this.cacheProvider.setNonce(signerAddress, nonceType, nonceFromChain);
 
-        return nonceFromChain.toString();
+        return nonceFromChain;
       } else {
         if (cachedNonceInfo.lockAquired === false) {
           console.log(`Nonce for ${signerAddress}, ${nonceType} is locked, waiting for it to be released...`);
@@ -51,7 +51,7 @@ export class ProxyNonceCache {
     }
   }
 
-  private async validateNonceAndIncrement(signerAddress: string, nonceType: string, nonceData, queryApi): Promise<number> {
+  private async validateNonceAndIncrement(signerAddress: string, nonceType: NonceType, nonceData: NonceData, queryApi: Query): Promise<number> {
     const nonceIsExpired = Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
     if (nonceIsExpired) {
@@ -61,7 +61,7 @@ export class ProxyNonceCache {
     }
   }
 
-  private async refreshNonceFromChain(signerAddress: string, nonceType: string, nonceData, queryApi): Promise<number> {
+  private async refreshNonceFromChain(signerAddress: string, nonceType: NonceType, nonceData: NonceData, queryApi: Query): Promise<number> {
     const nonceFromChain = parseInt(await queryApi.getNonce(signerAddress, nonceType));
     if (nonceData.nonce === nonceFromChain) {
       // The chain should always be nonce + 1 so do not reset yet, instead:
@@ -86,7 +86,7 @@ export class ProxyNonceCache {
     for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       // check if lock is released
-      let isNonceLocked = await this.cacheProvider.isNonceLocked(signerAddress, nonceType);
+      const isNonceLocked = await this.cacheProvider.isNonceLocked(signerAddress, nonceType);
       if (isNonceLocked === false) {
         return;
       }

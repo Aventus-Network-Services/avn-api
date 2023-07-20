@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import Axios from 'axios';
+import Axios, { AxiosInstance } from 'axios';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
 import { ProxyNonceCache, InMemoryNonceCacheProvider } from './caching';
@@ -10,6 +10,12 @@ import { version } from '../package.json';
 import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer } from './interfaces';
 import { NonceCacheType } from './caching';
 
+interface Apis {
+    query: Query,
+    send: Send,
+    poll: Poll
+}
+
 export class AvnApi {
   private suri = undefined;
   private options: AvnApiOptions;
@@ -19,7 +25,7 @@ export class AvnApi {
   public relayer: string;
   public utils: AccountUtils;
   public awtUtils: AwtUtils;
-  public apis: any;
+  public apis: { (signerAddress?: string): Apis; };
 
   public signer: Signer;
   public myAddress: string;
@@ -74,7 +80,7 @@ export class AvnApi {
       axios: (token: string) => {
         //console.log(` - Axios called with token: ${token.substring(0, 8) + "..." + token.substring(token.length - (8))}`)
         // Add any middlewares here to configure global axios behaviours
-        (Axios as any).defaults.headers.common = { Authorization: `bearer ${token}` };
+        (Axios as AxiosInstance).defaults.headers.common = { Authorization: `bearer ${token}` };
         return Axios;
       },
       relayer: async (queryApi: Query) => {
@@ -96,7 +102,7 @@ export class AvnApi {
     return avnApi;
   }
 
-  private setStandardFunctions(avnApi: AvnApiConfig, signerAddress: string) {
+  private setStandardFunctions(avnApi: AvnApiConfig, signerAddress: string): Apis {
     // Standard functions
     const awt = new Awt(avnApi, signerAddress, this.options);
     const query = new Query(avnApi, awt);

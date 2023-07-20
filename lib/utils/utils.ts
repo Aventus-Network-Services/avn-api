@@ -60,6 +60,7 @@ export class Utils {
     });
   }
 
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   static validateIsArray(array: any) {
     const isValid = Array.isArray(array);
     if (isValid === false) {
@@ -121,7 +122,7 @@ export class Utils {
     if (!suri) throw new Error('Unable to get signer because Suri is not defined');
     const user = keyring.addFromUri(suri);
     return {
-      sign: async (data, _signerAddress) => await u8aToHex(user.sign(data)),
+      sign: async (data, ) => await u8aToHex(user.sign(data)),
       address: user.address
     };
   }

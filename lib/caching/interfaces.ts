@@ -10,7 +10,7 @@ export interface CachedNonceInfo {
 
 export interface NonceData {
   nonce: number;
-  lastUpdated: Date;
+  lastUpdated: number;
   locked: boolean;
 }
 

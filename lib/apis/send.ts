@@ -8,7 +8,15 @@ import { Awt } from '../awt';
 import { Query } from './query';
 
 interface Fees {
-  [key: string]: {};
+  [key: string]: object;
+}
+
+interface PaymentArgs {
+    relayer: string,
+    user: string,
+    payer: string,
+    proxySignature: string,
+    transactionType: TxType
 }
 export class Send {
   private api: AvnApiConfig;
@@ -25,7 +33,7 @@ export class Send {
     this.feesMap = {};
   }
 
-  async transferAvt(recipient: string, amount: string) {
+  async transferAvt(recipient: string, amount: string): Promise<string> {
     Utils.validateAccount(recipient);
     amount = Utils.validateAndConvertAmountToString(amount);
     const token = await this.queryApi.getAvtContractAddress();
@@ -33,7 +41,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyAvtTransfer, NonceType.Token);
   }
 
-  async transferToken(recipient: string, token: string, amount: string) {
+  async transferToken(recipient: string, token: string, amount: string): Promise<string> {
     Utils.validateAccount(recipient);
     Utils.validateEthereumAddress(token);
     amount = Utils.validateAndConvertAmountToString(amount);
@@ -42,7 +50,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyTokenTransfer, NonceType.Token);
   }
 
-  async confirmTokenLift(ethereumTransactionHash: string) {
+  async confirmTokenLift(ethereumTransactionHash: string): Promise<string> {
     Utils.validateEthereumTransactionHash(ethereumTransactionHash);
     const eventType = EthereumLogEventType.Lifted;
     const methodArgs = { ethereumTransactionHash, eventType };
@@ -50,7 +58,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyConfirmTokenLift, NonceType.Confirmation);
   }
 
-  async lowerToken(t1Recipient: string, token: string, amount: string) {
+  async lowerToken(t1Recipient: string, token: string, amount: string): Promise<string> {
     Utils.validateEthereumAddress(t1Recipient);
     Utils.validateEthereumAddress(token);
     amount = Utils.validateAndConvertAmountToString(amount);
@@ -59,7 +67,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyTokenLower, NonceType.Token);
   }
 
-  async createNftBatch(totalSupply: number, royalties: Royalty[], t1Authority: string) {
+  async createNftBatch(totalSupply: number, royalties: Royalty[], t1Authority: string): Promise<string> {
     Utils.validateRoyalties(royalties);
     Utils.validateEthereumAddress(t1Authority);
     const methodArgs = { totalSupply, royalties, t1Authority };
@@ -67,7 +75,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyCreateNftBatch, NonceType.Batch);
   }
 
-  async mintSingleNft(externalRef: string, royalties: Royalty[], t1Authority: string) {
+  async mintSingleNft(externalRef: string, royalties: Royalty[], t1Authority: string): Promise<string> {
     Utils.validateStringIsPopulated(externalRef);
     Utils.validateRoyalties(royalties);
     Utils.validateEthereumAddress(t1Authority);
@@ -76,7 +84,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyMintSingleNft, NonceType.None);
   }
 
-  async mintBatchNft(batchId: string, index: number, owner: string, externalRef: string) {
+  async mintBatchNft(batchId: string, index: number, owner: string, externalRef: string): Promise<string> {
     batchId = Utils.validateNftId(batchId);
     Utils.validateAccount(owner);
     Utils.validateStringIsPopulated(externalRef);
@@ -85,7 +93,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyMintBatchNft, NonceType.None);
   }
 
-  async listFiatNftForSale(nftId: string) {
+  async listFiatNftForSale(nftId: string): Promise<string> {
     nftId = Utils.validateNftId(nftId);
     const market = Market.Fiat;
     const methodArgs = { nftId, market };
@@ -93,7 +101,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyListNftOpenForSale, NonceType.Nft);
   }
 
-  async listFiatNftBatchForSale(batchId: string) {
+  async listFiatNftBatchForSale(batchId: string): Promise<string> {
     batchId = Utils.validateNftId(batchId);
     const market = Market.Fiat;
     const methodArgs = { batchId, market };
@@ -101,7 +109,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyListNftBatchForSale, NonceType.Batch);
   }
 
-  async transferFiatNft(recipient: string, nftId: string) {
+  async transferFiatNft(recipient: string, nftId: string): Promise<string> {
     Utils.validateAccount(recipient);
     nftId = Utils.validateNftId(nftId);
     recipient = AccountUtils.convertToPublicKeyIfNeeded(recipient);
@@ -110,21 +118,21 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyTransferFiatNft, NonceType.Nft);
   }
 
-  async endNftBatchSale(batchId: string) {
+  async endNftBatchSale(batchId: string): Promise<string> {
     batchId = Utils.validateNftId(batchId);
     const methodArgs = { batchId };
 
     return await this.proxyRequest(methodArgs, TxType.ProxyEndNftBatchSale, NonceType.Batch);
   }
 
-  async cancelFiatNftListing(nftId: string) {
+  async cancelFiatNftListing(nftId: string): Promise<string> {
     nftId = Utils.validateNftId(nftId);
     const methodArgs = { nftId };
 
     return await this.proxyRequest(methodArgs, TxType.ProxyCancelListFiatNft, NonceType.Nft);
   }
 
-  async stake(amount: string) {
+  async stake(amount: string): Promise<string> {
     amount = Utils.validateAndConvertAmountToString(amount);
     const stakingStatus = await this.queryApi.getStakingStatus(this.signerAddress);
 
@@ -139,11 +147,11 @@ export class Send {
     }
   }
 
-  async unstake(unstakeAmount: string) {
+  async unstake(unstakeAmount: string): Promise<string> {
     const amount = Utils.validateAndConvertAmountToString(unstakeAmount);
     const minimumFirstTimeStakingValue = await Utils.getMinimumStakingValue(this.queryApi);
     const accountInfo = await this.queryApi.getAccountInfo(this.signerAddress);
-    let newStakedBalance = new BN(accountInfo?.stakedBalance).sub(new BN(amount));
+    const newStakedBalance = new BN(accountInfo?.stakedBalance).sub(new BN(amount));
 
     if (newStakedBalance?.lt(minimumFirstTimeStakingValue)) {
       const methodArgs = {};
@@ -154,7 +162,7 @@ export class Send {
     }
   }
 
-  async withdrawUnlocked() {
+  async withdrawUnlocked(): Promise<string> {
     const accountInfo = await this.queryApi.getAccountInfo(this.signerAddress);
     const methodArgs = {};
 
@@ -165,22 +173,22 @@ export class Send {
     }
   }
 
-  async scheduleLeaveNominators() {
+  async scheduleLeaveNominators(): Promise<string> {
     const methodArgs = {};
     return await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, NonceType.Staking);
   }
 
-  async executeLeaveNominators() {
+  async executeLeaveNominators(): Promise<string> {
     const methodArgs = {};
     return await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, NonceType.Staking);
   }
 
-  async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType) {
+  async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
     // By default the user pays the relayer fees but this can be changed to any `payer`
     const payer = this.signerAddress;
     const relayer = await this.api.relayer(this.queryApi);
 
-    let proxyArgs = Object.assign({ relayer, user: this.signerAddress, payer }, methodArgs);
+    const proxyArgs = Object.assign({ relayer, user: this.signerAddress, payer }, methodArgs);
 
     if (nonceType !== NonceType.None) {
       proxyArgs.nonce =
@@ -211,7 +219,7 @@ export class Send {
     return response;
   }
 
-  async postRequest(method: TxType, params: any) {
+  async postRequest(method: TxType, params: any): Promise<string> {
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const response = await this.api
@@ -234,7 +242,7 @@ export class Send {
     return this.feesMap[relayer][payer][transactionType];
   }
 
-  async getPaymentNonceAndSignature(paymentArgs: any) {
+  async getPaymentNonceAndSignature(paymentArgs: PaymentArgs): Promise<{ paymentNonce: number, feePaymentSignature: string }> {
     const { relayer, user, payer, proxySignature, transactionType } = paymentArgs;
     const paymentNonce = await this.api.nonceCache.getNonceAndIncrement(payer, NonceType.Payment, this.queryApi);
     const relayerFee = await this.getRelayerFee(relayer, payer, transactionType);

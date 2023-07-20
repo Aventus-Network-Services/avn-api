@@ -36,8 +36,8 @@ export class AwtUtils {
     };
   }
 
-  static async generateAwtToken(options: SplitFeeConfig, signer): Promise<string> {
-    let payload = await this.generateAwtPayload(signer, new Date().toISOString(), options);
+  static async generateAwtToken(options: SplitFeeConfig, signer: Signer): Promise<string> {
+    const payload = await this.generateAwtPayload(signer, new Date().toISOString(), options);
     return this.generateAwtTokenFromPayload(payload);
   }
 
