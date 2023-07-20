@@ -1,6 +1,6 @@
 'use strict';
 
-import AwtUtils from './awtUtils';
+import {AwtUtils} from './awtUtils';
 import { AvnApiConfig } from '../interfaces';
 
 export class Awt {
