@@ -27,5 +27,5 @@
     "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{ts,json}\"",
     "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{ts,json}\"",
     "lint": "eslint . --ext .ts"
- }
+  }
 }

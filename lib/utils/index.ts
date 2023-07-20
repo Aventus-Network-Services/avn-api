@@ -26,7 +26,7 @@ export enum TxType {
   ProxyWithdrawUnlocked = 'proxyWithdrawUnlocked',
   ProxyScheduleLeaveNominators = 'proxyScheduleLeaveNominators',
   ProxyExecuteLeaveNominators = 'proxyExecuteLeaveNominators'
-};
+}
 
 export enum EthereumLogEventType {
   AddedValidator = 0,
@@ -35,14 +35,14 @@ export enum EthereumLogEventType {
   NftTransferTo = 3,
   NftCancelListing = 4,
   NftCancelBatchListing = 5
-};
+}
 
 export enum Market {
-    Ethereum = 1,
-    Fiat = 2
+  Ethereum = 1,
+  Fiat = 2
 }
 
 export enum StakingStatus {
-    isStaking = 'isStaking',
-    isNotStaking = 'isNotStaking'
+  isStaking = 'isStaking',
+  isNotStaking = 'isNotStaking'
 }
