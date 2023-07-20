@@ -11,7 +11,8 @@
     "@polkadot/util-crypto": "^5.9.2",
     "axios": "^0.21.4",
     "bn.js": "^5.2.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "prettier": "^2.5.1"
   },
   "devDependencies": {
     "@types/uuid": "8.3.2",
@@ -23,7 +24,8 @@
   },
   "scripts": {
     "build": "rm -rf build && tsc",
-    "prepack": "npm run build",
+    "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{ts,json}\"",
+    "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{ts,json}\"",
     "lint": "eslint . --ext .ts"
  }
 }
