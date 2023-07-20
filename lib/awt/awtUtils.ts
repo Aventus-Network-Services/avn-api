@@ -1,16 +1,16 @@
 'use strict';
 
 import { hexToU8a, u8aToHex, u8aConcat } from '@polkadot/util';
-import common = require('../utils/common.js');
-import utils from '../utils/utils.js';
+import {Utils, registry} from '../utils';
+import { AccountUtils } from '../utils';
 import {SplitFeeConfig, IAwt, Signer} from '../interfaces/index.js'
 
 const MAX_TOKEN_AGE_MSEC = 600000;
 const SIGNING_CONTEXT = 'awt_gateway_api';
 
-export default class AwtUtils {
+export class AwtUtils {
     static async generateAwtPayload(signer: Signer, issuedAt: string, options: SplitFeeConfig): Promise<IAwt> {
-        const avnPublicKey = u8aToHex(common.convertToPublicKeyBytes(signer.address));
+        const avnPublicKey = u8aToHex(AccountUtils.convertToPublicKeyBytes(signer.address));
 
         let hasPayer = false;
         let payerAddress = undefined;
@@ -21,7 +21,7 @@ export default class AwtUtils {
         }
 
         if (payerAddress) {
-          payerAddress = utils.addressToPublicKey(payerAddress);
+          payerAddress = AccountUtils.addressToPublicKey(payerAddress);
         }
 
         const encodedData = this.encodeAvnPublicKeyForSigning(avnPublicKey, issuedAt, hasPayer, payerAddress);
@@ -32,7 +32,7 @@ export default class AwtUtils {
           iat: issuedAt,
           hasPayer,
           payer: payerAddress,
-          sig: utils.convertToHexIfNeeded(signature)
+          sig: Utils.convertToHexIfNeeded(signature)
         };
     }
 
@@ -47,17 +47,17 @@ export default class AwtUtils {
     }
 
     static encodeAvnPublicKeyForSigning(avnPublicKey: string, issuedAt: string, hasPayer: boolean, payerAddress: string): string {
-        const encodedContext = common.registry.createType('Text', SIGNING_CONTEXT);
-        const encodedPublicKey = common.registry.createType('AccountId', hexToU8a(avnPublicKey));
-        const encodedIssuedAt = common.registry.createType('Text', issuedAt);
+        const encodedContext = registry.createType('Text', SIGNING_CONTEXT);
+        const encodedPublicKey = registry.createType('AccountId', hexToU8a(avnPublicKey));
+        const encodedIssuedAt = registry.createType('Text', issuedAt);
 
         if (!hasPayer && !payerAddress) {
           // this is a legacy token
           const encodedData = u8aConcat(encodedContext.toU8a(false), encodedPublicKey.toU8a(true), encodedIssuedAt.toU8a(false));
           return u8aToHex(encodedData);
         } else {
-          const encodedHasPayer = common.registry.createType('bool', hasPayer);
-          const encodedPayer = common.registry.createType('Option<AccountId>', payerAddress);
+          const encodedHasPayer = registry.createType('bool', hasPayer);
+          const encodedPayer = registry.createType('Option<AccountId>', payerAddress);
 
           const encodedData = u8aConcat(
             encodedContext.toU8a(false),

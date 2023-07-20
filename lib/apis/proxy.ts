@@ -1,8 +1,8 @@
 'use strict';
 
-import common = require('../utils/common');
+import common = require('../utils/utils');
 import { AvnApiConfig, Royalty } from '../interfaces';
-import utils from '../utils/utils';
+import utils from '../utils/accountUtils';
 import { u8aConcat } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
 

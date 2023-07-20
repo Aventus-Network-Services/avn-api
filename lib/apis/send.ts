@@ -1,6 +1,6 @@
 'use strict';
 
-import common = require('../utils/common');
+import common = require('../utils/utils');
 import { NonceType } from '../interfaces/index';
 import proxyApi = require('./proxy');
 import BN = require('bn.js');

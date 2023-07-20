@@ -1,4 +1,4 @@
-import common = require('../utils/common');
+import common = require('../utils/utils');
 import { NonceType } from '../interfaces/index';
 import { Query } from '../apis/query';
 import { INonceCacheProvider } from './index';

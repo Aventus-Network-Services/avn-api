@@ -1,6 +1,6 @@
 'use strict';
 
-import common = require('../utils/common.js');
+import common = require('../utils/utils.js');
 import {Awt} from '../awt/awt.js'
 import {AvnApiConfig} from '../interfaces/index.js'
 
