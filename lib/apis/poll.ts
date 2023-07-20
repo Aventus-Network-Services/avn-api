@@ -1,8 +1,8 @@
 'use strict';
 
-import common = require('../utils/utils.js');
-import {Awt} from '../awt/awt.js'
-import {AvnApiConfig} from '../interfaces/index.js'
+import {Utils} from '../utils';
+import {Awt} from '../awt'
+import {AvnApiConfig} from '../interfaces/index'
 
 export class Poll{
     private api: AvnApiConfig;
@@ -14,7 +14,7 @@ export class Poll{
     }
 
     async requestState(requestId: string) {
-        common.validateRequestId(requestId);
+        Utils.validateRequestId(requestId);
         return await this.postRequest(this.api, 'requestState', { requestId });
     }
 

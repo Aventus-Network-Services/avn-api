@@ -1,8 +1,8 @@
 'use strict';
 
-import common = require('../utils/utils');
+import {TxType, Utils, registry} from '../utils';
 import { AvnApiConfig, Royalty } from '../interfaces';
-import utils from '../utils/accountUtils';
+import {AccountUtils} from '../utils/accountUtils';
 import { u8aConcat } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
 
@@ -30,12 +30,12 @@ const signing = {
 };
 
 // signing object contains functions called by passing transaction type and the arguments to sign to generateProxySignature
-export const generateProxySignature = async (api: AvnApiConfig, signerAddress: string, transactionType: common.TxType, proxyArgs: any) =>
+export const generateProxySignature = async (api: AvnApiConfig, signerAddress: string, transactionType: TxType, proxyArgs: any) =>
     await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
 
 export async function generateFeePaymentSignature({ relayer, proxySignature, relayerFee, paymentNonce }, signerAddress: string, api: AvnApiConfig) {
-    relayer = common.convertToPublicKeyIfNeeded(relayer);
-    const user = common.convertToPublicKeyIfNeeded(signerAddress);
+    relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+    const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
     const proxyProofData = [{ AccountId: user }, { AccountId: relayer }, { MultiSignature: { Sr25519: proxySignature } }];
 
@@ -52,9 +52,9 @@ export async function generateFeePaymentSignature({ relayer, proxySignature, rel
 }
 
 async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
-  const user = common.convertToPublicKeyIfNeeded(signerAddress);
-  recipient = common.convertToPublicKeyIfNeeded(recipient);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+  recipient = AccountUtils.convertToPublicKeyIfNeeded(recipient);
 
   const orderedData = [
     { Text: 'authorization for transfer operation' },
@@ -71,7 +71,7 @@ async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce
 }
 
 async function signProxyConfirmTokenLift({ relayer, eventType, ethereumTransactionHash, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'authorization for add ethereum log operation' },
@@ -86,8 +86,8 @@ async function signProxyConfirmTokenLift({ relayer, eventType, ethereumTransacti
 }
 
 async function signProxyTokenLower({ relayer, token, amount, t1Recipient, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
-  const user = common.convertToPublicKeyIfNeeded(signerAddress);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
   const orderedData = [
     { Text: 'authorization for lower operation' },
@@ -104,7 +104,7 @@ async function signProxyTokenLower({ relayer, token, amount, t1Recipient, nonce,
 }
 
 async function signProxyCreateNftBatch({ relayer, totalSupply, royalties, t1Authority, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'authorization for create batch operation' },
@@ -120,7 +120,7 @@ async function signProxyCreateNftBatch({ relayer, totalSupply, royalties, t1Auth
 }
 
 async function signProxyMintSingleNft({ relayer, externalRef, royalties, t1Authority, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'authorization for mint single nft operation' },
@@ -135,8 +135,8 @@ async function signProxyMintSingleNft({ relayer, externalRef, royalties, t1Autho
 }
 
 async function signProxyMintBatchNft({ relayer, batchId, index, owner, externalRef, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
-  owner = common.convertToPublicKeyIfNeeded(owner);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  owner = AccountUtils.convertToPublicKeyIfNeeded(owner);
 
   const orderedData = [
     { Text: 'authorization for mint batch nft operation' },
@@ -152,7 +152,7 @@ async function signProxyMintBatchNft({ relayer, batchId, index, owner, externalR
 }
 
 async function signProxyListNftOpenForSale({ relayer, nftId, market, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'authorization for list nft open for sale operation' },
@@ -167,7 +167,7 @@ async function signProxyListNftOpenForSale({ relayer, nftId, market, nonce, sign
 }
 
 async function signProxyListNftBatchForSale({ relayer, batchId, market, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'authorization for list batch for sale operation' },
@@ -182,8 +182,8 @@ async function signProxyListNftBatchForSale({ relayer, batchId, market, nonce, s
 }
 
 async function signProxyTransferFiatNft({ relayer, nftId, recipient, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
-  recipient = common.convertToPublicKeyIfNeeded(recipient);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  recipient = AccountUtils.convertToPublicKeyIfNeeded(recipient);
 
   const orderedData = [
     { Text: 'authorization for transfer fiat nft operation' },
@@ -198,7 +198,7 @@ async function signProxyTransferFiatNft({ relayer, nftId, recipient, nonce, sign
 }
 
 async function signProxyCancelListFiatNft({ relayer, nftId, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'authorization for cancel list fiat nft for sale operation' },
@@ -212,7 +212,7 @@ async function signProxyCancelListFiatNft({ relayer, nftId, nonce, signerAddress
 }
 
 async function signProxyEndNftBatchSale({ relayer, batchId, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'authorization for end batch sale operation' },
@@ -226,7 +226,7 @@ async function signProxyEndNftBatchSale({ relayer, batchId, nonce, signerAddress
 }
 
 async function signProxyNominate({ relayer, targets, amount, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'parachain authorization for nominate operation' },
@@ -241,7 +241,7 @@ async function signProxyNominate({ relayer, targets, amount, nonce, signerAddres
 }
 
 async function signProxyIncreaseStake({ relayer, amount, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'parachain authorization for nominator bond extra operation' },
@@ -255,7 +255,7 @@ async function signProxyIncreaseStake({ relayer, amount, nonce, signerAddress, a
 }
 
 async function signProxyUnstake({ relayer, amount, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'parachain authorization for scheduling nominator unbond operation' },
@@ -269,8 +269,8 @@ async function signProxyUnstake({ relayer, amount, nonce, signerAddress, api }) 
 }
 
 async function signProxyWithdrawUnlocked({ relayer, nonce, signerAddress, api }) {
-  relayer = common.convertToPublicKeyIfNeeded(relayer);
-  const user = common.convertToPublicKeyIfNeeded(signerAddress);
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
   const orderedData = [
     { Text: 'parachain authorization for executing nomination requests operation' },
@@ -284,7 +284,7 @@ async function signProxyWithdrawUnlocked({ relayer, nonce, signerAddress, api })
 }
 
 async function signProxyScheduleLeaveNominators({ relayer, nonce, signerAddress, api }) {
-  const dataRelayer = common.convertToPublicKeyIfNeeded(relayer);
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'parachain authorization for scheduling leaving nominators operation' },
@@ -297,8 +297,8 @@ async function signProxyScheduleLeaveNominators({ relayer, nonce, signerAddress,
 }
 
 async function signProxyExecuteLeaveNominators({ relayer, nonce, signerAddress, api }) {
-  const dataRelayer = common.convertToPublicKeyIfNeeded(relayer);
-  const user = common.convertToPublicKeyIfNeeded(signerAddress);
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
   const orderedData = [
     { Text: 'parachain authorization for executing leave nominators operation' },
@@ -314,7 +314,7 @@ async function signProxyExecuteLeaveNominators({ relayer, nonce, signerAddress, 
 function encodeOrderedData(data: any[]) {
   const encodedDataToSign = data.map((d: { [s: string]: unknown; } | ArrayLike<unknown>) => {
     const [type, value] = Object.entries(d)[0];
-    return type === 'SkipEncode' ? value : common.registry.createType((type as any), value).toU8a(numTypes.includes(type));
+    return type === 'SkipEncode' ? value : registry.createType((type as any), value).toU8a(numTypes.includes(type));
   });
   return u8aConcat(...encodedDataToSign);
 }
@@ -325,14 +325,14 @@ function encodeRoyalties(royalties: Royalty[]) {
     return encodeOrderedData(orderedData);
   });
 
-  const encodedResult = createTypeUnsafe(common.registry, 'Vec<(H160, u32)>', [encodedRoyalties]);
+  const encodedResult = createTypeUnsafe(registry, 'Vec<(H160, u32)>', [encodedRoyalties]);
   return encodedResult.toU8a(false);
 }
 
 // the response to sign() can come from a remote signer so
 // handle hex and bytes return types here.
 async function signData(api: AvnApiConfig, signerAddress: string, encodedDataToSign: string | Uint8Array) {
-  encodedDataToSign = utils.convertToHexIfNeeded(encodedDataToSign);
+  encodedDataToSign = Utils.convertToHexIfNeeded(encodedDataToSign);
   const signature = await api.sign(encodedDataToSign, signerAddress);
-  return utils.convertToHexIfNeeded(signature);
+  return Utils.convertToHexIfNeeded(signature);
 }

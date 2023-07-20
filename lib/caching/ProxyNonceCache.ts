@@ -1,7 +1,7 @@
-import common = require('../utils/utils');
 import { NonceType } from '../interfaces/index';
 import { Query } from '../apis/query';
 import { INonceCacheProvider } from './index';
+import { AccountUtils, Utils } from '../utils';
 
 const TX_PROCESSING_TIME_MS = 120000;
 const NONCE_LOCK_POLL_INTERVAL_MS = 500;
@@ -23,7 +23,7 @@ export class ProxyNonceCache {
     }
 
     public async getNonceAndIncrement(signerAddress: string, nonceType: NonceType, queryApi: Query) {
-        signerAddress = common.convertToPublicKeyIfNeeded(signerAddress);
+        signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
         let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
 
@@ -74,7 +74,7 @@ export class ProxyNonceCache {
                 nonceType,
                 EXPIRY_UPDATE_ENUM.DoNotUpade)).nonce;
 
-            await common.sleep(TX_PROCESSING_TIME_MS);
+            await Utils.sleep(TX_PROCESSING_TIME_MS);
             return incrementedNonce;
         } else {
             await this.cacheProvider.setNonce(signerAddress, nonceType, nonceFromChain);
@@ -85,7 +85,7 @@ export class ProxyNonceCache {
     // We wait for a maximum of MAX_NONCE_LOCK_TIME_MS until a nonce lock is released
     private async waitForLock(signerAddress: string, nonceType: string) {
         for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
-            await common.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
+            await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
             // check if lock is released
             let isNonceLocked = await this.cacheProvider.isNonceLocked(signerAddress, nonceType);
             if (isNonceLocked === false) {

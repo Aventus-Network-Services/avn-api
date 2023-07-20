@@ -1,9 +1,9 @@
 'use strict';
 
-import common = require('../utils/utils');
+import {AccountUtils, EthereumLogEventType, Market, StakingStatus, TxType, Utils} from '../utils';
 import { NonceType } from '../interfaces/index';
 import proxyApi = require('./proxy');
-import BN = require('bn.js');
+import BN from 'bn.js';
 
 export class Send {
     private awtManager;
@@ -109,7 +109,7 @@ export class Send {
         }
     }
     async getRelayerFee(queryApi, relayer, payer, transactionType) {
-        payer = common.convertToPublicKeyIfNeeded(payer);
+        payer = AccountUtils.convertToPublicKeyIfNeeded(payer);
         if (!this.feesMap[relayer]) this.feesMap[relayer] = {};
         if (!this.feesMap[relayer][payer]) this.feesMap[relayer][payer] = await queryApi.getRelayerFees(relayer, payer);
         return this.feesMap[relayer][payer][transactionType];
@@ -126,159 +126,159 @@ export class Send {
 
 function transferAvt(api, queryApi, signerAddress) {
   return async function (recipient, amount) {
-    common.validateAccount(recipient);
-    amount = common.validateAndConvertAmountToString(amount);
+    Utils.validateAccount(recipient);
+    amount = Utils.validateAndConvertAmountToString(amount);
     const token = await queryApi.getAvtContractAddress();
     const methodArgs = { recipient, token, amount };
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyAvtTransfer, NonceType.Token);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyAvtTransfer, NonceType.Token);
   };
 }
 
 function transferToken(api, queryApi, signerAddress) {
   return async function (recipient, token, amount) {
-    common.validateAccount(recipient);
-    common.validateEthereumAddress(token);
-    amount = common.validateAndConvertAmountToString(amount);
+    Utils.validateAccount(recipient);
+    Utils.validateEthereumAddress(token);
+    amount = Utils.validateAndConvertAmountToString(amount);
     const methodArgs = { recipient, token, amount };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyTokenTransfer, NonceType.Token);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyTokenTransfer, NonceType.Token);
   };
 }
 
 function confirmTokenLift(api, queryApi, signerAddress) {
   return async function (ethereumTransactionHash) {
-    common.validateEthereumTransactionHash(ethereumTransactionHash);
-    const eventType = common.EthereumLogEventType.Lifted;
+    Utils.validateEthereumTransactionHash(ethereumTransactionHash);
+    const eventType = EthereumLogEventType.Lifted;
     const methodArgs = { ethereumTransactionHash, eventType };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyConfirmTokenLift, NonceType.Confirmation);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyConfirmTokenLift, NonceType.Confirmation);
   };
 }
 
 function lowerToken(api, queryApi, signerAddress) {
   return async function (t1Recipient, token, amount) {
-    common.validateEthereumAddress(t1Recipient);
-    common.validateEthereumAddress(token);
-    amount = common.validateAndConvertAmountToString(amount);
+    Utils.validateEthereumAddress(t1Recipient);
+    Utils.validateEthereumAddress(token);
+    amount = Utils.validateAndConvertAmountToString(amount);
     const methodArgs = { t1Recipient, token, amount };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyTokenLower, NonceType.Token);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyTokenLower, NonceType.Token);
   };
 }
 
 function createNftBatch(api, queryApi, signerAddress) {
   return async function (totalSupply, royalties, t1Authority) {
-    common.validateNumber(totalSupply);
-    common.validateRoyalties(royalties);
-    common.validateEthereumAddress(t1Authority);
+    Utils.validateNumber(totalSupply);
+    Utils.validateRoyalties(royalties);
+    Utils.validateEthereumAddress(t1Authority);
     const methodArgs = { totalSupply, royalties, t1Authority };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyCreateNftBatch, NonceType.Batch);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyCreateNftBatch, NonceType.Batch);
   };
 }
 
 function mintSingleNft(api, queryApi, signerAddress) {
   return async function (externalRef, royalties, t1Authority) {
-    common.validateStringIsPopulated(externalRef);
-    common.validateRoyalties(royalties);
-    common.validateEthereumAddress(t1Authority);
+    Utils.validateStringIsPopulated(externalRef);
+    Utils.validateRoyalties(royalties);
+    Utils.validateEthereumAddress(t1Authority);
     const methodArgs = { externalRef, royalties, t1Authority };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyMintSingleNft, NonceType.None);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyMintSingleNft, NonceType.None);
   };
 }
 
 function mintBatchNft(api, queryApi, signerAddress) {
   return async function (batchId, index, owner, externalRef) {
-    batchId = common.validateNftId(batchId);
-    common.validateNumber(index);
-    common.validateAccount(owner);
-    common.validateStringIsPopulated(externalRef);
+    batchId = Utils.validateNftId(batchId);
+    Utils.validateNumber(index);
+    Utils.validateAccount(owner);
+    Utils.validateStringIsPopulated(externalRef);
     const methodArgs = { batchId, index, owner, externalRef };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyMintBatchNft, NonceType.None);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyMintBatchNft, NonceType.None);
   };
 }
 
 function listFiatNftForSale(api, queryApi, signerAddress) {
   return async function (nftId) {
-    nftId = common.validateNftId(nftId);
-    const market = common.Market.Fiat;
+    nftId = Utils.validateNftId(nftId);
+    const market = Market.Fiat;
     const methodArgs = { nftId, market };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyListNftOpenForSale, NonceType.Nft);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyListNftOpenForSale, NonceType.Nft);
   };
 }
 
 function listFiatNftBatchForSale(api, queryApi, signerAddress) {
   return async function (batchId) {
-    batchId = common.validateNftId(batchId);
-    const market = common.Market.Fiat;
+    batchId = Utils.validateNftId(batchId);
+    const market = Market.Fiat;
     const methodArgs = { batchId, market };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyListNftBatchForSale, NonceType.Batch);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyListNftBatchForSale, NonceType.Batch);
   };
 }
 
 function transferFiatNft(api, queryApi, signerAddress) {
   return async function (recipient, nftId) {
-    common.validateAccount(recipient);
-    nftId = common.validateNftId(nftId);
-    recipient = common.convertToPublicKeyIfNeeded(recipient);
+    Utils.validateAccount(recipient);
+    nftId = Utils.validateNftId(nftId);
+    recipient = AccountUtils.convertToPublicKeyIfNeeded(recipient);
     const methodArgs = { nftId, recipient };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyTransferFiatNft, NonceType.Nft);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyTransferFiatNft, NonceType.Nft);
   };
 }
 
 function endNftBatchSale(api, queryApi, signerAddress) {
   return async function (batchId) {
-    batchId = common.validateNftId(batchId);
+    batchId = Utils.validateNftId(batchId);
     const methodArgs = { batchId };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyEndNftBatchSale, NonceType.Batch);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyEndNftBatchSale, NonceType.Batch);
   };
 }
 
 function cancelFiatNftListing(api, queryApi, signerAddress) {
   return async function (nftId) {
-    nftId = common.validateNftId(nftId);
+    nftId = Utils.validateNftId(nftId);
     const methodArgs = { nftId };
 
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyCancelListFiatNft, NonceType.Nft);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyCancelListFiatNft, NonceType.Nft);
   };
 }
 
 function stake(api, queryApi, signerAddress) {
   return async function (amount) {
-    amount = common.validateAndConvertAmountToString(amount);
+    amount = Utils.validateAndConvertAmountToString(amount);
     const stakingStatus = await queryApi.getStakingStatus(signerAddress);
 
-    if (stakingStatus === common.StakingStatus.isStaking) {
+    if (stakingStatus === StakingStatus.isStaking) {
       const methodArgs = { amount };
-      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyIncreaseStake, NonceType.Staking);
+      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyIncreaseStake, NonceType.Staking);
     } else {
       const targets = await queryApi.getValidatorsToNominate();
-      common.validateStakingTargets(targets);
+      Utils.validateStakingTargets(targets);
       const methodArgs = { amount, targets };
-      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.proxyStakeAvt, NonceType.Staking);
+      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.proxyStakeAvt, NonceType.Staking);
     }
   };
 }
 
 function unstake(api, queryApi, signerAddress) {
   return async function (unstakeAmount) {
-    const amount = common.validateAndConvertAmountToString(unstakeAmount);
-    const minimumFirstTimeStakingValue = await common.getMinimumStakingValue(queryApi);
+    const amount = Utils.validateAndConvertAmountToString(unstakeAmount);
+    const minimumFirstTimeStakingValue = await Utils.getMinimumStakingValue(queryApi);
     const accountInfo = await queryApi.getAccountInfo(signerAddress);
     let newStakedBalance = new BN(accountInfo?.stakedBalance).sub(new BN(amount));
 
     if (newStakedBalance?.lt(minimumFirstTimeStakingValue)) {
       const methodArgs = {};
-      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyScheduleLeaveNominators, NonceType.Staking);
+      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyScheduleLeaveNominators, NonceType.Staking);
     } else {
       const methodArgs = { amount };
-      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyUnstake, NonceType.Staking);
+      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyUnstake, NonceType.Staking);
     }
   };
 }
@@ -289,9 +289,9 @@ function withdrawUnlocked(api, queryApi, signerAddress) {
     const methodArgs = {};
 
     if (new BN(accountInfo?.stakedBalance).eq(new BN(accountInfo?.unlockedBalance))) {
-      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyExecuteLeaveNominators, NonceType.Staking);
+      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyExecuteLeaveNominators, NonceType.Staking);
     } else {
-      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyWithdrawUnlocked, NonceType.Staking);
+      return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyWithdrawUnlocked, NonceType.Staking);
     }
   };
 }
@@ -299,14 +299,14 @@ function withdrawUnlocked(api, queryApi, signerAddress) {
 function scheduleLeaveNominators(api, queryApi, signerAddress) {
   return async function () {
     const methodArgs = {};
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyScheduleLeaveNominators, NonceType.Staking);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyScheduleLeaveNominators, NonceType.Staking);
   };
 }
 
 function executeLeaveNominators(api, queryApi, signerAddress) {
   return async function () {
     const methodArgs = {};
-    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, common.TxType.ProxyExecuteLeaveNominators, NonceType.Staking);
+    return await this.proxyRequest(api, queryApi, signerAddress, methodArgs, TxType.ProxyExecuteLeaveNominators, NonceType.Staking);
   };
 }
 
