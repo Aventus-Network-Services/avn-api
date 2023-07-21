@@ -57,6 +57,7 @@ export class ProxyNonceCache {
     nonceData: NonceData,
     queryApi: Query
   ): Promise<number> {
+    console.log("Last updated: ", nonceData.lastUpdated)
     const nonceIsExpired = nonceData.lastUpdated === 0 || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
     if (nonceIsExpired) {
