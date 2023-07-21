@@ -197,7 +197,9 @@ export class Send {
           : await this.api.nonceCache.getNonceAndIncrement(this.signerAddress, nonceType, this.queryApi);
     }
 
+    console.log("Proxy args: ", JSON.stringify(proxyArgs, null, 2))
     let params = { ...proxyArgs };
+    console.log("Params args: ", JSON.stringify(params, null, 2))
 
     const proxySignature = await proxyApi.generateProxySignature(this.api, this.signerAddress, transactionType, proxyArgs);
     params.proxySignature = proxySignature;
