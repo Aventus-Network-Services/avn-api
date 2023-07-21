@@ -23,6 +23,7 @@ export class ProxyNonceCache {
   }
 
   public async setNonceCacheForUserIfRequired(signerAddress: string) {
+    signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
     await this.cacheProvider.initUserNonceCache(signerAddress);
   }
 
