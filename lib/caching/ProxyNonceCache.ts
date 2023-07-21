@@ -27,6 +27,10 @@ export class ProxyNonceCache {
     await this.cacheProvider.initUserNonceCache(signerAddress);
   }
 
+  public async getNonceData(signerAddress: string, nonceType: NonceType): Promise<NonceData | undefined> {
+    return await this.cacheProvider.getNonceData(signerAddress, nonceType);
+  }
+
   public async getNonceAndIncrement(signerAddress: string, nonceType: NonceType, queryApi: Query): Promise<number> {
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 

@@ -2,12 +2,12 @@ import { v4 } from 'uuid';
 import Axios, { AxiosInstance } from 'axios';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
-import { ProxyNonceCache, InMemoryNonceCacheProvider } from './caching';
+import { ProxyNonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
 import { Awt, AwtUtils } from './awt';
 import { AccountUtils, Utils } from './utils';
 import { version } from '../package.json';
 
-import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer } from './interfaces';
+import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer, NonceType } from './interfaces';
 import { NonceCacheType } from './caching';
 
 interface Apis {
@@ -28,7 +28,7 @@ export class AvnApi {
   public utils: AccountUtils;
   public awtUtils: AwtUtils;
   public apis: (signerAddress: string) => Promise<Apis>;
-
+  public getProxyNonceData: (signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>;
   public signer: Signer;
   public myAddress: string;
   public myPublicKey: string;
@@ -59,6 +59,10 @@ export class AvnApi {
 
     if (this.gateway) {
       const avnApi = await this.buildApiConfig();
+
+      // Expose a way to read the current nonce. Note: this is a "dirty" read.
+      this.getProxyNonceData = async (signerAddress: string, nonceType: NonceType) =>
+        await avnApi.nonceCache.getNonceData(signerAddress, nonceType);
 
       if (this.options.setupMode === SetupMode.SingleUser && this.options.signingMode === SigningMode.SuriBased) {
         // Set additional properties

@@ -20,6 +20,7 @@ export interface INonceCacheProvider {
   initUserNonceCache(signerAddress: string): Promise<void>;
   isNonceLocked(signerAddress: string, nonceType: string): Promise<boolean>;
   getNonceAndLock(signerAddress: string, nonceType: string): Promise<CachedNonceInfo>;
+  getNonceData(signerAddress: string, nonceType: string): Promise<NonceData>;
   incrementNonce(lockId: string, signerAddress: string, nonceType: string, updateLastUpdate: boolean): Promise<NonceData>;
   unlockNonce(signerAddress: string, nonceType: string): Promise<void>;
   setNonce(lockId: string, signerAddress: string, nonceType: string, nonce: number): Promise<void>;
