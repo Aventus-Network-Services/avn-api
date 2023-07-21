@@ -17,7 +17,7 @@ interface Apis {
 }
 
 export class AvnApi {
-  private suri = undefined;
+  #suri = undefined;
   private options: AvnApiOptions;
 
   public version: string;
@@ -46,7 +46,7 @@ export class AvnApi {
     this.awtUtils = AwtUtils;
 
     if (this.options.signingMode === SigningMode.SuriBased) {
-      this.suri = options.suri || process.env.AVN_SURI;
+      this.#suri = options.suri || process.env.AVN_SURI;
       // Prevent the suri from leaking if object is printed
       delete this.options.suri;
     }
@@ -60,7 +60,7 @@ export class AvnApi {
 
       if (this.options.setupMode === SetupMode.SingleUser && this.options.signingMode === SigningMode.SuriBased) {
         // Set additional properties
-        this.signer = Utils.getSignerFromSuri(this.suri!);
+        this.signer = Utils.getSignerFromSuri(this.#suri!);
         this.myAddress = this.signer.address;
         this.myPublicKey = Utils.convertToHexIfNeeded(AccountUtils.convertToPublicKeyBytes(this.myAddress));
 
