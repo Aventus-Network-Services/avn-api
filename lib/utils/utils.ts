@@ -122,6 +122,7 @@ export class Utils {
     if (!suri) throw new Error('Unable to get signer because Suri is not defined');
     const user = keyring.addFromUri(suri);
     return {
+      // eslint-disable-next-line  @typescript-eslint/no-unused-vars
       sign: async (data, _) => await u8aToHex(user.sign(data)),
       address: user.address
     };

@@ -22,6 +22,10 @@ export class ProxyNonceCache {
     this.cacheProvider = await this.cacheProvider.connect();
   }
 
+  public async setNonceCacheForUserIfRequired(signerAddress: string) {
+    await this.cacheProvider.initUserNonceCache(signerAddress);
+  }
+
   public async getNonceAndIncrement(signerAddress: string, nonceType: NonceType, queryApi: Query): Promise<number> {
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
@@ -40,7 +44,7 @@ export class ProxyNonceCache {
           cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
         }
 
-        return await this.validateNonceAndIncrement(signerAddress, nonceType, cachedNonceInfo.data, queryApi);
+        return await this.validateNonceAndIncrement(cachedNonceInfo.data.lockId, signerAddress, nonceType, cachedNonceInfo.data, queryApi);
       }
     } catch (err) {
       console.error(`Error getting nonce from cache: `, err.toString());
@@ -52,6 +56,7 @@ export class ProxyNonceCache {
   }
 
   private async validateNonceAndIncrement(
+    lockId: string,
     signerAddress: string,
     nonceType: NonceType,
     nonceData: NonceData,
@@ -60,13 +65,14 @@ export class ProxyNonceCache {
     const nonceIsExpired = Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
     if (nonceIsExpired) {
-      return await this.refreshNonceFromChain(signerAddress, nonceType, nonceData, queryApi);
+      return await this.refreshNonceFromChain(lockId, signerAddress, nonceType, nonceData, queryApi);
     } else {
-      return (await this.cacheProvider.incrementNonce(signerAddress, nonceType, EXPIRY_UPDATE_ENUM.UpdateExpiry)).nonce;
+      return (await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.UpdateExpiry)).nonce;
     }
   }
 
   private async refreshNonceFromChain(
+    lockId: string,
     signerAddress: string,
     nonceType: NonceType,
     nonceData: NonceData,
@@ -80,7 +86,7 @@ export class ProxyNonceCache {
       //  - Give a chance for the chain to create a block
       console.warn(`Nonce expired but on-chain nonce ${nonceFromChain} is the same as last nonce used ${nonceData.nonce}.`);
       const incrementedNonce = (
-        await this.cacheProvider.incrementNonce(signerAddress, nonceType, EXPIRY_UPDATE_ENUM.DoNotUpade)
+        await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.DoNotUpade)
       ).nonce;
 
       await Utils.sleep(TX_PROCESSING_TIME_MS);

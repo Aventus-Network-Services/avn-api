@@ -27,7 +27,7 @@ export class AvnApi {
   public relayer: string;
   public utils: AccountUtils;
   public awtUtils: AwtUtils;
-  public apis: { (signerAddress?: string): Apis };
+  public apis: (signerAddress: string) => Promise<Apis>;
 
   public signer: Signer;
   public myAddress: string;
@@ -67,9 +67,9 @@ export class AvnApi {
         this.myPublicKey = Utils.convertToHexIfNeeded(AccountUtils.convertToPublicKeyBytes(this.myAddress));
 
         // Set apis
-        this.apis = () => this.setStandardFunctions(avnApi, this.signer.address);
+        this.apis = async () => await this.setStandardFunctions(avnApi, this.signer.address);
       } else {
-        this.apis = (signerAddress: string) => this.setStandardFunctions(avnApi, signerAddress);
+        this.apis = async (signerAddress: string) => await this.setStandardFunctions(avnApi, signerAddress);
       }
     }
   }
@@ -104,10 +104,12 @@ export class AvnApi {
     return avnApi;
   }
 
-  private setStandardFunctions(avnApi: AvnApiConfig, signerAddress: string): Apis {
+  private async setStandardFunctions(avnApi: AvnApiConfig, signerAddress: string): Promise<Apis> {
     // Standard functions
     const awt = new Awt(avnApi, signerAddress, this.options);
     const query = new Query(avnApi, awt);
+    await avnApi.nonceCache.setNonceCacheForUserIfRequired(signerAddress);
+
     return {
       query: query,
       send: new Send(avnApi, query, awt, signerAddress),
