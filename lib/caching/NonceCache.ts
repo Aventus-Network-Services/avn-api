@@ -11,7 +11,7 @@ const EXPIRY_UPDATE_ENUM = {
   UpdateExpiry: true
 };
 
-export class ProxyNonceCache {
+export class NonceCache {
   private cacheProvider: INonceCacheProvider;
 
   constructor(cacheProvider: INonceCacheProvider) {

@@ -2,7 +2,7 @@ import { v4 } from 'uuid';
 import Axios, { AxiosInstance } from 'axios';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
-import { ProxyNonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
+import { NonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
 import { Awt, AwtUtils } from './awt';
 import { AccountUtils, Utils } from './utils';
 import { version } from '../package.json';
@@ -123,8 +123,8 @@ export class AvnApi {
   private async buildNonceCache() {
     const cache =
       this.options.nonceCacheType === NonceCacheType.Remote
-        ? new ProxyNonceCache(this.options.cacheProvider)
-        : new ProxyNonceCache(new InMemoryNonceCacheProvider());
+        ? new NonceCache(this.options.cacheProvider)
+        : new NonceCache(new InMemoryNonceCacheProvider());
 
     await cache.init();
     return cache;

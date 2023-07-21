@@ -1,4 +1,4 @@
-import { ProxyNonceCache } from '../caching/ProxyNonceCache';
+import { NonceCache } from '../caching/NonceCache';
 import { INonceCacheProvider, NonceCacheType } from '../caching';
 import { Query } from '../apis/query';
 
@@ -64,7 +64,7 @@ export interface AvnApiConfig {
   axios(token: string): any;
   relayer(queryApi: Query): Promise<string>;
   sign(data: string, signerAddress: string): Promise<string>;
-  nonceCache: ProxyNonceCache;
+  nonceCache: NonceCache;
 }
 
 export interface SplitFeeConfig {
