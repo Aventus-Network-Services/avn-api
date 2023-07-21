@@ -35,7 +35,7 @@ export class ProxyNonceCache {
 
     try {
       if (cachedNonceInfo.lockAquired === false) {
-        console.log(`Nonce for ${signerAddress} (${nonceType}) is locked, waiting for it to be released...`);
+        console.log(` - Nonce for ${signerAddress} (${nonceType}) is locked, waiting for it to be released...`);
         await this.waitForLock(signerAddress, nonceType);
         cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
       }
@@ -85,7 +85,7 @@ export class ProxyNonceCache {
       //  - Ignore the nonce from chain
       //  - Do not update the expiry
       //  - Give a chance for the chain to create a block
-      console.warn(`Nonce expired but on-chain nonce ${nonceFromChain} is the same as last nonce used ${nonceData.nonce}.`);
+      console.warn(` - Nonce expired but on-chain nonce ${nonceFromChain} is the same as last nonce used ${nonceData.nonce}.`);
       const incrementedNonce = (
         await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.DoNotUpade)
       ).nonce;
@@ -110,7 +110,7 @@ export class ProxyNonceCache {
     }
 
     console.warn(
-      `Timeout expired waiting for nonce to be unlocked, forcing to unlock. Signer: ${signerAddress}, nonceType: ${nonceType}.`
+      ` - Timeout expired waiting for nonce to be unlocked, forcing to unlock. Signer: ${signerAddress}, nonceType: ${nonceType}.`
     );
     await this.cacheProvider.unlockNonce(signerAddress, nonceType);
   }
