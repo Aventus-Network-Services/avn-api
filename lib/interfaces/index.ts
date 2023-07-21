@@ -1,4 +1,4 @@
-import { NonceCache } from '../caching/NonceCache';
+import { NonceCache } from '../caching';
 import { INonceCacheProvider, NonceCacheType } from '../caching';
 import { Query } from '../apis/query';
 
