@@ -16,6 +16,14 @@ interface Nfts {
   [key: string]: string;
 }
 
+interface AccountInfo {
+  totalBalance: string,
+  freeBalance: string,
+  stakedBalance: string,
+  unlockedBalance: string,
+  unstakedBalance: string
+}
+
 export class Query {
   private api: AvnApiConfig;
   private awtManager: Awt;
@@ -146,7 +154,7 @@ export class Query {
     return await this.postRequest(this.api, 'getOwnedNfts', { accountId: accountAddress });
   }
 
-  async getAccountInfo(accountAddress: string) {
+  async getAccountInfo(accountAddress: string): Promise<AccountInfo> {
     Utils.validateAccount(accountAddress);
     return await this.postRequest(this.api, 'getAccountInfo', { accountId: accountAddress });
   }
