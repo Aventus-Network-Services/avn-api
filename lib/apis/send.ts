@@ -12,11 +12,11 @@ interface Fees {
 }
 
 interface PaymentArgs {
-    relayer: string,
-    user: string,
-    payer: string,
-    proxySignature: string,
-    transactionType: TxType
+  relayer: string;
+  user: string;
+  payer: string;
+  proxySignature: string;
+  transactionType: TxType;
 }
 export class Send {
   private api: AvnApiConfig;
@@ -242,7 +242,7 @@ export class Send {
     return this.feesMap[relayer][payer][transactionType];
   }
 
-  async getPaymentNonceAndSignature(paymentArgs: PaymentArgs): Promise<{ paymentNonce: number, feePaymentSignature: string }> {
+  async getPaymentNonceAndSignature(paymentArgs: PaymentArgs): Promise<{ paymentNonce: number; feePaymentSignature: string }> {
     const { relayer, user, payer, proxySignature, transactionType } = paymentArgs;
     const paymentNonce = await this.api.nonceCache.getNonceAndIncrement(payer, NonceType.Payment, this.queryApi);
     const relayerFee = await this.getRelayerFee(relayer, payer, transactionType);

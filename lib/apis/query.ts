@@ -17,11 +17,11 @@ interface Nfts {
 }
 
 interface AccountInfo {
-  totalBalance: string,
-  freeBalance: string,
-  stakedBalance: string,
-  unlockedBalance: string,
-  unstakedBalance: string
+  totalBalance: string;
+  freeBalance: string;
+  stakedBalance: string;
+  unlockedBalance: string;
+  unstakedBalance: string;
 }
 
 export class Query {

@@ -4,14 +4,14 @@ import { Utils } from '../utils';
 import { Awt } from '../awt';
 import { AvnApiConfig } from '../interfaces/index';
 
- interface PollResponse {
-     txHash: string,
-     status: string,
-     blockNumber: string,
-     transactionIndex: string,
-     senderNonce: string,
-     eventArgs: Array<any>
- }
+interface PollResponse {
+  txHash: string;
+  status: string;
+  blockNumber: string;
+  transactionIndex: string;
+  senderNonce: string;
+  eventArgs: Array<any>;
+}
 
 export class Poll {
   private api: AvnApiConfig;

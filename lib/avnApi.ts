@@ -11,13 +11,15 @@ import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer } from './i
 import { NonceCacheType } from './caching';
 
 interface Apis {
-    query: Query,
-    send: Send,
-    poll: Poll
+  query: Query;
+  send: Send;
+  poll: Poll;
 }
 
 export class AvnApi {
+  // Hide this field because it contains sensitive data
   #suri = undefined;
+
   private options: AvnApiOptions;
 
   public version: string;
@@ -25,7 +27,7 @@ export class AvnApi {
   public relayer: string;
   public utils: AccountUtils;
   public awtUtils: AwtUtils;
-  public apis: { (signerAddress?: string): Apis; };
+  public apis: { (signerAddress?: string): Apis };
 
   public signer: Signer;
   public myAddress: string;

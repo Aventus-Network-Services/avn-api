@@ -51,7 +51,12 @@ export class ProxyNonceCache {
     }
   }
 
-  private async validateNonceAndIncrement(signerAddress: string, nonceType: NonceType, nonceData: NonceData, queryApi: Query): Promise<number> {
+  private async validateNonceAndIncrement(
+    signerAddress: string,
+    nonceType: NonceType,
+    nonceData: NonceData,
+    queryApi: Query
+  ): Promise<number> {
     const nonceIsExpired = Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
     if (nonceIsExpired) {
@@ -61,7 +66,12 @@ export class ProxyNonceCache {
     }
   }
 
-  private async refreshNonceFromChain(signerAddress: string, nonceType: NonceType, nonceData: NonceData, queryApi: Query): Promise<number> {
+  private async refreshNonceFromChain(
+    signerAddress: string,
+    nonceType: NonceType,
+    nonceData: NonceData,
+    queryApi: Query
+  ): Promise<number> {
     const nonceFromChain = parseInt(await queryApi.getNonce(signerAddress, nonceType));
     if (nonceData.nonce === nonceFromChain) {
       // The chain should always be nonce + 1 so do not reset yet, instead:

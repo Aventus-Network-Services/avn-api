@@ -122,7 +122,7 @@ export class Utils {
     if (!suri) throw new Error('Unable to get signer because Suri is not defined');
     const user = keyring.addFromUri(suri);
     return {
-      sign: async (data, ) => await u8aToHex(user.sign(data)),
+      sign: async (data, _) => await u8aToHex(user.sign(data)),
       address: user.address
     };
   }

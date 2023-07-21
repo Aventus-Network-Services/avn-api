@@ -2,7 +2,7 @@ import { CachedNonceInfo, INonceCacheProvider, NonceData } from './index';
 import { NonceType } from '../interfaces';
 
 export class InMemoryNonceCacheProvider implements INonceCacheProvider {
-  private nonceMap: { [x: string]: { [x: string]: NonceData; }; };
+  private nonceMap: { [x: string]: { [x: string]: NonceData } };
   constructor() {
     this.nonceMap = {};
   }
