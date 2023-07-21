@@ -14,7 +14,7 @@ interface Apis {
   query: Query;
   send: Send;
   poll: Poll;
-  proxyNonce:(signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>
+  proxyNonce: (signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>;
 }
 
 export class AvnApi {
