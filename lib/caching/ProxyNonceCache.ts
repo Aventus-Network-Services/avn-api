@@ -31,16 +31,22 @@ export class ProxyNonceCache {
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
     let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
-    if (!cachedNonceInfo) throw new Error(`Nonce not initialised for user ${signerAddress}, type: ${nonceType}`)
+    if (!cachedNonceInfo) throw new Error(`Nonce not initialised for user ${signerAddress}, type: ${nonceType}`);
 
     try {
-        if (cachedNonceInfo.lockAquired === false) {
-            console.log(`Nonce for ${signerAddress}, ${nonceType} is locked, waiting for it to be released...`);
-            await this.waitForLock(signerAddress, nonceType);
-            cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
-        }
+      if (cachedNonceInfo.lockAquired === false) {
+        console.log(`Nonce for ${signerAddress} (${nonceType}) is locked, waiting for it to be released...`);
+        await this.waitForLock(signerAddress, nonceType);
+        cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
+      }
 
-        return await this.validateNonceAndIncrement(cachedNonceInfo.data.lockId, signerAddress, nonceType, cachedNonceInfo.data, queryApi);
+      return await this.validateNonceAndIncrement(
+        cachedNonceInfo.data.lockId,
+        signerAddress,
+        nonceType,
+        cachedNonceInfo.data,
+        queryApi
+      );
     } catch (err) {
       console.error(`Error getting nonce from cache: `, err.toString());
       throw err;

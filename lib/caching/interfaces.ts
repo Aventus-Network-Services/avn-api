@@ -12,7 +12,7 @@ export interface NonceData {
   nonce: number;
   lastUpdated: number;
   locked: boolean;
-  lockId?: string
+  lockId?: string;
 }
 
 export interface INonceCacheProvider {

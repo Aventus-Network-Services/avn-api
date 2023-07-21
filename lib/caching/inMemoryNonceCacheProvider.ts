@@ -13,7 +13,15 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
   async initUserNonceCache(signerAddress: string): Promise<void> {
     if (this.nonceMap[signerAddress] === undefined) {
-        this.nonceMap[signerAddress] = { nonceType: undefined };
+      this.nonceMap[signerAddress] = Object.values(NonceType).reduce(
+        (o, key) => ({
+          ...o,
+          [key]: {
+            locked: false
+          }
+        }),
+        {}
+      );
     }
   }
 
@@ -33,9 +41,16 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
     return { lockAquired: false, data: undefined };
   }
 
-  async incrementNonce(lockId: string, signerAddress: string, nonceType: NonceType, updateLastUpdate: boolean): Promise<NonceData> {
+  async incrementNonce(
+    lockId: string,
+    signerAddress: string,
+    nonceType: NonceType,
+    updateLastUpdate: boolean
+  ): Promise<NonceData> {
     if (this.nonceMap[signerAddress][nonceType].locked !== true || this.nonceMap[signerAddress][nonceType].lockId !== lockId) {
-        throw new Error(`Invalid attempt to increment lock. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`)
+      throw new Error(
+        `Invalid attempt to increment lock. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
+      );
     }
 
     this.nonceMap[signerAddress][nonceType].nonce += 1;
@@ -53,7 +68,9 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
   async setNonce(lockId: string, signerAddress: string, nonceType: NonceType, nonce: number): Promise<void> {
     if (this.nonceMap[signerAddress][nonceType].locked !== true || this.nonceMap[signerAddress][nonceType].lockId !== lockId) {
-        throw new Error(`Invalid attempt to set nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`)
+      throw new Error(
+        `Invalid attempt to set nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
+      );
     }
 
     this.nonceMap[signerAddress][nonceType] = { nonce: nonce, lastUpdated: Date.now(), locked: false };
