@@ -14,6 +14,7 @@ interface Apis {
   query: Query;
   send: Send;
   poll: Poll;
+  proxyNonce:(signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>
 }
 
 export class AvnApi {
@@ -28,7 +29,7 @@ export class AvnApi {
   public utils: AccountUtils;
   public awtUtils: AwtUtils;
   public apis: (signerAddress: string) => Promise<Apis>;
-  public getProxyNonceData: (signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>;
+
   public signer: Signer;
   public myAddress: string;
   public myPublicKey: string;
@@ -59,10 +60,6 @@ export class AvnApi {
 
     if (this.gateway) {
       const avnApi = await this.buildApiConfig();
-
-      // Expose a way to read the current nonce. Note: this is a "dirty" read.
-      this.getProxyNonceData = async (signerAddress: string, nonceType: NonceType) =>
-        await avnApi.nonceCache.getNonceData(signerAddress, nonceType);
 
       if (this.options.setupMode === SetupMode.SingleUser && this.options.signingMode === SigningMode.SuriBased) {
         // Set additional properties
@@ -117,7 +114,9 @@ export class AvnApi {
     return {
       query: query,
       send: new Send(avnApi, query, awt, signerAddress),
-      poll: new Poll(avnApi, awt)
+      poll: new Poll(avnApi, awt),
+      proxyNonce: async (signerAddress: string, nonceType: NonceType) =>
+        await avnApi.nonceCache.getNonceData(signerAddress, nonceType)
     };
   }
 
