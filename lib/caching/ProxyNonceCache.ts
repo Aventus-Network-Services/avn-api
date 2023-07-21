@@ -87,7 +87,7 @@ export class ProxyNonceCache {
       await Utils.sleep(TX_PROCESSING_TIME_MS);
       return incrementedNonce;
     } else {
-      await this.cacheProvider.setNonce(signerAddress, nonceType, nonceFromChain);
+      await this.cacheProvider.setNonce(lockId, signerAddress, nonceType, nonceFromChain);
       return parseInt(nonceFromChain.toString());
     }
   }
