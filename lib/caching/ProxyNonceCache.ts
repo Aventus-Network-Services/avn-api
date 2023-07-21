@@ -31,22 +31,16 @@ export class ProxyNonceCache {
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
     let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
+    if (!cachedNonceInfo) throw new Error(`Nonce not initialised for user ${signerAddress}, type: ${nonceType}`)
 
     try {
-      if (!cachedNonceInfo) {
-        const nonceFromChain = parseInt(await queryApi.getNonce(signerAddress, nonceType));
-        await this.cacheProvider.setNonce(signerAddress, nonceType, nonceFromChain);
-
-        return nonceFromChain;
-      } else {
         if (cachedNonceInfo.lockAquired === false) {
-          console.log(`Nonce for ${signerAddress}, ${nonceType} is locked, waiting for it to be released...`);
-          await this.waitForLock(signerAddress, nonceType);
-          cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
+            console.log(`Nonce for ${signerAddress}, ${nonceType} is locked, waiting for it to be released...`);
+            await this.waitForLock(signerAddress, nonceType);
+            cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
         }
 
         return await this.validateNonceAndIncrement(cachedNonceInfo.data.lockId, signerAddress, nonceType, cachedNonceInfo.data, queryApi);
-      }
     } catch (err) {
       console.error(`Error getting nonce from cache: `, err.toString());
       throw err;
@@ -63,7 +57,7 @@ export class ProxyNonceCache {
     nonceData: NonceData,
     queryApi: Query
   ): Promise<number> {
-    const nonceIsExpired = Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
+    const nonceIsExpired = nonceData.lastUpdated === 0 || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
     if (nonceIsExpired) {
       return await this.refreshNonceFromChain(lockId, signerAddress, nonceType, nonceData, queryApi);
