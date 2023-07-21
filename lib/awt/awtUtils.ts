@@ -3,7 +3,7 @@
 import { hexToU8a, u8aToHex, u8aConcat } from '@polkadot/util';
 import { Utils, registry } from '../utils';
 import { AccountUtils } from '../utils';
-import { SplitFeeConfig, IAwt, Signer } from '../interfaces/index.js';
+import { SplitFeeConfig, IAwt, Signer } from '../interfaces';
 
 const MAX_TOKEN_AGE_MSEC = 600000;
 const SIGNING_CONTEXT = 'awt_gateway_api';

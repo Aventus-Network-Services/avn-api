@@ -3,7 +3,7 @@
 import { Utils } from './utils';
 import { mnemonicGenerate, mnemonicToMiniSecret } from '@polkadot/util-crypto';
 import { u8aToHex, isHex } from '@polkadot/util';
-import { AvnAccount } from '../interfaces/index.js';
+import { AvnAccount } from '../interfaces';
 import { keyring } from './index';
 
 export class AccountUtils {

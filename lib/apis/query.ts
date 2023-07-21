@@ -1,7 +1,7 @@
 'use strict';
 
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
-import { Awt } from '../awt/awt.js';
+import { Awt } from '../awt';
 import { AvnApiConfig, NonceType } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
