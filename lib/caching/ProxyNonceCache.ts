@@ -74,7 +74,7 @@ export class ProxyNonceCache {
     queryApi: Query
   ): Promise<number> {
     const nonceFromChain = parseInt(await queryApi.getNonce(signerAddress, nonceType));
-    if (nonceData.nonce === nonceFromChain) {
+    if (nonceData.nonce > 0 && nonceData.nonce === nonceFromChain) {
       // The chain should always be nonce + 1 so do not reset yet, instead:
       //  - Ignore the nonce from chain
       //  - Do not update the expiry
