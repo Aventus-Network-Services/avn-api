@@ -18,6 +18,7 @@ interface PaymentArgs {
   proxySignature: string;
   transactionType: TxType;
 }
+
 export class Send {
   private api: AvnApiConfig;
   private awtManager: Awt;
