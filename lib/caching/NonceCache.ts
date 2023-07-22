@@ -106,11 +106,13 @@ export class NonceCache {
   private async waitForLockAndGetNonceInfo(signerAddress: string, nonceType: string): Promise<CachedNonceInfo> {
     console.log(`Checking for ${Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS)} rounds`);
     for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
-      console.log(`${i} - checking for lock`);
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       // check if lock is released
       const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
-      if (cachedNonceInfo.lockAquired === true) return cachedNonceInfo;
+      if (cachedNonceInfo.lockAquired === true) {
+        console.log(`Got nonce: ${JSON.stringify(cachedNonceInfo.data)}\n`)
+        return cachedNonceInfo;
+      }
     }
 
     throw new Error(`Unable to aquire nonce lock for ${signerAddress} (${nonceType})`);
