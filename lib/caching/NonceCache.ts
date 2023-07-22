@@ -43,6 +43,7 @@ export class NonceCache {
         console.log(` - Nonce for ${signerAddress} (${nonceType}) is locked, waiting for it to be released...`);
         await this.waitForLock(signerAddress, nonceType);
         cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
+        if (cachedNonceInfo.lockAquired === false) throw new Error(`Unable to aquire nonce lock for ${signerAddress} (${nonceType})`)
       }
 
       return await this.validateNonceAndIncrement(
