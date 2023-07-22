@@ -1,6 +1,6 @@
 import { NonceType } from '../interfaces/index';
 import { Query } from '../apis/query';
-import { INonceCacheProvider, NonceData } from './index';
+import { CachedNonceInfo, INonceCacheProvider, NonceData } from './index';
 import { AccountUtils, Utils } from '../utils';
 
 const TX_PROCESSING_TIME_MS = 120000;
@@ -41,9 +41,7 @@ export class NonceCache {
     try {
       if (cachedNonceInfo.lockAquired === false) {
         console.log(` - Nonce for ${signerAddress} (${nonceType}) is locked, waiting for it to be released...`);
-        await this.waitForLock(signerAddress, nonceType);
-        cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
-        if (cachedNonceInfo.lockAquired === false) throw new Error(`Unable to aquire nonce lock for ${signerAddress} (${nonceType})`)
+        cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType);
       }
 
       return await this.validateNonceAndIncrement(
@@ -105,21 +103,16 @@ export class NonceCache {
   }
 
   // We wait for a maximum of MAX_NONCE_LOCK_TIME_MS until a nonce lock is released
-  private async waitForLock(signerAddress: string, nonceType: string) {
-    console.log(`Checking for ${Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS)} rounds`)
+  private async waitForLockAndGetNonceInfo(signerAddress: string, nonceType: string): Promise<CachedNonceInfo> {
+    console.log(`Checking for ${Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS)} rounds`);
     for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
-        console.log(`${i} - checking for lock`)
+      console.log(`${i} - checking for lock`);
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       // check if lock is released
-      const isNonceLocked = await this.cacheProvider.isNonceLocked(signerAddress, nonceType);
-      if (isNonceLocked === false) {
-        return;
-      }
+      const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
+      if (cachedNonceInfo.lockAquired === true) return cachedNonceInfo;
     }
 
-    console.warn(
-      ` - Timeout expired waiting for nonce to be unlocked, forcing to unlock. Signer: ${signerAddress}, nonceType: ${nonceType}.`
-    );
-    await this.cacheProvider.unlockNonce(signerAddress, nonceType);
+    throw new Error(`Unable to aquire nonce lock for ${signerAddress} (${nonceType})`);
   }
 }

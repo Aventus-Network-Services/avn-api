@@ -221,7 +221,7 @@ export class Send {
   }
 
   async postRequest(method: TxType, params: any): Promise<string> {
-    console.log(`\n\n** Sending transaction: ${JSON.stringify(params)}\n\n`)
+    console.log(`\n\n** Sending transaction: ${JSON.stringify(params)}\n\n`);
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const response = await this.api
