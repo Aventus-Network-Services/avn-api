@@ -107,6 +107,7 @@ export class NonceCache {
   // We wait for a maximum of MAX_NONCE_LOCK_TIME_MS until a nonce lock is released
   private async waitForLock(signerAddress: string, nonceType: string) {
     for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
+        console.log("checking for lock")
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       // check if lock is released
       const isNonceLocked = await this.cacheProvider.isNonceLocked(signerAddress, nonceType);
