@@ -56,7 +56,7 @@ export class NonceCache {
       if (cachedNonceInfo.lockAquired === false) {
         console.log(`${traceId} - Nonce for ${signerAddress} (${nonceType}) is locked, waiting for it to be released...`);
         cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType, traceId);
-      } else { console.log(`${traceId} - lock aquired`); }
+      } else { console.log(`${traceId} - lock aquired. ${JSON.stringify(cachedNonceInfo.data)}`); }
 
       return await this.validateNonceAndIncrement(
         cachedNonceInfo.data.lockId,
@@ -87,6 +87,7 @@ export class NonceCache {
     const nonceIsExpired = nonceData.lastUpdated == undefined || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
     if (nonceIsExpired) {
+        console.log(`${traceId} - Nonce Expired.`);
       return await this.refreshNonceFromChain(lockId, signerAddress, nonceType, nonceData, queryApi, traceId);
     } else {
       return (await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.UpdateExpiry)).nonce;
