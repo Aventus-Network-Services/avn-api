@@ -221,7 +221,7 @@ export class Send {
   }
 
   async postRequest(method: TxType, params: any): Promise<string> {
-    console.log(`\n\n** Sending transaction: ${JSON.stringify(params)}\n\n`);
+    console.log(`\n\n** Sending transaction (${new Date()}): ${JSON.stringify(params)}`);
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const response = await this.api
@@ -233,6 +233,7 @@ export class Send {
     }
 
     if (response.data.result) {
+        console.log(`Response (${new Date()}): ${response.data.result}\n\n`)
       return response.data.result;
     }
   }
