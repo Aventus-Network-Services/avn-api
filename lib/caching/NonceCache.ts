@@ -42,8 +42,8 @@ export class NonceCache {
     traceId: string
   ): Promise<number> {
     console.log(`${traceId} - [getNonceAndIncrement ${signerAddress} (${nonceType})]`);
-    const localLockKey = `${signerAddress}${nonceType}-${traceId}`;
-    await this.nonceGuard.lock(localLockKey);
+    const lockTraceId = `${signerAddress}${nonceType}-${traceId}`;
+    await this.nonceGuard.lock(lockTraceId);
 
     console.log(`${traceId} - [Guard released lock for ${signerAddress} (${nonceType})]`);
 
@@ -72,7 +72,7 @@ export class NonceCache {
     } finally {
       // whatever happens, release the locks
       await this.cacheProvider.unlockNonce(signerAddress, nonceType);
-      this.nonceGuard.unlock(localLockKey);
+      this.nonceGuard.unlock(lockTraceId);
     }
   }
 
@@ -133,6 +133,11 @@ export class NonceCache {
     for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       // check if lock is released
+    //   const isNonceLocked = await this.cacheProvider.isNonceLocked(signerAddress, nonceType);
+    //   if (isNonceLocked === false) {
+    //     console.log(`${traceId} - Nonce is unlocked, trying to aquire lock\n`);
+    //     return;
+    //   }
       const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
       if (cachedNonceInfo.lockAquired === true) {
         console.log(`${traceId} - Got nonce: ${JSON.stringify(cachedNonceInfo.data)}\n`);

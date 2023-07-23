@@ -7,17 +7,17 @@ export default class InMemoryLock {
     this.requestQueue = [];
   }
 
-  lock(key: string): Promise<void> {
-    console.log(` - L -Locking ${key}`)
+  lock(traceId: string): Promise<void> {
+    console.log(` - L -Locking ${traceId}`)
     return new Promise(resolve => {
       const request = () => {
-        console.log(` - L -[UnLocking ${key}]`)
+        console.log(` - L -[UnLocking ${traceId}]`)
         this.isLocked = true;
         resolve();
       };
 
       if (this.isLocked) {
-        console.log(` - L -${key} added to lock Q`)
+        console.log(` - L -${traceId} added to lock Q`)
         this.requestQueue.push(request);
       } else {
         // Wait for 1 sec to give the transaction time to be sent to the chain
@@ -28,7 +28,8 @@ export default class InMemoryLock {
     });
   }
 
-  unlock(key: string) {
+  unlock(traceId: string) {
+    console.log(` - L - Calling Unlock for: ${traceId}`)
     this.isLocked = false;
     const nextRequest = this.requestQueue.shift();
     if (nextRequest) {

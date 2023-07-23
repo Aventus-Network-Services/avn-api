@@ -62,6 +62,10 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
     return this.nonceMap[signerAddress][nonceType];
   }
 
+  async isNonceLocked(signerAddress: string, nonceType: NonceType): Promise<boolean> {
+    return this.nonceMap[signerAddress][nonceType].locked === true;
+  }
+
   async unlockNonce(signerAddress: string, nonceType: NonceType): Promise<void> {
     this.nonceMap[signerAddress][nonceType].locked = false;
     this.nonceMap[signerAddress][nonceType].lockId = undefined;
