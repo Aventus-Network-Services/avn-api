@@ -218,13 +218,13 @@ export class Send {
     }
 
     const response = await this.postRequest(transactionType, params);
-    console.log(`\nResponse ${uniqueId} - (${new Date()}): ${response}\n\n`);
+    console.log(`\nResponse ${uniqueId} - (`, new Date(), `): ${response}\n\n`);
     return response;
   }
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const uniqueId = params.uniqueId || this.api.uuid();
-    console.log(`\n Sending transaction ${uniqueId} - (${new Date()}): ${JSON.stringify(params)}`);
+    console.log(`\n Sending transaction ${uniqueId} - (`, new Date(), `): ${JSON.stringify(params)}`);
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const response = await this.api
