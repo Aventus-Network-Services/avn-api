@@ -41,8 +41,11 @@ export class NonceCache {
     queryApi: Query,
     traceId: string
   ): Promise<number> {
+    console.log(`${traceId} - [getNonceAndIncrement ${signerAddress} (${nonceType})]`);
     const localLockKey = `${signerAddress}${nonceType}-${traceId}`;
     await this.nonceGuard.lock(localLockKey);
+
+    console.log(`${traceId} - [Guard released lock for ${signerAddress} (${nonceType})]`);
 
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
@@ -53,7 +56,7 @@ export class NonceCache {
       if (cachedNonceInfo.lockAquired === false) {
         console.log(`${traceId} - Nonce for ${signerAddress} (${nonceType}) is locked, waiting for it to be released...`);
         cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType, traceId);
-      }
+      } else { console.log(`${traceId} - lock aquired`); }
 
       return await this.validateNonceAndIncrement(
         cachedNonceInfo.data.lockId,
