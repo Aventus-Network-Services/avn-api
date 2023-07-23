@@ -1,32 +1,33 @@
 export default class InMemoryLock {
-  private isLocked: boolean;
+  private locks: { [key: string]: boolean };
   private requestQueue: (() => void)[];
 
   constructor() {
-    this.isLocked = false;
+    this.locks = {};
     this.requestQueue = [];
   }
 
-  lock(traceId: string): Promise<void> {
-    //console.log(` - L -Locking ${traceId}`)
+  lock(key: string): Promise<void> {
     return new Promise(resolve => {
       const request = () => {
-        this.isLocked = true;
+        console.log(` - L -Locking ${key}`)
+        this.locks[key] = true;
         resolve();
       };
 
-      if (this.isLocked) {
-        console.log(` - L -${traceId} added to lock Q`)
+      if (this.locks[key] === true) {
+        console.log(` - L -${key} added to lock Q`)
         this.requestQueue.push(request);
       } else {
+        // Wait for 1 sec to give the transaction time to be sent to the chain
         request();
       }
     });
   }
 
-  unlock(traceId: string) {
-    console.log(` - L - Calling Unlock for: ${traceId}`)
-    this.isLocked = false;
+  unlock(key: string) {
+    this.locks[key] = false;
+    console.log(` - L - Calling Unlock for: ${key}`)
     const nextRequest = this.requestQueue.shift();
     if (nextRequest) {
       nextRequest();

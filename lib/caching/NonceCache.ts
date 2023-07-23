@@ -42,7 +42,7 @@ export class NonceCache {
     traceId: string
   ): Promise<number> {
     console.log(`${traceId} - [getNonceAndIncrement ${signerAddress} (${nonceType})]`);
-    const lockTraceId = `${signerAddress}${nonceType}-${traceId}`;
+    const lockTraceId = `${signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockTraceId);
 
     console.log(`${traceId} - [Guard released lock for ${signerAddress} (${nonceType})]`);
