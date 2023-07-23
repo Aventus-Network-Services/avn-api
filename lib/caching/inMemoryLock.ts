@@ -8,10 +8,9 @@ export default class InMemoryLock {
   }
 
   lock(traceId: string): Promise<void> {
-    console.log(` - L -Locking ${traceId}`)
+    //console.log(` - L -Locking ${traceId}`)
     return new Promise(resolve => {
       const request = () => {
-        console.log(` - L -[UnLocking ${traceId}]`)
         this.isLocked = true;
         resolve();
       };
