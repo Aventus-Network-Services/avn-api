@@ -20,10 +20,7 @@ export default class InMemoryLock {
         console.log(` - L -${traceId} added to lock Q`)
         this.requestQueue.push(request);
       } else {
-        // Wait for 1 sec to give the transaction time to be sent to the chain
-
-          request();
-
+        request();
       }
     });
   }
