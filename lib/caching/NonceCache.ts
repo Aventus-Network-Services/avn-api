@@ -2,6 +2,7 @@ import { NonceType } from '../interfaces/index';
 import { Query } from '../apis/query';
 import { CachedNonceInfo, INonceCacheProvider, NonceData } from './index';
 import { AccountUtils, Utils } from '../utils';
+import InMemoryLock from './inMemoryLock';
 
 const TX_PROCESSING_TIME_MS = 120000;
 const NONCE_LOCK_POLL_INTERVAL_MS = 500;
@@ -35,7 +36,7 @@ export class NonceCache {
   }
 
   public async getNonceAndIncrement(signerAddress: string, nonceType: NonceType, queryApi: Query): Promise<number> {
-    await this.lock.lock()
+    await this.lock.lock();
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
     let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
@@ -60,7 +61,7 @@ export class NonceCache {
     } finally {
       // whatever happens, release the lock
       await this.cacheProvider.unlockNonce(signerAddress, nonceType);
-      this.lock.unlock()
+      this.lock.unlock();
     }
   }
 
@@ -114,7 +115,7 @@ export class NonceCache {
       // check if lock is released
       const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
       if (cachedNonceInfo.lockAquired === true) {
-        console.log(`Got nonce: ${JSON.stringify(cachedNonceInfo.data)}\n`)
+        console.log(`Got nonce: ${JSON.stringify(cachedNonceInfo.data)}\n`);
         return cachedNonceInfo;
       }
     }
