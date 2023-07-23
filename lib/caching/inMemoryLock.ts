@@ -4,6 +4,7 @@ export default class InMemoryLock {
 
   constructor() {
     this.locks = {};
+    this.requestQueue = [];
   }
 
   lock(key: string): Promise<void> {
