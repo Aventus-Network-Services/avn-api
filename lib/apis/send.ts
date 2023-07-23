@@ -185,6 +185,8 @@ export class Send {
   }
 
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
+    const uniqueId = this.api.uuid();
+    console.log(`\n\n **** \n- Preapring to send ${uniqueId}`)
     // By default the user pays the relayer fees but this can be changed to any `payer`
     const payer = this.signerAddress;
     const relayer = await this.api.relayer(this.queryApi);
@@ -198,7 +200,7 @@ export class Send {
           : await this.api.nonceCache.getNonceAndIncrement(this.signerAddress, nonceType, this.queryApi);
     }
 
-    let params = { ...proxyArgs };
+    let params = { ...proxyArgs, uniqueId };
 
     const proxySignature = await proxyApi.generateProxySignature(this.api, this.signerAddress, transactionType, proxyArgs);
     params.proxySignature = proxySignature;
@@ -216,24 +218,24 @@ export class Send {
     }
 
     const response = await this.postRequest(transactionType, params);
-
+    console.log(`\nResponse ${uniqueId} - (${new Date()}): ${response}\n\n`);
     return response;
   }
 
   async postRequest(method: TxType, params: any): Promise<string> {
-    console.log(`\n\n** Sending transaction (${new Date()}): ${JSON.stringify(params)}`);
+    const uniqueId = params.uniqueId || this.api.uuid();
+    console.log(`\n Sending transaction ${uniqueId} - (${new Date()}): ${JSON.stringify(params)}`);
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const response = await this.api
       .axios(awtToken)
-      .post(endpoint, { jsonrpc: '2.0', id: this.api.uuid(), method: method, params: params });
+      .post(endpoint, { jsonrpc: '2.0', id: uniqueId, method: method, params: params });
 
     if (!response || !response.data) {
       throw new Error('Invalid server response');
     }
 
     if (response.data.result) {
-      console.log(`Response (${new Date()}): ${response.data.result}\n\n`);
       return response.data.result;
     }
   }
