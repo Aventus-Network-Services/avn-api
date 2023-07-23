@@ -233,7 +233,7 @@ export class Send {
     }
 
     if (response.data.result) {
-        console.log(`Response (${new Date()}): ${response.data.result}\n\n`)
+      console.log(`Response (${new Date()}): ${response.data.result}\n\n`);
       return response.data.result;
     }
   }

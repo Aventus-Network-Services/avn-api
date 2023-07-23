@@ -1,33 +1,38 @@
 export default class InMemoryLock {
-  private isLocked: boolean;
-  private requestQueue: (() => void)[];
+  private locks: { [key: string]: { isLocked: boolean; requestQueue: (() => void)[] } };
 
   constructor() {
-    this.isLocked = false;
-    this.requestQueue = [];
+    this.locks = {};
   }
 
-  lock(): Promise<void> {
+  lock(key: string): Promise<void> {
     return new Promise(resolve => {
+      if (!this.locks[key]) {
+        this.locks[key] = { isLocked: false, requestQueue: [] };
+      }
+
       const request = () => {
-        this.isLocked = true;
+        this.locks[key].isLocked = true;
         resolve();
       };
 
-      if (this.isLocked) {
-        console.log('Resource locked, adding to the queue');
-        this.requestQueue.push(request);
+      if (this.locks[key].isLocked) {
+        this.locks[key].requestQueue.push(request);
       } else {
         request();
       }
     });
   }
 
-  unlock() {
-    this.isLocked = false;
-    const nextRequest = this.requestQueue.shift();
+  unlock(key: string) {
+    const lock = this.locks[key];
+    if (!lock) {
+      throw new Error(`No lock found for key: ${key}`);
+    }
+
+    lock.isLocked = false;
+    const nextRequest = lock.requestQueue.shift();
     if (nextRequest) {
-      console.log('Processing next item from locked queue');
       nextRequest();
     }
   }

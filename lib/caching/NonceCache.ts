@@ -14,11 +14,11 @@ const EXPIRY_UPDATE_ENUM = {
 
 export class NonceCache {
   private cacheProvider: INonceCacheProvider;
-  private lock: InMemoryLock;
+  private nonceGuard: InMemoryLock;
 
   constructor(cacheProvider: INonceCacheProvider) {
     this.cacheProvider = cacheProvider;
-    this.lock = new InMemoryLock();
+    this.nonceGuard = new InMemoryLock();
   }
 
   public async init() {
@@ -36,7 +36,9 @@ export class NonceCache {
   }
 
   public async getNonceAndIncrement(signerAddress: string, nonceType: NonceType, queryApi: Query): Promise<number> {
-    await this.lock.lock();
+    const localLockKey = `${signerAddress}${nonceType}`;
+    await this.nonceGuard.lock(localLockKey);
+
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
     let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
@@ -59,9 +61,9 @@ export class NonceCache {
       console.error(`Error getting nonce from cache: `, err.toString());
       throw err;
     } finally {
-      // whatever happens, release the lock
+      // whatever happens, release the locks
       await this.cacheProvider.unlockNonce(signerAddress, nonceType);
-      this.lock.unlock();
+      this.nonceGuard.unlock(localLockKey);
     }
   }
 
