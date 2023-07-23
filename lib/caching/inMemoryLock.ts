@@ -19,7 +19,7 @@ export default class InMemoryLock {
       } else {
         // Wait for 1 sec to give the transaction time to be sent to the chain
         setTimeout(() => {
-            request();
+          request();
         }, 1000);
       }
     });

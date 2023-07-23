@@ -186,7 +186,7 @@ export class Send {
 
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
     const uniqueId = this.api.uuid();
-    console.log(`\n\n **** \n- Preapring to send ${uniqueId}`)
+    console.log(`\n\n **** \n- Preapring to send ${uniqueId}`);
     // By default the user pays the relayer fees but this can be changed to any `payer`
     const payer = this.signerAddress;
     const relayer = await this.api.relayer(this.queryApi);
@@ -197,7 +197,7 @@ export class Send {
       proxyArgs.nonce =
         nonceType === NonceType.Nft
           ? await this.queryApi.getNftNonce(methodArgs.nftId)
-          : await this.api.nonceCache.getNonceAndIncrement(this.signerAddress, nonceType, this.queryApi);
+          : await this.api.nonceCache.getNonceAndIncrement(this.signerAddress, nonceType, this.queryApi, uniqueId);
     }
 
     let params = { ...proxyArgs, uniqueId };
@@ -209,7 +209,7 @@ export class Send {
     if (this.api.hasSplitFeeToken() === false) {
       // By default the user pays the relayer fees but this can be changed to any `payer`
       const paymentArgs = { relayer, user: this.signerAddress, payer, proxySignature, transactionType };
-      const paymentData = await this.getPaymentNonceAndSignature(paymentArgs);
+      const paymentData = await this.getPaymentNonceAndSignature(uniqueId, paymentArgs);
       params = Object.assign(params, {
         feePaymentSignature: paymentData.feePaymentSignature,
         paymentNonce: paymentData.paymentNonce,
@@ -247,9 +247,12 @@ export class Send {
     return this.feesMap[relayer][payer][transactionType];
   }
 
-  async getPaymentNonceAndSignature(paymentArgs: PaymentArgs): Promise<{ paymentNonce: number; feePaymentSignature: string }> {
+  async getPaymentNonceAndSignature(
+    traceId: string,
+    paymentArgs: PaymentArgs
+  ): Promise<{ paymentNonce: number; feePaymentSignature: string }> {
     const { relayer, user, payer, proxySignature, transactionType } = paymentArgs;
-    const paymentNonce = await this.api.nonceCache.getNonceAndIncrement(payer, NonceType.Payment, this.queryApi);
+    const paymentNonce = await this.api.nonceCache.getNonceAndIncrement(payer, NonceType.Payment, this.queryApi, traceId);
     const relayerFee = await this.getRelayerFee(relayer, payer, transactionType);
     const feePaymentArgs = { relayer, user, proxySignature, relayerFee, paymentNonce, signerAddress: this.signerAddress };
     const feePaymentSignature = await proxyApi.generateFeePaymentSignature(feePaymentArgs, this.signerAddress, this.api);
