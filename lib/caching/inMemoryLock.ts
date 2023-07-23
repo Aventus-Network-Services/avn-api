@@ -1,9 +1,9 @@
 export default class InMemoryLock {
-  private locks: { [key: string]: boolean };
+  private isLocked: boolean;
   private requestQueue: (() => void)[];
 
   constructor() {
-    this.locks = {};
+    this.isLocked = false;
     this.requestQueue = [];
   }
 
@@ -12,11 +12,11 @@ export default class InMemoryLock {
     return new Promise(resolve => {
       const request = () => {
         console.log(` - L -[UnLocking ${key}]`)
-        this.locks[key] = true;
+        this.isLocked = true;
         resolve();
       };
 
-      if (this.locks[key] === true) {
+      if (this.isLocked) {
         console.log(` - L -${key} added to lock Q`)
         this.requestQueue.push(request);
       } else {
@@ -29,7 +29,7 @@ export default class InMemoryLock {
   }
 
   unlock(key: string) {
-    this.locks[key] = false;
+    this.isLocked = false;
     const nextRequest = this.requestQueue.shift();
     if (nextRequest) {
       nextRequest();
