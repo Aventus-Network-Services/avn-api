@@ -19,7 +19,10 @@ export default class InMemoryLock {
       if (this.locks[key].isLocked) {
         this.locks[key].requestQueue.push(request);
       } else {
-        request();
+        // Wait for 1 sec to give the transaction time to be sent to the chain
+        setTimeout(() => {
+            request();
+        }, 1000);
       }
     });
   }
