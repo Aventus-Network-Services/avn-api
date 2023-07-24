@@ -34,6 +34,7 @@ export default class InMemoryLock {
       // We are here because multiple requests for the same user and nonce were attempted so create a delay
       // to prevent the nonce going to the gateway out of order
       await new Promise(resolve => setTimeout(resolve, this.sameUserNonceDelayMs));
+      nextRequest();
     }
   }
 }
