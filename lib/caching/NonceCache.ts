@@ -2,7 +2,7 @@ import { NonceType } from '../interfaces/index';
 import { Query } from '../apis/query';
 import { CachedNonceInfo, INonceCacheProvider, NonceData } from './index';
 import { AccountUtils, Utils } from '../utils';
-import InMemoryLock from './inMemoryLock';
+import { InMemoryLock } from './inMemoryLock';
 
 const TX_PROCESSING_TIME_MS = 120000;
 const NONCE_LOCK_POLL_INTERVAL_MS = 500;

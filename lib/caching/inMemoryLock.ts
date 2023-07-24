@@ -1,4 +1,4 @@
-export default class InMemoryLock {
+export class InMemoryLock {
   private sameUserNonceDelayMs: number;
   private locks: { [key: string]: { isLocked: boolean; requestQueue: (() => void)[] } };
 
@@ -39,16 +39,13 @@ export default class InMemoryLock {
 
     const nextRequest = lock.requestQueue.shift();
 
-    console.log(`....waiting ${this.sameUserNonceDelayMs} ms to unlock`, new Date())
     await new Promise(resolve => setTimeout(resolve, this.sameUserNonceDelayMs));
-    console.log("....unlock done: ", new Date())
 
     lock.isLocked = false;
     // We are here because multiple requests for the same user and nonce were attempted so create a delay
     // to prevent the nonce going to the gateway out of order
     if (nextRequest) {
-        nextRequest();
+      nextRequest();
     }
-
   }
 }

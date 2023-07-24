@@ -8,7 +8,7 @@ import { AccountUtils, Utils } from './utils';
 import { version } from '../package.json';
 
 import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer, NonceType } from './interfaces';
-import { NonceCacheType } from './caching';
+import { NonceCacheType, InMemoryLock } from './caching';
 
 interface Apis {
   query: Query;
@@ -122,11 +122,12 @@ export class AvnApi {
     // Standard functions
     const awt = new Awt(avnApi, signerAddress, this.options);
     const query = new Query(avnApi, awt);
+    const nonceGuard = new InMemoryLock(this.options.nonceCacheOptions.sameUserNonceDelayMs);
     await avnApi.nonceCache.setNonceCacheForUserIfRequired(signerAddress);
 
     return {
       query: query,
-      send: new Send(avnApi, query, awt, signerAddress),
+      send: new Send(avnApi, query, awt, nonceGuard, signerAddress),
       poll: new Poll(avnApi, awt),
       proxyNonce: async (signerAddress: string, nonceType: NonceType) =>
         await avnApi.nonceCache.getNonceData(signerAddress, nonceType)
