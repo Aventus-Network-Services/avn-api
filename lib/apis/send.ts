@@ -224,9 +224,10 @@ export class Send {
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const uniqueId = params.uniqueId || this.api.uuid();
-    console.log(`\n Sending transaction ${uniqueId} - (`, new Date(), `): ${JSON.stringify(params)}`);
+    console.log(`\n ** Sending transaction ${uniqueId} - (`, new Date(), `): ${params.nonce}, ${params.proxySignature}, ${params.user}\n`);
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
+    console.log(`  - **Got AWT token ${uniqueId} - (`, new Date(), `): ${awtToken}\n`);
     const response = await this.api
       .axios(awtToken)
       .post(endpoint, { jsonrpc: '2.0', id: uniqueId, method: method, params: params });
