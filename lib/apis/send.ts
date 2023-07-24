@@ -195,7 +195,7 @@ export class Send {
 
     try {
       const uniqueId = this.api.uuid();
-      log.trace(`\n\n **** \n- Preapring to send ${uniqueId}`);
+      log.debug(`\n - Preapring to send ${uniqueId}`);
       // By default the user pays the relayer fees but this can be changed to any `payer`
       const payer = this.signerAddress;
       const relayer = await this.api.relayer(this.queryApi);
@@ -226,7 +226,7 @@ export class Send {
       }
 
       const response = await this.postRequest(transactionType, params);
-      log.trace(`\nResponse ${uniqueId} - (`, new Date(), `): ${response}\n\n`);
+      log.debug(`Response ${uniqueId} - (`, new Date(), `): ${response}\n\n`);
       return response;
     } catch (err) {
       console.error(`Error sending transaction to the avn gateway: ${err.toString()}`);
@@ -238,11 +238,7 @@ export class Send {
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const uniqueId = params.uniqueId || this.api.uuid();
-    log.trace(
-      `\n ** Sending transaction ${uniqueId} - (`,
-      new Date(),
-      `): ${params.nonce}, ${params.proxySignature}, ${params.user}\n`
-    );
+    log.debug(`Sending transaction ${uniqueId} - (`,new Date(),`): ${params.nonce}, ${params.proxySignature}, ${params.user}`);
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const response = await this.api

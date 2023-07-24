@@ -2,6 +2,7 @@
 
 import { AwtUtils } from './awtUtils';
 import { AvnApiConfig } from '../interfaces';
+import log from 'loglevel';
 
 export class Awt {
   private splitFeeOptions: { hasPayer: boolean; payerAddress: string };
@@ -22,7 +23,7 @@ export class Awt {
 
   async getToken() {
     if (!AwtUtils.tokenAgeIsValid(this.awtToken)) {
-      console.log(` - Awt token for ${this.signerAddress} has expired, refreshing`);
+      log.debug(` - Awt token for ${this.signerAddress} has expired, refreshing`);
       this.awtToken = await AwtUtils.generateAwtToken(this.splitFeeOptions, {
         sign: this.apiSigner,
         address: this.signerAddress

@@ -1,3 +1,4 @@
+import log from 'loglevel';
 export class InMemoryLock {
   private sameUserNonceDelayMs: number;
   private locks: { [key: string]: { isLocked: boolean; requestQueue: (() => void)[] } };
@@ -14,13 +15,13 @@ export class InMemoryLock {
       }
 
       const request = () => {
-        console.log(` - L -Locking ${key}`);
+        log.debug(`[InMemoryLock]: Locking: ${key}. `, new Date());
         this.locks[key].isLocked = true;
         resolve();
       };
 
       if (this.locks[key].isLocked) {
-        console.log(` - L -${key} added to lock Q`);
+        log.debug(`[InMemoryLock]: ${key} added to lock Queue. `, new Date());
         this.locks[key].requestQueue.push(request);
       } else {
         request();
@@ -29,21 +30,19 @@ export class InMemoryLock {
   }
 
   async unlock(key: string) {
-    console.log(` - L - Calling Unlock for: ${key}`);
+    log.debug(`[InMemoryLock]: Calling Unlock for ${key}. `, new Date());
 
     const lock = this.locks[key];
-
     if (!lock) {
       throw new Error(`No lock found for key: ${key}`);
     }
 
     const nextRequest = lock.requestQueue.shift();
-
-    await new Promise(resolve => setTimeout(resolve, this.sameUserNonceDelayMs));
+    // We are here because multiple requests for the same user and nonce were attempted
+    // so add a delay to prevent the nonce going to the gateway out of order
+    //await new Promise(resolve => setTimeout(resolve, this.sameUserNonceDelayMs));
 
     lock.isLocked = false;
-    // We are here because multiple requests for the same user and nonce were attempted so create a delay
-    // to prevent the nonce going to the gateway out of order
     if (nextRequest) {
       nextRequest();
     }
