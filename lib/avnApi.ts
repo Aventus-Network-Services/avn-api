@@ -9,6 +9,8 @@ import { version } from '../package.json';
 
 import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer, NonceType } from './interfaces';
 import { NonceCacheType, InMemoryLock } from './caching';
+import {setLogLevel} from './logger'
+import log from 'loglevel'
 
 interface Apis {
   query: Query;
@@ -55,6 +57,7 @@ export class AvnApi {
 
   async init() {
     await cryptoWaitReady();
+    setLogLevel(this.options.defaultLogLevel)
 
     if (this.gateway) {
       const avnApi = await this.buildApiConfig();
@@ -78,6 +81,8 @@ export class AvnApi {
     options.setupMode = options.setupMode || SetupMode.SingleUser;
     options.signingMode = options.signingMode || SigningMode.SuriBased;
 
+    this.options.defaultLogLevel = this.options.defaultLogLevel || 'info'
+
     if (!options.nonceCacheOptions) {
       options.nonceCacheOptions = {
         sameUserNonceDelayMs: 2000,
@@ -95,6 +100,7 @@ export class AvnApi {
       uuid: () => v4(),
       axios: (token: string) => {
         //console.log(` - Axios called with token: ${token.substring(0, 8) + "..." + token.substring(token.length - (8))}`)
+        log.info(` - Axios called with token: ${token.substring(0, 8) + "..." + token.substring(token.length - (8))}`);
         // Add any middlewares here to configure global axios behaviours
         (Axios as AxiosInstance).defaults.headers.common = { Authorization: `bearer ${token}` };
         return Axios;

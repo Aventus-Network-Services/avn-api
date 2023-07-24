@@ -7,6 +7,7 @@ import BN from 'bn.js';
 import { Awt } from '../awt';
 import { Query } from './query';
 import { InMemoryLock } from '../caching';
+import log from 'loglevel';
 
 interface Fees {
   [key: string]: object;
@@ -194,7 +195,7 @@ export class Send {
 
     try {
       const uniqueId = this.api.uuid();
-      console.log(`\n\n **** \n- Preapring to send ${uniqueId}`);
+      log.trace(`\n\n **** \n- Preapring to send ${uniqueId}`);
       // By default the user pays the relayer fees but this can be changed to any `payer`
       const payer = this.signerAddress;
       const relayer = await this.api.relayer(this.queryApi);
@@ -225,7 +226,7 @@ export class Send {
       }
 
       const response = await this.postRequest(transactionType, params);
-      console.log(`\nResponse ${uniqueId} - (`, new Date(), `): ${response}\n\n`);
+      log.trace(`\nResponse ${uniqueId} - (`, new Date(), `): ${response}\n\n`);
       return response;
     } catch (err) {
       console.error(`Error sending transaction to the avn gateway: ${err.toString()}`);
@@ -237,14 +238,13 @@ export class Send {
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const uniqueId = params.uniqueId || this.api.uuid();
-    console.log(
+    log.trace(
       `\n ** Sending transaction ${uniqueId} - (`,
       new Date(),
       `): ${params.nonce}, ${params.proxySignature}, ${params.user}\n`
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
-    console.log(`  - **Got AWT token ${uniqueId} - (`, new Date(), `): ${awtToken}\n`);
     const response = await this.api
       .axios(awtToken)
       .post(endpoint, { jsonrpc: '2.0', id: uniqueId, method: method, params: params });

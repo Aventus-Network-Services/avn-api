@@ -40,6 +40,13 @@ export interface NonceCacheOptions {
   cacheProvider?: INonceCacheProvider;
 }
 
+export type LogLevelNames =
+        | 'trace'
+        | 'debug'
+        | 'info'
+        | 'warn'
+        | 'error'
+        | 'silent';
 export interface AvnApiOptions {
   gateway?: string;
   relayer?: string;
@@ -50,6 +57,7 @@ export interface AvnApiOptions {
   nonceCacheOptions?: NonceCacheOptions;
   hasPayer?: boolean;
   payerAddress?: string;
+  defaultLogLevel?: LogLevelNames;
 }
 
 export interface IAwt {

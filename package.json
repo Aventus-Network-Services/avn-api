@@ -6,13 +6,14 @@
   "author": "Aventus Network Services",
   "license": "ISC",
   "dependencies": {
-    "@polkadot/keyring": "^5.9.2",
-    "@polkadot/types": "^3.11.1",
-    "@polkadot/util-crypto": "^5.9.2",
+    "@polkadot/keyring": "^9.4.3",
+    "@polkadot/types": "^9.4.3",
+    "@polkadot/util-crypto": "^9.4.3",
     "axios": "^0.21.4",
     "bn.js": "^5.2.1",
     "prettier": "^2.5.1",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "loglevel": "1.8.1"
   },
   "devDependencies": {
     "@types/uuid": "8.3.2",
