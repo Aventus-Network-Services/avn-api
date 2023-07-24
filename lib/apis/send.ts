@@ -232,13 +232,17 @@ export class Send {
       console.error(`Error sending transaction to the avn gateway: ${err.toString()}`);
       throw err;
     } finally {
-      await this.nonceGuard.unlock(lockKey);
+      this.nonceGuard.unlock(lockKey);
     }
   }
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const uniqueId = params.uniqueId || this.api.uuid();
-    log.debug(`Sending transaction ${uniqueId} - (`,new Date(),`): ${params.nonce}, ${params.proxySignature}, ${params.user}`);
+    log.debug(
+      `Sending transaction ${uniqueId} - (`,
+      new Date(),
+      `): ${params.nonce}, ${params.proxySignature}, ${params.user}`
+    );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const response = await this.api

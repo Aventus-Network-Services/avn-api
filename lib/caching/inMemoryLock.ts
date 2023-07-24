@@ -29,7 +29,7 @@ export class InMemoryLock {
     });
   }
 
-  async unlock(key: string) {
+  unlock(key: string) {
     log.debug(`[InMemoryLock]: Calling Unlock for ${key}. `, new Date());
 
     const lock = this.locks[key];
@@ -37,12 +37,9 @@ export class InMemoryLock {
       throw new Error(`No lock found for key: ${key}`);
     }
 
-    const nextRequest = lock.requestQueue.shift();
-    // We are here because multiple requests for the same user and nonce were attempted
-    // so add a delay to prevent the nonce going to the gateway out of order
-    //await new Promise(resolve => setTimeout(resolve, this.sameUserNonceDelayMs));
-
     lock.isLocked = false;
+
+    const nextRequest = lock.requestQueue.shift();
     if (nextRequest) {
       nextRequest();
     }
