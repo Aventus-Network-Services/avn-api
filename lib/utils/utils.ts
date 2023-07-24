@@ -133,6 +133,6 @@ export class Utils {
       return input.toLowerCase();
     }
 
-    return u8aToHex(input).toLowerCase();
+    return u8aToHex(input as Uint8Array).toLowerCase();
   }
 }
