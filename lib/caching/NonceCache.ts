@@ -73,6 +73,7 @@ export class NonceCache {
       throw err;
     } finally {
       // whatever happens, release the locks
+      console.error(`${traceId} - Unlocking all locks`);
       await this.cacheProvider.unlockNonce(signerAddress, nonceType);
       await this.nonceGuard.unlock(lockTraceId);
     }
