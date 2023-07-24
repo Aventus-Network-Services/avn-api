@@ -41,13 +41,13 @@ export class NonceCache {
     queryApi: Query,
     traceId: string
   ): Promise<number> {
+    signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+
     console.log(`${traceId} - [getNonceAndIncrement ${signerAddress} (${nonceType})]`);
     const lockTraceId = `${signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockTraceId);
 
     console.log(`${traceId} - [Guard released lock for ${signerAddress} (${nonceType})]`);
-
-    signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
     let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
     if (!cachedNonceInfo) throw new Error(`${traceId} - Nonce not initialised for user ${signerAddress}, type: ${nonceType}`);
