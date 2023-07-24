@@ -8,6 +8,7 @@
   "dependencies": {
     "@polkadot/keyring": "^9.4.3",
     "@polkadot/util-crypto": "^9.4.3",
+    "@polkadot/types": "^9.4.3",
     "axios": "^0.21.4",
     "bn.js": "^5.2.1",
     "prettier": "^2.5.1",
@@ -15,7 +16,6 @@
     "loglevel": "1.8.1"
   },
   "devDependencies": {
-    "@polkadot/types": "^9.4.3",
     "@types/uuid": "8.3.2",
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
