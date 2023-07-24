@@ -81,7 +81,7 @@ export class AvnApi {
     options.setupMode = options.setupMode || SetupMode.SingleUser;
     options.signingMode = options.signingMode || SigningMode.SuriBased;
 
-    this.options.defaultLogLevel = this.options.defaultLogLevel || 'info';
+    options.defaultLogLevel = options.defaultLogLevel || 'info';
 
     if (!options.nonceCacheOptions) {
       options.nonceCacheOptions = {
