@@ -36,9 +36,7 @@ export class AvnApi {
 
   constructor(gateway?: string, options?: AvnApiOptions) {
     // Set default values
-    options = options || {};
-    options.setupMode = options.setupMode || SetupMode.SingleUser;
-    options.signingMode = options.signingMode || SigningMode.SuriBased;
+    options = this.setDefaultOptions(options);
 
     validateOptions(options);
 
@@ -73,6 +71,21 @@ export class AvnApi {
         this.apis = async (signerAddress: string) => await this.setStandardFunctions(avnApi, signerAddress);
       }
     }
+  }
+
+  private setDefaultOptions(options?: AvnApiOptions): AvnApiOptions {
+    options = options || {};
+    options.setupMode = options.setupMode || SetupMode.SingleUser;
+    options.signingMode = options.signingMode || SigningMode.SuriBased;
+
+    if (!options.nonceCacheOptions) {
+      options.nonceCacheOptions = {
+        sameUserNonceDelayMs: 2000,
+        nonceCacheType: NonceCacheType.Local
+      };
+    }
+    options.nonceCacheOptions?.sameUserNonceDelayMs || 2000;
+    return options;
   }
 
   private async buildApiConfig(): Promise<AvnApiConfig> {
@@ -122,9 +135,9 @@ export class AvnApi {
 
   private async buildNonceCache() {
     const cache =
-      this.options.nonceCacheType === NonceCacheType.Remote
-        ? new NonceCache(this.options.cacheProvider)
-        : new NonceCache(new InMemoryNonceCacheProvider());
+      this.options.nonceCacheOptions.nonceCacheType === NonceCacheType.Remote
+        ? new NonceCache(this.options.nonceCacheOptions.cacheProvider, this.options.nonceCacheOptions.sameUserNonceDelayMs)
+        : new NonceCache(new InMemoryNonceCacheProvider(), this.options.nonceCacheOptions.sameUserNonceDelayMs);
 
     await cache.init();
     return cache;
@@ -144,8 +157,8 @@ function validateOptions(options?: AvnApiOptions) {
     Utils.validateAccount(options.relayer);
   }
 
-  if (options.nonceCacheType === NonceCacheType.Remote) {
-    if (!options.cacheProvider) {
+  if (options.nonceCacheOptions.nonceCacheType === NonceCacheType.Remote) {
+    if (!options.nonceCacheOptions.cacheProvider) {
       throw new Error(
         "You must specify a cache provider interface with a 'connect', 'resetNonce', 'getNonce' and 'getNonceAndIncrement' functions"
       );

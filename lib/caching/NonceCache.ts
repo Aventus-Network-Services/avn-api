@@ -16,9 +16,9 @@ export class NonceCache {
   private cacheProvider: INonceCacheProvider;
   private nonceGuard: InMemoryLock;
 
-  constructor(cacheProvider: INonceCacheProvider) {
+  constructor(cacheProvider: INonceCacheProvider, sameUserNonceDelayMs: number) {
     this.cacheProvider = cacheProvider;
-    this.nonceGuard = new InMemoryLock();
+    this.nonceGuard = new InMemoryLock(sameUserNonceDelayMs);
   }
 
   public async init() {
@@ -56,7 +56,9 @@ export class NonceCache {
       if (cachedNonceInfo.lockAquired === false) {
         console.log(`${traceId} - Nonce for ${signerAddress} (${nonceType}) is locked, waiting for it to be released...`);
         cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType, traceId);
-      } else { console.log(`${traceId} - lock aquired. ${JSON.stringify(cachedNonceInfo.data)}`); }
+      } else {
+        console.log(`${traceId} - lock aquired. ${JSON.stringify(cachedNonceInfo.data)}`);
+      }
 
       return await this.validateNonceAndIncrement(
         cachedNonceInfo.data.lockId,
@@ -87,7 +89,7 @@ export class NonceCache {
     const nonceIsExpired = nonceData.lastUpdated == undefined || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
     if (nonceIsExpired) {
-        console.log("LastUpdate: ", nonceData.lastUpdated, " diff: ", Date.now() - nonceData.lastUpdated);
+      console.log('LastUpdate: ', nonceData.lastUpdated, ' diff: ', Date.now() - nonceData.lastUpdated);
       return await this.refreshNonceFromChain(lockId, signerAddress, nonceType, nonceData, queryApi, traceId);
     } else {
       return (await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.UpdateExpiry)).nonce;
@@ -133,11 +135,11 @@ export class NonceCache {
     for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       // check if lock is released
-    //   const isNonceLocked = await this.cacheProvider.isNonceLocked(signerAddress, nonceType);
-    //   if (isNonceLocked === false) {
-    //     console.log(`${traceId} - Nonce is unlocked, trying to aquire lock\n`);
-    //     return;
-    //   }
+      //   const isNonceLocked = await this.cacheProvider.isNonceLocked(signerAddress, nonceType);
+      //   if (isNonceLocked === false) {
+      //     console.log(`${traceId} - Nonce is unlocked, trying to aquire lock\n`);
+      //     return;
+      //   }
       const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
       if (cachedNonceInfo.lockAquired === true) {
         console.log(`${traceId} - Got nonce: ${JSON.stringify(cachedNonceInfo.data)}\n`);

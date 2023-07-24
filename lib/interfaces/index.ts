@@ -34,6 +34,12 @@ export interface Signer {
   address: string;
 }
 
+export interface NonceCacheOptions {
+  sameUserNonceDelayMs?: number;
+  nonceCacheType?: NonceCacheType;
+  cacheProvider?: INonceCacheProvider;
+}
+
 export interface AvnApiOptions {
   gateway?: string;
   relayer?: string;
@@ -41,8 +47,7 @@ export interface AvnApiOptions {
   suri?: string;
   signingMode?: SigningMode;
   setupMode?: SetupMode;
-  nonceCacheType?: NonceCacheType;
-  cacheProvider?: INonceCacheProvider;
+  nonceCacheOptions?: NonceCacheOptions;
   hasPayer?: boolean;
   payerAddress?: string;
 }
