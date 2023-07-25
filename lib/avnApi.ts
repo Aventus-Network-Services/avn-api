@@ -85,11 +85,11 @@ export class AvnApi {
 
     if (!options.nonceCacheOptions) {
       options.nonceCacheOptions = {
-        sameUserNonceDelayMs: 2000,
+        sameUserNonceDelayMs: 100,
         nonceCacheType: NonceCacheType.Local
       };
     }
-    options.nonceCacheOptions.sameUserNonceDelayMs = options.nonceCacheOptions.sameUserNonceDelayMs || 2000;
+    options.nonceCacheOptions.sameUserNonceDelayMs = options.nonceCacheOptions.sameUserNonceDelayMs || 100;
     return options;
   }
 
