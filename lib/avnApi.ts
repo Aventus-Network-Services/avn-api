@@ -166,7 +166,7 @@ function validateOptions(options?: AvnApiOptions) {
   if (options.nonceCacheOptions.nonceCacheType === NonceCacheType.Remote) {
     if (!options.nonceCacheOptions.cacheProvider) {
       throw new Error(
-        "You must specify a cache provider interface with a 'connect', 'resetNonce', 'getNonce' and 'getNonceAndIncrement' functions"
+        "With a remote cache, you must specify a cache provider interface that implements an INonceCacheProvider"
       );
     }
   }
