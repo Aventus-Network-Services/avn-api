@@ -17,8 +17,8 @@ interface Nfts {
 }
 
 type RelayerFees = {
-    [key in TxType]: string;
-}
+  [key in TxType]: string;
+};
 
 interface AccountInfo {
   totalBalance: string;
@@ -29,24 +29,24 @@ interface AccountInfo {
 }
 
 interface StakingStats {
-    totalStaked: string;
-    minUserBond: string;
-    maxNominatorsRewardedPerValidator: string;
-    totalStakers: string;
-    averageStaked: string;
+  totalStaked: string;
+  minUserBond: string;
+  maxNominatorsRewardedPerValidator: string;
+  totalStakers: string;
+  averageStaked: string;
 }
 
 interface LowerData {
-    token: string;
-    from:  string;
-    to: string;
-    amount: string;
-    claimData: LowerClaimData;
+  token: string;
+  from: string;
+  to: string;
+  amount: string;
+  claimData: LowerClaimData;
 }
 
 interface LowerClaimData {
-    leaf: string,
-    merklePath: string[]
+  leaf: string;
+  merklePath: string[];
 }
 
 export class Query {
@@ -213,7 +213,11 @@ export class Query {
     Utils.validateAccount(relayerAddress);
     if (userAddress) Utils.validateAccount(userAddress);
 
-    return await this.postRequest<RelayerFees | number>(this.api, 'getRelayerFees', { relayer: relayerAddress, user: userAddress, transactionType });
+    return await this.postRequest<RelayerFees | number>(this.api, 'getRelayerFees', {
+      relayer: relayerAddress,
+      user: userAddress,
+      transactionType
+    });
   }
 
   async getCurrentBlock(): Promise<string> {

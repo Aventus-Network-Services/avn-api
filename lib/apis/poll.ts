@@ -10,7 +10,7 @@ interface PollResponse {
   blockNumber: string;
   transactionIndex: string;
   senderNonce: string;
-  eventArgs: Array<any>;
+  eventArgs: object;
 }
 
 export class Poll {

@@ -6,6 +6,13 @@ import { AccountUtils } from '../utils/accountUtils';
 import { u8aConcat } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
 
+export interface FeePaymentData {
+  relayer: string;
+  proxySignature: string;
+  relayerFee: string;
+  paymentNonce: number;
+}
+
 const numTypes = ['AccountId', 'Balance', 'BalanceOf', 'EraIndex', 'u8', 'u32', 'u64', 'u128', 'U256', 'H160', 'H256'];
 
 const signing = {
@@ -34,25 +41,25 @@ export const generateProxySignature = async (
   api: AvnApiConfig,
   signerAddress: string,
   transactionType: TxType,
-  proxyArgs: any
+  proxyArgs: object
 ) => await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
 
-export async function generateFeePaymentSignature(
-  { relayer, proxySignature, relayerFee, paymentNonce },
-  signerAddress: string,
-  api: AvnApiConfig
-) {
-  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+export async function generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig) {
+  feeData.relayer = AccountUtils.convertToPublicKeyIfNeeded(feeData.relayer);
   const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
-  const proxyProofData = [{ AccountId: user }, { AccountId: relayer }, { MultiSignature: { Sr25519: proxySignature } }];
+  const proxyProofData = [
+    { AccountId: user },
+    { AccountId: feeData.relayer },
+    { MultiSignature: { Sr25519: feeData.proxySignature } }
+  ];
 
   const orderedData = [
     { Text: 'authorization for proxy payment' },
     { SkipEncode: encodeOrderedData(proxyProofData) },
-    { AccountId: relayer },
-    { Balance: relayerFee },
-    { u64: paymentNonce }
+    { AccountId: feeData.relayer },
+    { Balance: feeData.relayerFee },
+    { u64: feeData.paymentNonce }
   ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
@@ -319,8 +326,8 @@ async function signProxyExecuteLeaveNominators({ relayer, nonce, signerAddress, 
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-function encodeOrderedData(data: any[]) {
-  const encodedDataToSign = data.map((d: { [s: string]: unknown } | ArrayLike<unknown>) => {
+function encodeOrderedData(data: object[]) {
+  const encodedDataToSign = data.map(d => {
     const [type, value] = Object.entries(d)[0];
     return type === 'SkipEncode' ? value : registry.createType(type as any, value).toU8a(numTypes.includes(type));
   });
