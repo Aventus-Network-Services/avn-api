@@ -1,6 +1,7 @@
 import { NonceCache } from '../caching';
 import { INonceCacheProvider, NonceCacheType } from '../caching';
 import { Query } from '../apis/query';
+import { LogLevelNames } from 'loglevel';
 
 export enum NonceType {
   Token = 'token',
@@ -40,7 +41,6 @@ export interface NonceCacheOptions {
   cacheProvider?: INonceCacheProvider;
 }
 
-export type LogLevelNames = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'silent';
 export interface AvnApiOptions {
   gateway?: string;
   relayer?: string;
