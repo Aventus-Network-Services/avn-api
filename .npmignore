@@ -1,0 +1,9 @@
+node_modules/
+build/
+.gitignore
+.vscode/
+.eslintignore
+.eslintrc.json
+.prettierignore
+.prettierrc.json
+lib/
