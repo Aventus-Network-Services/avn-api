@@ -14,5 +14,5 @@
     "esModuleInterop": true
   },
   "include": ["lib/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "package.json"]
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }
