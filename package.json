@@ -1,6 +1,6 @@
 {
   "name": "avn-api",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "API wrapper around JSON-RPC calls to the AvN",
   "main": "build/index.js",
   "author": "Aventus Network Services",
@@ -25,6 +25,7 @@
   },
   "scripts": {
     "build": "rm -rf build && tsc",
+    "prepare": "npm run build",
     "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{ts,json}\"",
     "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{ts,json}\"",
     "lint": "eslint . --ext .ts"
