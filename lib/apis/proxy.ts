@@ -36,34 +36,33 @@ const signing = {
   proxyExecuteLeaveNominators: async proxyArgs => await signProxyExecuteLeaveNominators(proxyArgs)
 };
 
-// signing object contains functions called by passing transaction type and the arguments to sign to generateProxySignature
-export const generateProxySignature = async (
-  api: AvnApiConfig,
-  signerAddress: string,
-  transactionType: TxType,
-  proxyArgs: object
-) => await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
+export default class ProxyUtils {
+  // signing object contains functions called by passing transaction type and the arguments to sign to generateProxySignature
+  static async generateProxySignature(api: AvnApiConfig, signerAddress: string, transactionType: TxType, proxyArgs: object) {
+    return await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
+  }
 
-export async function generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig) {
-  feeData.relayer = AccountUtils.convertToPublicKeyIfNeeded(feeData.relayer);
-  const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+  static async generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig) {
+    feeData.relayer = AccountUtils.convertToPublicKeyIfNeeded(feeData.relayer);
+    const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
-  const proxyProofData = [
-    { AccountId: user },
-    { AccountId: feeData.relayer },
-    { MultiSignature: { Sr25519: feeData.proxySignature } }
-  ];
+    const proxyProofData = [
+      { AccountId: user },
+      { AccountId: feeData.relayer },
+      { MultiSignature: { Sr25519: feeData.proxySignature } }
+    ];
 
-  const orderedData = [
-    { Text: 'authorization for proxy payment' },
-    { SkipEncode: encodeOrderedData(proxyProofData) },
-    { AccountId: feeData.relayer },
-    { Balance: feeData.relayerFee },
-    { u64: feeData.paymentNonce }
-  ];
+    const orderedData = [
+      { Text: 'authorization for proxy payment' },
+      { SkipEncode: encodeOrderedData(proxyProofData) },
+      { AccountId: feeData.relayer },
+      { Balance: feeData.relayerFee },
+      { u64: feeData.paymentNonce }
+    ];
 
-  const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
+    const encodedDataToSign = encodeOrderedData(orderedData);
+    return await signData(api, signerAddress, encodedDataToSign);
+  }
 }
 
 async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce, signerAddress, api }) {

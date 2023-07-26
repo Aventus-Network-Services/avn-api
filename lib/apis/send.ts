@@ -2,7 +2,7 @@
 
 import { AccountUtils, EthereumLogEventType, Market, StakingStatus, TxType, Utils } from '../utils';
 import { AvnApiConfig, NonceType, Royalty } from '../interfaces/index';
-import proxyApi = require('./proxy');
+import ProxyUtils from './proxy';
 import BN from 'bn.js';
 import { Awt } from '../awt';
 import { Query } from './query';
@@ -211,7 +211,7 @@ export class Send {
 
       let params = { ...proxyArgs, uniqueId };
 
-      const proxySignature = await proxyApi.generateProxySignature(this.api, this.signerAddress, transactionType, proxyArgs);
+      const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, transactionType, proxyArgs);
       params.proxySignature = proxySignature;
 
       // Only populate paymentInfo if this is a self pay transaction
@@ -273,7 +273,7 @@ export class Send {
     const paymentNonce = await this.api.nonceCache.getNonceAndIncrement(payer, NonceType.Payment, this.queryApi, traceId);
     const relayerFee = await this.getRelayerFee(relayer, payer, transactionType);
     const feePaymentArgs = { relayer, user, proxySignature, relayerFee, paymentNonce, signerAddress: this.signerAddress };
-    const feePaymentSignature = await proxyApi.generateFeePaymentSignature(feePaymentArgs, this.signerAddress, this.api);
+    const feePaymentSignature = await ProxyUtils.generateFeePaymentSignature(feePaymentArgs, this.signerAddress, this.api);
     return { paymentNonce, feePaymentSignature };
   }
 }

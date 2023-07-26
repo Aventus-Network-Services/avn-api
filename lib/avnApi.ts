@@ -11,6 +11,7 @@ import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer, NonceType 
 import { NonceCacheType, InMemoryLock } from './caching';
 import { setLogLevel } from './logger';
 import log from 'loglevel';
+import ProxyUtils from './apis/proxy';
 
 interface Apis {
   query: Query;
@@ -28,8 +29,9 @@ export class AvnApi {
   public version: string;
   public gateway: string;
   public relayer: string;
-  public utils: AccountUtils;
+  public accountUtils: AccountUtils;
   public awtUtils: AwtUtils;
+  public proxyUtils: ProxyUtils;
   public apis: (signerAddress: string) => Promise<Apis>;
 
   public signer: Signer;
@@ -45,8 +47,9 @@ export class AvnApi {
     this.options = options;
     this.version = version;
     this.gateway = gateway;
-    this.utils = AccountUtils;
+    this.accountUtils = AccountUtils;
     this.awtUtils = AwtUtils;
+    this.proxyUtils = ProxyUtils;
 
     if (this.options.signingMode === SigningMode.SuriBased) {
       this.#suri = options.suri || process.env.AVN_SURI;
@@ -166,7 +169,7 @@ function validateOptions(options?: AvnApiOptions) {
   if (options.nonceCacheOptions.nonceCacheType === NonceCacheType.Remote) {
     if (!options.nonceCacheOptions.cacheProvider) {
       throw new Error(
-        "With a remote cache, you must specify a cache provider interface that implements an INonceCacheProvider"
+        'With a remote cache, you must specify a cache provider interface that implements an INonceCacheProvider'
       );
     }
   }
