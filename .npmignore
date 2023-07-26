@@ -1,5 +1,9 @@
 node_modules/
-dist/
+build/
 .gitignore
 .vscode/
+.eslintignore
+.eslintrc.json
+.prettierignore
+.prettierrc.json
 lib/
