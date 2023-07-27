@@ -218,10 +218,11 @@ export class Send {
       throw err;
     } finally {
       log.debug(`[Send]: ${requestId} - Unlocking all locks`);
-      if (proxyNonceData) this.api.nonceCache.unlockNonce(proxyNonceData.lockId, this.signerAddress, nonceType, requestId);
+      if (proxyNonceData)
+        await this.api.nonceCache.unlockNonce(proxyNonceData.lockId, this.signerAddress, nonceType, requestId);
 
       if (paymentNonceData)
-        this.api.nonceCache.unlockNonce(paymentNonceData.lockId, this.signerAddress, NonceType.Payment, requestId);
+        await this.api.nonceCache.unlockNonce(paymentNonceData.lockId, this.signerAddress, NonceType.Payment, requestId);
 
       this.nonceGuard.unlock(lockKey);
     }
