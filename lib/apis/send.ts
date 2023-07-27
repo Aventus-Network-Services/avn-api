@@ -193,44 +193,44 @@ export class Send {
     const lockKey = `${this.signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockKey);
 
-    const uniqueId = this.api.uuid();
-    log.debug(`[Send]: ${uniqueId} - Preparing to send ${transactionType}, ${JSON.stringify(methodArgs)}`);
+    const requestId = this.api.uuid();
+    log.debug(`[Send]: ${requestId} - Preparing to send ${transactionType}, ${JSON.stringify(methodArgs)}`);
     let proxyNonceData: NonceData, paymentNonceData: NonceData;
 
     try {
       // Handle locking of nonces. This is important to prevent multiple instances of the sdk from accessing the same nonce concurrently
       if (nonceType !== NonceType.None && nonceType !== NonceType.Nft) {
-        proxyNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, nonceType, uniqueId);
+        proxyNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, nonceType, requestId);
       }
 
       if (this.api.hasSplitFeeToken() === false) {
-        paymentNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, NonceType.Payment, uniqueId);
+        paymentNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, NonceType.Payment, requestId);
       }
 
-      const proxyNonce = await this.getProxyNonce(nonceType, uniqueId, proxyNonceData, methodArgs.nftId);
-      const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, uniqueId);
+      const proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
+      const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId);
       const response = await this.postRequest(transactionType, params);
 
-      log.debug(`[Send] proxyRequest response ${uniqueId} - (`, new Date(), `): ${response}\n\n`);
+      log.debug(`[Send] proxyRequest response ${requestId} - (`, new Date(), `): ${response}\n\n`);
       return response;
     } catch (err) {
       log.error(`Error sending transaction to the avn gateway: `, err);
       throw err;
     } finally {
-      log.debug(`[Send]: ${uniqueId} - Unlocking all locks`);
-      if (proxyNonceData) this.api.nonceCache.unlockNonce(proxyNonceData.lockId, this.signerAddress, nonceType, uniqueId);
+      log.debug(`[Send]: ${requestId} - Unlocking all locks`);
+      if (proxyNonceData) this.api.nonceCache.unlockNonce(proxyNonceData.lockId, this.signerAddress, nonceType, requestId);
 
       if (paymentNonceData)
-        this.api.nonceCache.unlockNonce(paymentNonceData.lockId, this.signerAddress, NonceType.Payment, uniqueId);
+        this.api.nonceCache.unlockNonce(paymentNonceData.lockId, this.signerAddress, NonceType.Payment, requestId);
 
       this.nonceGuard.unlock(lockKey);
     }
   }
 
   async postRequest(method: TxType, params: any): Promise<string> {
-    const uniqueId = params.uniqueId || this.api.uuid();
+    const requestId = params.requestId || this.api.uuid();
     log.debug(
-      `Sending transaction ${uniqueId} - (`,
+      `Sending transaction ${requestId} - (`,
       new Date(),
       `): ${params.nonce}, ${params.proxySignature}, ${params.user}`
     );
@@ -238,7 +238,7 @@ export class Send {
     const awtToken = await this.awtManager.getToken();
     const response = await this.api
       .axios(awtToken)
-      .post(endpoint, { jsonrpc: '2.0', id: uniqueId, method: method, params: params });
+      .post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
 
     if (!response || !response.data) {
       throw new Error('Invalid server response');
@@ -268,11 +268,11 @@ export class Send {
     return { paymentNonce, feePaymentSignature };
   }
 
-  private async getProxyNonce(nonceType: NonceType, uniqueId: string, proxyNonceData?: NonceData, nftId?: string) {
+  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string) {
     if (nonceType === NonceType.Nft) {
       return await this.queryApi.getNftNonce(nftId);
     } else if (proxyNonceData) {
-      return await this.api.nonceCache.incrementNonce(proxyNonceData, this.signerAddress, nonceType, this.queryApi, uniqueId);
+      return await this.api.nonceCache.incrementNonce(proxyNonceData, this.signerAddress, nonceType, this.queryApi, requestId);
     }
   }
 
@@ -281,12 +281,12 @@ export class Send {
     txType: TxType,
     paymentNonceData: NonceData,
     methodArgs: object,
-    uniqueId: string
+    requestId: string
   ) {
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
     const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, txType, proxyArgs);
-    let params = { ...proxyArgs, uniqueId, user: this.signerAddress, proxySignature };
+    let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature };
 
     // Only populate paymentInfo if this is a self pay transaction
     if (this.api.hasSplitFeeToken() === false) {
@@ -296,7 +296,7 @@ export class Send {
           this.signerAddress,
           NonceType.Payment,
           this.queryApi,
-          uniqueId
+          requestId
         );
 
         const paymentArgs = {
@@ -306,7 +306,7 @@ export class Send {
           proxySignature,
           transactionType: txType
         };
-        const paymentInfo = await this.getPaymentNonceAndSignature(uniqueId, paymentNonce, paymentArgs);
+        const paymentInfo = await this.getPaymentNonceAndSignature(requestId, paymentNonce, paymentArgs);
         params = Object.assign(params, {
           feePaymentSignature: paymentInfo.feePaymentSignature,
           paymentNonce: paymentInfo.paymentNonce,
@@ -314,7 +314,7 @@ export class Send {
         });
       } catch (err) {
         log.error(
-          `[getProxyParams]: ${uniqueId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(
+          `[getProxyParams]: ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(
             methodArgs
           )}`
         );
