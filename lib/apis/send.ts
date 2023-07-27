@@ -257,7 +257,7 @@ export class Send {
   }
 
   async getPaymentNonceAndSignature(
-    traceId: string,
+    requestId: string,
     paymentNonce: number,
     paymentArgs: PaymentArgs
   ): Promise<{ paymentNonce: number; feePaymentSignature: string }> {
