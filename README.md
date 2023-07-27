@@ -111,8 +111,7 @@ async function main() {
     signingMode: SigningMode.SuriBased,
     nonceCacheOptions: {
       nonceCacheType: NonceCacheType.Remote,
-      cacheProvider: *remoteCacheProvider*,
-      sameUserNonceDelayMs: 100,
+      cacheProvider: *remoteCacheProvider*
     },
 
   }
@@ -139,8 +138,7 @@ async function main() {
     signingMode: SigningMode.RemoteSigner,
     nonceCacheOptions: {
       nonceCacheType: NonceCacheType.Remote,
-      cacheProvider: testCacheProvider,
-      sameUserNonceDelayMs: 100,
+      cacheProvider: testCacheProvider
     },
   }
 

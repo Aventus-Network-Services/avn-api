@@ -1,11 +1,9 @@
 import log from 'loglevel';
 export class InMemoryLock {
-  private sameUserNonceDelayMs: number;
   private locks: { [key: string]: { isLocked: boolean; requestQueue: (() => void)[] } };
 
-  constructor(sameUserNonceDelayMs: number) {
+  constructor() {
     this.locks = {};
-    this.sameUserNonceDelayMs = sameUserNonceDelayMs;
   }
 
   lock(key: string): Promise<void> {
