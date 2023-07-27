@@ -145,8 +145,8 @@ export class AvnApi {
   private async buildNonceCache() {
     const cache =
       this.options.nonceCacheOptions.nonceCacheType === NonceCacheType.Remote
-        ? new NonceCache(this.options.nonceCacheOptions.cacheProvider, this.options.nonceCacheOptions.sameUserNonceDelayMs)
-        : new NonceCache(new InMemoryNonceCacheProvider(), this.options.nonceCacheOptions.sameUserNonceDelayMs);
+        ? new NonceCache(this.options.nonceCacheOptions.cacheProvider)
+        : new NonceCache(new InMemoryNonceCacheProvider());
 
     await cache.init();
     return cache;

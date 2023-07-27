@@ -2,7 +2,6 @@ import { NonceType } from '../interfaces/index';
 import { Query } from '../apis/query';
 import { CachedNonceInfo, INonceCacheProvider, NonceData } from './index';
 import { AccountUtils, Utils } from '../utils';
-import { InMemoryLock } from './inMemoryLock';
 import log from 'loglevel';
 
 const TX_PROCESSING_TIME_MS = 120000;
@@ -15,11 +14,9 @@ const EXPIRY_UPDATE_ENUM = {
 
 export class NonceCache {
   private cacheProvider: INonceCacheProvider;
-  private nonceGuard: InMemoryLock;
 
-  constructor(cacheProvider: INonceCacheProvider, sameUserNonceDelayMs: number) {
+  constructor(cacheProvider: INonceCacheProvider) {
     this.cacheProvider = cacheProvider;
-    this.nonceGuard = new InMemoryLock(sameUserNonceDelayMs);
   }
 
   public async init() {
@@ -36,64 +33,52 @@ export class NonceCache {
     return await this.cacheProvider.getNonceData(signerAddress, nonceType);
   }
 
-  public async getNonceAndIncrement(
-    signerAddress: string,
-    nonceType: NonceType,
-    queryApi: Query,
-    traceId: string
-  ): Promise<number> {
+  public async lockNonce(signerAddress: string, nonceType: NonceType, traceId: string): Promise<NonceData> {
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
-
-    log.debug(`[NonceCache]: ${traceId} - getNonceAndIncrement ${signerAddress} (${nonceType})`);
-    const lockTraceId = `${signerAddress}${nonceType}`;
-    await this.nonceGuard.lock(lockTraceId);
-
-    log.debug(`[NonceCache]: ${traceId} - getNonceAndLock ${signerAddress} (${nonceType})`);
+    log.debug(`[lockNonce]: ${traceId} - Locking nonce. signerAddress: ${signerAddress}, nonceType: ${nonceType}`);
 
     let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
     if (!cachedNonceInfo) throw new Error(`${traceId} - Nonce not initialised for user ${signerAddress}, type: ${nonceType}`);
 
-    try {
-      if (cachedNonceInfo.lockAquired === false) {
-        log.debug(`[NonceCache]: ${traceId} - Nonce for ${signerAddress} (${nonceType}) is locked.`);
-        cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType, traceId);
-      }
-
-      return await this.validateNonceAndIncrement(
-        cachedNonceInfo.data.lockId,
-        signerAddress,
-        nonceType,
-        cachedNonceInfo.data,
-        queryApi,
-        traceId
-      );
-    } catch (err) {
-      log.error(`[NonceCache]: ${traceId} - Error getting nonce from cache: ${err.toString()}`);
-      throw err;
-    } finally {
-      // whatever happens, release the locks
-      log.debug(`[NonceCache]: ${traceId} - Unlocking all locks`);
-      await this.cacheProvider.unlockNonce(signerAddress, nonceType);
-      this.nonceGuard.unlock(lockTraceId);
+    if (cachedNonceInfo.lockAquired === false) {
+      log.debug(`[lockNonce]: ${traceId} - Nonce is already locked. signerAddress: ${signerAddress}, nonceType: ${nonceType}`);
+      cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType, traceId);
     }
+
+    return cachedNonceInfo.data;
   }
 
-  private async validateNonceAndIncrement(
-    lockId: string,
+  public async incrementNonce(
+    nonceData: NonceData,
     signerAddress: string,
     nonceType: NonceType,
-    nonceData: NonceData,
     queryApi: Query,
     traceId: string
   ): Promise<number> {
-    const nonceIsExpired = nonceData.lastUpdated == undefined || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
+    try {
+      signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+      const nonceIsExpired = nonceData.lastUpdated == undefined || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
-    if (nonceIsExpired) {
-      log.debug(`[validateNonceAndIncrement]: Nonce expired. Last updated: ${nonceData.lastUpdated}. Now: `, Date.now());
-      return await this.refreshNonceFromChain(lockId, signerAddress, nonceType, nonceData, queryApi, traceId);
-    } else {
-      return (await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.UpdateExpiry)).nonce;
+      if (nonceIsExpired) {
+        log.debug(`[incrementNonce]: : ${traceId} - Nonce expired. Last updated: ${nonceData.lastUpdated}. Now: `, Date.now());
+        return await this.refreshNonceFromChain(nonceData.lockId, signerAddress, nonceType, nonceData, queryApi, traceId);
+      }
+
+      return (
+        await this.cacheProvider.incrementNonce(nonceData.lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.UpdateExpiry)
+      ).nonce;
+    } catch (err) {
+      log.error(`[incrementNonce]: ${traceId} - Error incrementing nonce in cache: `, err);
+      throw err;
     }
+  }
+
+  public async unlockNonce(lockId: string, signerAddress: string, nonceType: NonceType, traceId: string): Promise<void> {
+    signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+    log.debug(
+      `[unlockNonce] ${traceId}: Unlocking nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
+    );
+    await this.cacheProvider.unlockNonce(lockId, signerAddress, nonceType);
   }
 
   private async refreshNonceFromChain(
