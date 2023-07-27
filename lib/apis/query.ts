@@ -189,6 +189,11 @@ export class Query {
     return await this.postRequest<StakingStatus>(this.api, 'getStakingStatus', { accountId: stakerAddress });
   }
 
+  async getStakerRewardsEarned(accountId: string, fromTimestamp: string = null, toTimestamp: string = null): Promise<string> {
+    Utils.validateAccount(accountId);
+    return await this.postRequest<string>(this.api, 'getStakerRewardsEarned', { accountId, fromTimestamp, toTimestamp });
+  }
+
   async getValidatorsToNominate(): Promise<string[]> {
     return await this.postRequest<string[]>(this.api, 'getValidatorsToNominate');
   }

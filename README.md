@@ -1,14 +1,20 @@
 # Quick Start
 
+## Install
+
+```shell
+$ npm i avn-api
+```
+
 ## Access
 Any account wishing to access the AvN gateway must initially hold a minimum of 1 AVT. Once a transaction has been sent sucessfully, the minimum balance restriction will be removed.
 
 ## Usage
-This SDK can be used in 2 modes:
- - Single user mode (default): In this mode, the sdk acts as a single account wallet.
- - Multi user mode: In this mode, multiple users can use the same instance of the sdk to interact with the Avn gateway.
+This SDK can be used in 2 modes as defined in the `SetupMode` enum:
+ - Single user mode (default): In this mode, the SDK acts as a single account wallet.
+ - Multi user mode: In this mode, multiple users can use the same instance of the SDK to interact with the Avn gateway.
 
- To set one of this mode, pass in the following options when creating an instance of the sdk
+ To set one of these mode, pass in the following options when creating an instance of the SDK
  ```
  import { AvnApi, SetupMode } from 'avn-api';
 
@@ -18,11 +24,11 @@ This SDK can be used in 2 modes:
  ```
 
 ### Signing
-There are 2 options to choose from when configuring the signing behaviour of the sdk:
- - Suri based signer (default): In this mode, the user must set their `SURI` either via an environment variable or as part of the options (see `Accounts` below). This SURI will be used to sign messages required by the sdk. **This is only applicable in single user mode**.
- - Remote signer: In this mode, the caller will set a function that will be called by the sdk when it requires a signature. The sdk will not have access to the signer's SURI. This option can be selected for *single user* and *multi user* modes.
+There are 2 options to choose from when configuring the signing behaviour of the SDK:
+ - Suri based signer (default): In this mode, the user must set their `SURI` either via an environment variable or as part of the options (see `Accounts` below). This SURI will be used to sign messages such as AWT tokens or transactions. **This is only applicable in single user mode**.
+ - Remote signer: In this mode, the caller will set a function that will be called by the SDK when it requires a signature. The SDK will not have access to the signer's SURI. This option can be selected for *single user* and *multi user* modes.
 
- To set one of this mode, pass in the following options when creating an instance of the sdk
+ To set one of these mode, pass in the following options when creating an instance of the sdk
  ```
  import { AvnApi, SigningMode } from 'avn-api';
 
@@ -31,11 +37,11 @@ There are 2 options to choose from when configuring the signing behaviour of the
  ```
 
 ### Nonce caching
-Part of the sdk functionality is to send transactions via the Avn gateway to the Avn parachain. These transactions require various nonces to be specified to ensure they are safe from replay attacks. The sdk supports 2 types of nonce caching:
-- Local cache (default): this is an in-memory cache attached to the single instance of the sdk. This setup **is not recommended** for setups where there multiple instances of the sdk processing the same user requests. Example: a multi pod setup running a backend for the same frontend application.
-- Remote cache: this allows the user to specify a remote cache [via an INonceCacheProvider interface](./lib/caching/interfaces.ts) enabling multiple separate intances of the sdk to access the same nonce cache. If this mode is selected, a `cacheProvider` must be specified in the options. Please see [this provider](./lib/caching/inMemoryNonceCacheProvider.ts) to get an idea of how to implement one.
+Part of the sdk functionality is to send transactions via the AvN gateway to the AvN parachain. These transactions require various nonces to be specified to ensure they are safe from replay attacks. This SDK supports 2 types of nonce caching:
+- Local cache (default): this is an in-memory cache attached to the single instance of the sdk. This setup **is not recommended** if there are multiple instances of the SDK processing the same user requests. Example: a multi pod setup running multiple backends for the same frontend application.
+- Remote cache: this allows the user to specify a remote cache [via an INonceCacheProvider interface](./lib/caching/interfaces.ts) enabling multiple separate intances of the SDK to access the same nonce storage. If this mode is selected, a `cacheProvider` must be specified in the options. Please see [this provider](./lib/caching/inMemoryNonceCacheProvider.ts) to get started on how to implement one.
 
-To set one of this mode, pass in the following options when creating an instance of the sdk
+To set one of these modes, pass in the following options when creating an instance of the SDK
  ```
  import { AvnApi, NonceCacheType } from 'avn-api';
 
@@ -47,7 +53,7 @@ To set one of this mode, pass in the following options when creating an instance
  })
  ```
 
-## Accounts
+### Accounts
 Accounts can be imported or generated by the API\
 In *Suri based signing mode*, an account can then be assigned by any of the following:
 - setting the `AVN_SURI` environment variable, eg: \
@@ -57,16 +63,10 @@ In *Suri based signing mode*, an account can then be assigned by any of the foll
 
 _**Note:** Always keep your mnemonic/seed safe and private. If compromised you could lose all your account's funds._
 
-## Install
-
-```shell
-$ npm i avn-api
-```
-
 ## Basic Usage
 
 ```javascript
-const AvnApi = require('avn-api');
+const {AvnApi, SetupMode, SigningMode, NonceCacheType} = require('avn-api');
 
 // The AvN gateway endpoint:
 const AVN_GATEWAY_URL = 'https://...';
@@ -83,27 +83,44 @@ const USER_ADDRESS = '5B4C9...'
 async function main() {
   // ******* OPTIONS *******
   // By default, the sdk will run in SingleUser mode with a SuriBased signer and Local nonce cache so we only need to set a SURI.
-  const options = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f'};
+  const options = {
+    suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f'
+  };
+
   // For split fee functionality we can specify the payer in the options object.
-  const splitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', payerAddress: PAYER };
+  const splitFeeOptions = {
+    suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', payerAddress: PAYER
+  };
+
   // If a default payer account is added we can simply set the hasPayer flag to true.
-  const defaultSplitFeeOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', hasPayer: true };
+  const defaultSplitFeeOptions = {
+    suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', hasPayer: true
+  };
+
   // Relayer defaults to Aventus if none is passed
-  const relayerOptions = { suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', relayer: '5FgyN...' };
+  const relayerOptions = {
+    suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f',
+    relayer: '5FgyN...'
+  };
+
   // Single user setup with a remote cache
   const multiUserOptions = {
     suri: '0x816...',
     relayer: relayer,
     setupMode : SetupMode.SingleUser,
     signingMode: SigningMode.SuriBased,
-    nonceCacheType: NonceCacheType.Remote,
-    cacheProvider: *remoteCacheProvider*
+    nonceCacheOptions: {
+      nonceCacheType: NonceCacheType.Remote,
+      cacheProvider: *remoteCacheProvider*,
+      sameUserNonceDelayMs: 100,
+    },
+
   }
 
+  /* Multi user setup with a remote signer and remote cache */
 
-  // Multi user setup with a remote signer and remote cache
-
-  // A remote signer and a user can be passed in instead of a suri. This function must be able to sign and return a signature
+  // A remote signer and a user can be passed in instead of a suri.
+  // This function must be able to sign and return a signature
   async function signData(encodedDataToSign, signerAddress) {
     // Example:
     //   Make an http call to a KMS to sign encodedData using signerAccount
@@ -120,8 +137,11 @@ async function main() {
     relayer: relayer,
     setupMode : SetupMode.MultiUser,
     signingMode: SigningMode.RemoteSigner,
-    nonceCacheType: NonceCacheType.Remote,
-    cacheProvider: testCacheProvider
+    nonceCacheOptions: {
+      nonceCacheType: NonceCacheType.Remote,
+      cacheProvider: testCacheProvider,
+      sameUserNonceDelayMs: 100,
+    },
   }
 
   // ******* API SETUP *******
@@ -139,13 +159,14 @@ async function main() {
   // Return your account's address:
   const MY_ADDRESS = avnSdk.myAddress();
 
-  // In a Single user, Suri based signing setup, get access to the apis provided by the sdk
+  // In a Single user, Suri based signing setup, you can get access to the apis provided by the SDK without specifying a user address.
   // `userAddress` is ommited because the sdk can calculate it based on the SURI
   const api = await avnSdk.apis()
-  // In a Remote based signing setup, get access to the apis provided by the sdk
+  // In a Remote signing setup, to get access to the apis provided by the SDK, you have to pass in a user address.
+  //This user will be the signer for any transactions or token generated.
   const api = await avnSdk.apis(USER_ADDRESS)
 
-  // View all the public endpoint you can call on the Avn blockchain via the apis:
+  // View all the public endpoint you can call on the AvN blockchain via the apis:
   console.log(api);
 
   // Get information about the connected chain:
@@ -189,24 +210,24 @@ async function main() {
   let requestId = await api.send.transferAvt(recipientPublicKey, avtAmount);
 
   // Poll the status of the AVT transfer:
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // Transfer two 18dp ERC-20 or ERC-777 tokens:
   const tokenAmount = '2000000000000000000';
   requestId = await api.send.transferToken(recipientPublicKey, someToken, tokenAmount);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // Lower three tokens to layer 1:
   const recipientEthereumAddress = '0xfA2Fafc874336F12C80E89e72c8C499cCaba7a46';
   const lowerAmount = '3000000000000000000';
   requestId = await api.send.lowerToken(recipientEthereumAddress, someToken, lowerAmount);
-  const transactionInfo = await confirmTransaction(api, requestId);
+  const transactionInfo = await confirmTransaction(api.poll, requestId);
 
   // Get all available lowers and the data to complete them
   // by Ethereum recipient address:
   console.log(await await api.query.getOutstandingLowersForAccount(recipientEthereumAddress));
-  // or by AvN sender address:
-  console.log(await await api.query.getOutstandingLowersForAccount(MY_ADDRESS));
+  // or by AvN sender public key:
+  console.log(await await api.query.getOutstandingLowersForAccount(publicKey));
 
   // ******* NFT OPERATIONS *******
 
@@ -229,44 +250,44 @@ async function main() {
     }
   ];
   requestId = await api.send.mintSingleNft(externalRef, royalties, AVN_AUTHORITY);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // Get the ID of the freshly minted NFT:
   let nftId = await api.query.getNftId(externalRef);
 
   // List the NFT for sale in fiat:
   requestId = await api.send.listFiatNftForSale(nftId);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // Transfer a sold NFT:
   requestId = await api.send.transferFiatNft(recipientPublicKey, nftId);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
   console.log(await api.query.getNftOwner(nftId)); // Confirm the new owner
 
   // Or cancel the listing:
   requestId = await api.send.cancelFiatNftListing(nftId);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // ******* BATCH NFT OPERATIONS *******
   // Create nft batch
   const totalSupply = 5; // number of nfts available to mint in this batch
   requestId = await api.send.createNftBatch(totalSupply, royalties, AVN_AUTHORITY);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // Mint Batch nft
   const index = 1; // Index of the nft within the batch
   const owner = '5G7B3...'; // New owner address
   const batchId = "batch_id"; // string representing the batch Id
   requestId = await api.send.mintBatchNft(batchId, index, owner, externalRef);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // List Fiat nft Batch for sale
   requestId = await api.send.listFiatNftBatchForSale(batchId);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // End nft Batch sale
   requestId = await api.send.endNftBatchSale(batchId);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // ******* STAKING OPERATIONS *******
   // Get an account's staking information:
@@ -278,26 +299,27 @@ async function main() {
   // Stake one AVT (locks up an amount of stake to begin earning rewards):
   const amountToStake = '1000000000000000000';
   requestId = await api.send.stake(amountToStake);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
-  // Collect any rewards due (pays out the next 250 unpaid stakers for the staking era - callable until that era is emptied):
-  let era = await api.query.getActiveEra();
-  let previousEra = era - 1;
-  requestId = await api.send.payoutStakers(previousEra); // era is optional, if left the latest active era is used
-  await confirmTransaction(api, requestId);
+  // See the amount of staking rewards earned over all time:
+  console.log(await api.query.getStakerRewardsEarned(MY_ADDRESS));
+  // Or during a period of time:
+  const fromTimestamp = 1672531200; // 1st Jan 2023
+  const toTimestamp = 	1685574000; // 1st Jun 2023
+  console.log(await api.query.getStakerRewardsEarned(api.myPublicKey(), fromTimestamp, toTimestamp));
 
   // Unstake half an AVT (unstaked funds no longer accrue rewards and are unlocked after a period of 7 days):
   const amountToUnstake = '500000000000000000';
   requestId = await api.send.unstake(amountToUnstake);
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // Withdraws all previously unlocked AVT back to the user's free AVT balance:
   requestId = await api.send.withdrawUnlocked();
-  await confirmTransaction(api, requestId);
+  await confirmTransaction(api.poll, requestId);
 
   // ******* ACCOUNT OPERATIONS *******
   // Generate a new AvN account (account generation is local and will also work offline):
-  const newAccount = api.utils.generateNewAccount();
+  const newAccount = api.accountUtils.generateNewAccount();
   console.log(newAccount);
 
   // ******* CACHED NONCES *******
