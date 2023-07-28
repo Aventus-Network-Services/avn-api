@@ -215,7 +215,8 @@ export class Send {
       log.debug(`[Send] proxyRequest response ${requestId} - (`, new Date(), `): ${response}\n\n`);
       return response;
     } catch (err) {
-      log.error(`[Send]: ${requestId} - Error sending transaction to the avn gateway: `, err);
+      log.error(`e[Send]: ${requestId} - Error sending transaction to the avn gateway: `, err);
+      log.debug(`[Send]: ${requestId} - Error sending transaction to the avn gateway: `, err);
       if (proxyNonce)
         await this.api.nonceCache.setNonce(proxyNonceData.lockId, proxyNonce - 1, this.signerAddress, nonceType, requestId);
       throw err;
@@ -319,8 +320,13 @@ export class Send {
           payer: this.signerAddress
         });
       } catch (err) {
+        log.debug(
+            `[getProxyParams]: ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(
+              methodArgs
+            )}`
+          );
         log.error(
-          `[getProxyParams]: ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(
+          `e[getProxyParams]: ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(
             methodArgs
           )}`
         );
