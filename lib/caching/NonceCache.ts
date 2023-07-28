@@ -45,6 +45,7 @@ export class NonceCache {
       cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType, requestId);
     }
 
+    log.info(`[lockNonce]: ${requestId} - Response ${JSON.stringify(cachedNonceInfo.data || {})}`);
     return cachedNonceInfo.data;
   }
 
@@ -74,11 +75,15 @@ export class NonceCache {
   }
 
   public async unlockNonce(lockId: string, signerAddress: string, nonceType: NonceType, requestId: string): Promise<void> {
-    signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
-    log.debug(
-      `[unlockNonce] ${requestId}: Unlocking nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
-    );
-    await this.cacheProvider.unlockNonce(lockId, signerAddress, nonceType);
+    try {
+        signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+        log.debug(
+          `[unlockNonce] ${requestId}: Unlocking nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
+        );
+        await this.cacheProvider.unlockNonce(lockId, signerAddress, nonceType);
+    } catch (err) {
+        log.error(`[unlockNonce] ${requestId}: Error unlocking nonce. LockId: ${lockId}, signerAddress: ${signerAddress} nonceType: ${nonceType}`, err);
+    }
   }
 
   private async refreshNonceFromChain(
