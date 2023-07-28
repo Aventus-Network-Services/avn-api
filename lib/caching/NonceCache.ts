@@ -64,7 +64,7 @@ export class NonceCache {
 
       if (nonceIsExpired) {
         log.debug(
-          `[incrementNonce]: : ${requestId} - Nonce expired. Nonce data: ${JSON.stringify(nonceData)}. Now: `,
+          `[incrementNonce]: ${requestId} - Nonce expired. Nonce data: ${JSON.stringify(nonceData)}. Now: `,
           Date.now()
         );
         return await this.refreshNonceFromChain(nonceData.lockId, signerAddress, nonceType, nonceData, queryApi, requestId);
@@ -160,6 +160,6 @@ export class NonceCache {
       }
     }
 
-    throw new Error(`Unable to aquire nonce lock for ${signerAddress} (${nonceType})`);
+    throw new Error(`[waitForLockAndGetNonceInfo]: ${requestId} - Unable to aquire nonce lock for ${signerAddress} (${nonceType})`);
   }
 }
