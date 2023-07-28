@@ -61,7 +61,7 @@ export class NonceCache {
       const nonceIsExpired = nonceData.lastUpdated == undefined || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
       if (nonceIsExpired) {
-        log.debug(`[incrementNonce]: : ${requestId} - Nonce expired. Last updated: ${nonceData.lastUpdated}. Now: `, Date.now());
+        log.debug(`[incrementNonce]: : ${requestId} - Nonce expired. Nonce data: ${JSON.stringify(nonceData)}. Now: `, Date.now());
         return await this.refreshNonceFromChain(nonceData.lockId, signerAddress, nonceType, nonceData, queryApi, requestId);
       }
 
