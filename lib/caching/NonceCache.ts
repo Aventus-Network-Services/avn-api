@@ -45,7 +45,7 @@ export class NonceCache {
       cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType, requestId);
     }
 
-    log.info(`[lockNonce]: ${requestId} - Response ${JSON.stringify(cachedNonceInfo.data || {})}`);
+    log.info(`[lockNonce]: ${requestId} - Response ${JSON.stringify(cachedNonceInfo)}`);
     return cachedNonceInfo.data;
   }
 
