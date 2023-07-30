@@ -233,7 +233,9 @@ export class Send {
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const requestId = params.requestId || this.api.uuid();
-    log.info(new Date(), ` ${requestId} - Sending transaction: nonce: ${params.nonce}, proxySig: ${params.proxySignature}, signer: ${params.user}`
+    log.info(
+      new Date(),
+      ` ${requestId} - Sending transaction: nonce: ${params.nonce}, proxySig: ${params.proxySignature}, signer: ${params.user}`
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
@@ -262,8 +264,7 @@ export class Send {
     const relayerFee = await this.getRelayerFee(relayer, payer, transactionType);
     const feePaymentArgs = { relayer, user, proxySignature, relayerFee, paymentNonce, signerAddress: this.signerAddress };
 
-    log.debug(new Date(), ` ${requestId} - Generating fee payment signature. ${JSON.stringify(feePaymentArgs)}`
-    );
+    log.debug(new Date(), ` ${requestId} - Generating fee payment signature. ${JSON.stringify(feePaymentArgs)}`);
     const feePaymentSignature = await ProxyUtils.generateFeePaymentSignature(feePaymentArgs, this.signerAddress, this.api);
     return feePaymentSignature;
   }
@@ -292,8 +293,7 @@ export class Send {
     // Only populate paymentInfo if this is a self pay transaction
     if (this.api.hasSplitFeeToken() === false) {
       try {
-        log.debug(new Date(), ` ${requestId} - Getting payment info. ${JSON.stringify(paymentNonceData)}`
-        );
+        log.debug(new Date(), ` ${requestId} - Getting payment info. ${JSON.stringify(paymentNonceData)}`);
         paymentNonce = await this.api.nonceCache.incrementNonce(
           paymentNonceData,
           this.signerAddress,
@@ -317,7 +317,9 @@ export class Send {
           payer: this.signerAddress
         });
       } catch (err) {
-        log.error(new Date(), ` ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(methodArgs)}`
+        log.error(
+          new Date(),
+          ` ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(methodArgs)}`
         );
 
         if (paymentNonce)
