@@ -7,7 +7,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
   private nonceMap: { [x: string]: { [x: string]: NonceData } };
   constructor() {
     this.nonceMap = {};
-    this.nonceGuard: new InMemoryLock();
+    this.nonceGuard = new InMemoryLock();
   }
 
   async connect(): Promise<INonceCacheProvider> {
