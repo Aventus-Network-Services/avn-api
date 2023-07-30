@@ -37,7 +37,6 @@ export interface Signer {
 }
 
 export interface NonceCacheOptions {
-  sameUserNonceDelayMs?: number;
   nonceCacheType?: NonceCacheType;
   cacheProvider?: INonceCacheProvider;
 }
