@@ -13,13 +13,13 @@ export class InMemoryLock {
       }
 
       const request = () => {
-        log.debug(`[InMemoryLock] `, new Date(), ` - Locking: ${key}. `, new Date());
+        log.debug(new Date(), ` - Locking resource with key: ${key}.`);
         this.locks[key].isLocked = true;
         resolve();
       };
 
       if (this.locks[key].isLocked) {
-        log.debug(`[InMemoryLock] `, new Date(), ` - ${key} added to lock Queue. `, new Date());
+        log.debug(new Date(), ` - Resource locked, ${key} added to lock Queue.`);
         this.locks[key].requestQueue.push(request);
       } else {
         request();
@@ -28,11 +28,11 @@ export class InMemoryLock {
   }
 
   unlock(key: string) {
-    log.debug(`[InMemoryLock] `, new Date(), ` - Unlocking ${key}. `, new Date());
+    log.debug(new Date(), ` - Unlocking resource: ${key}.`);
 
     const lock = this.locks[key];
     if (!lock) {
-      throw new Error(`No lock found for key: ${key}`);
+      throw new Error(`No resource lock found for key: ${key}`);
     }
 
     lock.isLocked = false;
