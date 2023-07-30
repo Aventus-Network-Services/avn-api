@@ -194,11 +194,12 @@ export class Send {
     await this.nonceGuard.lock(lockKey);
 
     const requestId = this.api.uuid();
-    log.debug(`[Send]: ${requestId} - Preparing to send ${transactionType}, ${JSON.stringify(methodArgs)}`);
-    let proxyNonceData: NonceData, paymentNonceData: NonceData;
+    log.info(`[Send] ${requestId}, `, new Date(), ` - Preparing to send ${transactionType}, ${JSON.stringify(methodArgs)}`);
+    let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number;
 
     try {
-      // Handle locking of nonces. This is important to prevent multiple instances of the sdk from accessing the same nonce concurrently
+      // Handle locking of nonces. This is important to prevent multiple instances of the sdk from
+      // accessing the same nonce concurrently
       if (nonceType !== NonceType.None && nonceType !== NonceType.Nft) {
         proxyNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, nonceType, requestId);
       }
@@ -207,21 +208,24 @@ export class Send {
         paymentNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, NonceType.Payment, requestId);
       }
 
-      const proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
+      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
       const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId);
       const response = await this.postRequest(transactionType, params);
 
-      log.debug(`[Send] proxyRequest response ${requestId} - (`, new Date(), `): ${response}\n\n`);
+      log.info(`[Send] ${requestId}, `, new Date(), ` - Response: ${response}\n\n`);
       return response;
     } catch (err) {
-      log.error(`Error sending transaction to the avn gateway: `, err);
+      log.error(`[Send] ${requestId}, `, new Date(), ` - Error sending transaction to the avn gateway: `, err);
+      if (proxyNonce)
+        await this.api.nonceCache.setNonce(proxyNonceData.lockId, proxyNonce - 1, this.signerAddress, nonceType, requestId);
       throw err;
     } finally {
-      log.debug(`[Send]: ${requestId} - Unlocking all locks`);
-      if (proxyNonceData) this.api.nonceCache.unlockNonce(proxyNonceData.lockId, this.signerAddress, nonceType, requestId);
+      log.debug(`[Send] ${requestId}, `, new Date(), ` - Unlocking all locks`);
+      if (proxyNonceData)
+        await this.api.nonceCache.unlockNonce(proxyNonceData.lockId, this.signerAddress, nonceType, requestId);
 
       if (paymentNonceData)
-        this.api.nonceCache.unlockNonce(paymentNonceData.lockId, this.signerAddress, NonceType.Payment, requestId);
+        await this.api.nonceCache.unlockNonce(paymentNonceData.lockId, this.signerAddress, NonceType.Payment, requestId);
 
       this.nonceGuard.unlock(lockKey);
     }
@@ -229,10 +233,10 @@ export class Send {
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const requestId = params.requestId || this.api.uuid();
-    log.debug(
-      `Sending transaction ${requestId} - (`,
+    log.info(
+      `[Send] ${requestId}, `,
       new Date(),
-      `): ${params.nonce}, ${params.proxySignature}, ${params.user}`
+      ` - Sending transaction: nonce: ${params.nonce}, proxySig: ${params.proxySignature}, signer: ${params.user}`
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
@@ -256,33 +260,36 @@ export class Send {
     return this.feesMap[relayer][payer][transactionType];
   }
 
-  async getPaymentNonceAndSignature(
-    traceId: string,
-    paymentNonce: number,
-    paymentArgs: PaymentArgs
-  ): Promise<{ paymentNonce: number; feePaymentSignature: string }> {
+  async getPaymentSignature(requestId: string, paymentNonce: number, paymentArgs: PaymentArgs): Promise<string> {
     const { relayer, user, payer, proxySignature, transactionType } = paymentArgs;
     const relayerFee = await this.getRelayerFee(relayer, payer, transactionType);
     const feePaymentArgs = { relayer, user, proxySignature, relayerFee, paymentNonce, signerAddress: this.signerAddress };
+
+    log.debug(
+      `[getPaymentSignature] ${requestId}, `,
+      new Date(),
+      ` - Generating fee payment signature. ${JSON.stringify(feePaymentArgs)}`
+    );
     const feePaymentSignature = await ProxyUtils.generateFeePaymentSignature(feePaymentArgs, this.signerAddress, this.api);
-    return { paymentNonce, feePaymentSignature };
+    return feePaymentSignature;
   }
 
   private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string) {
     if (nonceType === NonceType.Nft) {
-      return await this.queryApi.getNftNonce(nftId);
+      return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();
     } else if (proxyNonceData) {
       return await this.api.nonceCache.incrementNonce(proxyNonceData, this.signerAddress, nonceType, this.queryApi, requestId);
     }
   }
 
   private async getProxyParams(
-    proxyNonce: number | string,
+    proxyNonce: number,
     txType: TxType,
     paymentNonceData: NonceData,
     methodArgs: object,
     requestId: string
   ) {
+    let paymentNonce: number;
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
     const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, txType, proxyArgs);
@@ -291,7 +298,12 @@ export class Send {
     // Only populate paymentInfo if this is a self pay transaction
     if (this.api.hasSplitFeeToken() === false) {
       try {
-        const paymentNonce = await this.api.nonceCache.incrementNonce(
+        log.debug(
+          `[getProxyParams] ${requestId}, `,
+          new Date(),
+          ` - Getting payment info. ${JSON.stringify(paymentNonceData)}`
+        );
+        paymentNonce = await this.api.nonceCache.incrementNonce(
           paymentNonceData,
           this.signerAddress,
           NonceType.Payment,
@@ -306,18 +318,28 @@ export class Send {
           proxySignature,
           transactionType: txType
         };
-        const paymentInfo = await this.getPaymentNonceAndSignature(requestId, paymentNonce, paymentArgs);
+
+        const feePaymentSignature = await this.getPaymentSignature(requestId, paymentNonce, paymentArgs);
         params = Object.assign(params, {
-          feePaymentSignature: paymentInfo.feePaymentSignature,
-          paymentNonce: paymentInfo.paymentNonce,
+          feePaymentSignature,
+          paymentNonce,
           payer: this.signerAddress
         });
       } catch (err) {
         log.error(
-          `[getProxyParams]: ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(
-            methodArgs
-          )}`
+          `[getProxyParams] ${requestId}, `,
+          new Date(),
+          ` - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(methodArgs)}`
         );
+
+        if (paymentNonce)
+          await this.api.nonceCache.setNonce(
+            paymentNonceData.lockId,
+            paymentNonce - 1,
+            this.signerAddress,
+            NonceType.Payment,
+            requestId
+          );
         throw err;
       }
     }

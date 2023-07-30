@@ -88,11 +88,9 @@ export class AvnApi {
 
     if (!options.nonceCacheOptions) {
       options.nonceCacheOptions = {
-        sameUserNonceDelayMs: 100,
         nonceCacheType: NonceCacheType.Local
       };
     }
-    options.nonceCacheOptions.sameUserNonceDelayMs = options.nonceCacheOptions.sameUserNonceDelayMs || 100;
     return options;
   }
 
@@ -130,7 +128,7 @@ export class AvnApi {
     // Standard functions
     const awt = new Awt(avnApi, signerAddress, this.options);
     const query = new Query(avnApi, awt);
-    const nonceGuard = new InMemoryLock(this.options.nonceCacheOptions.sameUserNonceDelayMs);
+    const nonceGuard = new InMemoryLock();
     await avnApi.nonceCache.setNonceCacheForUserIfRequired(signerAddress);
 
     return {

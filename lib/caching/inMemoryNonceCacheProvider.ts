@@ -57,7 +57,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
     nonceData.nonce += 1;
     if (updateLastUpdate === true) {
-        nonceData.lastUpdated = Date.now();
+      nonceData.lastUpdated = Date.now();
     }
 
     return nonceData;
@@ -66,9 +66,11 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
   async unlockNonce(lockId: string, signerAddress: string, nonceType: NonceType): Promise<void> {
     const nonceData = this.nonceMap[signerAddress][nonceType];
     if (nonceData.locked !== true || nonceData.lockId !== lockId) {
-        throw new Error(
-          `Invalid attempt to unlock nonce. Current nonce data: ${JSON.stringify(nonceData)}. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
-        );
+      throw new Error(
+        `Invalid attempt to unlock nonce. Current nonce data: ${JSON.stringify(
+          nonceData
+        )}. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
+      );
     }
 
     nonceData.locked = false;
