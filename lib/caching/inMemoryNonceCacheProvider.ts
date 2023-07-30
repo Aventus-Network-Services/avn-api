@@ -1,10 +1,13 @@
 import { CachedNonceInfo, INonceCacheProvider, NonceData } from './index';
 import { NonceType } from '../interfaces';
+import { InMemoryLock } from '../caching';
 
 export class InMemoryNonceCacheProvider implements INonceCacheProvider {
+  private nonceGuard: InMemoryLock;
   private nonceMap: { [x: string]: { [x: string]: NonceData } };
   constructor() {
     this.nonceMap = {};
+    this.nonceGuard: new InMemoryLock();
   }
 
   async connect(): Promise<INonceCacheProvider> {
@@ -31,15 +34,22 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
   }
 
   async getNonceAndLock(signerAddress: string, nonceType: NonceType): Promise<CachedNonceInfo> {
-    const nonceData = this.nonceMap[signerAddress][nonceType];
-    if (nonceData.locked === false) {
-      const lockId = this.getLockId(signerAddress, nonceType, nonceData.nonce);
-      nonceData.locked = true;
-      nonceData.lockId = lockId;
-      return { lockAquired: true, data: nonceData };
-    }
+    const lockKey = `${signerAddress}${nonceType}`;
+    await this.nonceGuard.lock(lockKey);
 
-    return { lockAquired: false, data: undefined };
+    try {
+        const nonceData = this.nonceMap[signerAddress][nonceType];
+        if (nonceData.locked === false) {
+          const lockId = this.getLockId(signerAddress, nonceType, nonceData.nonce);
+          nonceData.locked = true;
+          nonceData.lockId = lockId;
+          return { lockAquired: true, data: nonceData };
+        }
+
+        return { lockAquired: false, data: undefined };
+    } finally {
+        this.nonceGuard.unlock(lockKey);
+    }
   }
 
   async incrementNonce(
