@@ -1,11 +1,9 @@
 import log from 'loglevel';
 export class InMemoryLock {
-  private sameUserNonceDelayMs: number;
   private locks: { [key: string]: { isLocked: boolean; requestQueue: (() => void)[] } };
 
-  constructor(sameUserNonceDelayMs: number) {
+  constructor() {
     this.locks = {};
-    this.sameUserNonceDelayMs = sameUserNonceDelayMs;
   }
 
   lock(key: string): Promise<void> {
@@ -15,13 +13,13 @@ export class InMemoryLock {
       }
 
       const request = () => {
-        log.debug(`[InMemoryLock]: Locking: ${key}. `, new Date());
+        log.debug(`[InMemoryLock] `, new Date(), ` - Locking: ${key}. `, new Date());
         this.locks[key].isLocked = true;
         resolve();
       };
 
       if (this.locks[key].isLocked) {
-        log.debug(`[InMemoryLock]: ${key} added to lock Queue. `, new Date());
+        log.debug(`[InMemoryLock] `, new Date(), ` - ${key} added to lock Queue. `, new Date());
         this.locks[key].requestQueue.push(request);
       } else {
         request();
@@ -30,7 +28,7 @@ export class InMemoryLock {
   }
 
   unlock(key: string) {
-    log.debug(`[InMemoryLock]: Calling Unlock for ${key}. `, new Date());
+    log.debug(`[InMemoryLock] `, new Date(), ` - Unlocking ${key}. `, new Date());
 
     const lock = this.locks[key];
     if (!lock) {
