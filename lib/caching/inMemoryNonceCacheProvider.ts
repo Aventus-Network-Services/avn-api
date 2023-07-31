@@ -34,7 +34,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
   }
 
   async getNonceAndLock(signerAddress: string, nonceType: NonceType): Promise<CachedNonceInfo> {
-    const lockKey = `${signerAddress}${nonceType}`;
+    const lockKey = `memNonceCache-${signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockKey);
 
     try {
