@@ -192,9 +192,10 @@ export class Send {
     // Lock while we are sending the transaction to ensure we maintain a correct order
     const lockKey = `send-${this.signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockKey);
+    log.info(``)
 
     const requestId = this.api.uuid();
-    log.info(`\n\n`, new Date(), ` ${requestId} - Preparing to send ${transactionType} ${JSON.stringify(methodArgs)}`);
+    log.info(new Date(), ` ${requestId} - Preparing to send ${transactionType} ${JSON.stringify(methodArgs)}`);
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number;
 
     try {
@@ -235,7 +236,9 @@ export class Send {
     const requestId = params.requestId || this.api.uuid();
     log.info(
       new Date(),
-      ` ${requestId} - Sending transaction: nonce: ${params.nonce}, proxySig: ${params.proxySignature}, signer: ${params.user}`
+      ` ${requestId} - Sending transaction. proxy nonce: ${params.nonce}, signer: ${params.user}`,
+      params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
+      `, proxySig: ${params.proxySignature}`
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
