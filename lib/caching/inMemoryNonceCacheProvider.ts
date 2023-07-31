@@ -15,7 +15,9 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
   }
 
   async initUserNonceCache(signerAddress: string): Promise<void> {
+    console.log(`initUserNonceCache: ${signerAddress}`)
     if (this.nonceMap[signerAddress] === undefined) {
+        console.log(`... setting up`)
       this.nonceMap[signerAddress] = Object.values(NonceType).reduce(
         (o, key) => ({
           ...o,
