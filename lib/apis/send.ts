@@ -190,7 +190,7 @@ export class Send {
 
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
     // Lock while we are sending the transaction to ensure we maintain a correct order
-    const lockKey = `${this.signerAddress}${nonceType}`;
+    const lockKey = `send-${this.signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockKey);
 
     const requestId = this.api.uuid();
