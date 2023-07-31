@@ -190,8 +190,9 @@ export class Send {
 
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
     // Lock while we are sending the transaction to ensure we maintain a correct order
-    const lockKey = `${this.signerAddress}${nonceType}`;
+    const lockKey = `send-${this.signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockKey);
+    log.info(``)
 
     const requestId = this.api.uuid();
     log.info(new Date(), ` ${requestId} - Preparing to send ${transactionType} ${JSON.stringify(methodArgs)}`);
@@ -212,7 +213,7 @@ export class Send {
       const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId);
       const response = await this.postRequest(transactionType, params);
 
-      log.info(new Date(), ` ${requestId} - Response: ${response}\n\n`);
+      log.info(new Date(), ` ${requestId} - Response: ${response}`);
       return response;
     } catch (err) {
       log.error(new Date(), ` ${requestId} - Error sending transaction to the avn gateway: `, err);
@@ -235,7 +236,9 @@ export class Send {
     const requestId = params.requestId || this.api.uuid();
     log.info(
       new Date(),
-      ` ${requestId} - Sending transaction: nonce: ${params.nonce}, proxySig: ${params.proxySignature}, signer: ${params.user}`
+      ` ${requestId} - Sending transaction. proxy nonce: ${params.nonce}, signer: ${params.user}`,
+      params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
+      `, proxySig: ${params.proxySignature}`
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
