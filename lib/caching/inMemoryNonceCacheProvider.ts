@@ -76,9 +76,6 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
   async unlockNonce(lockId: string, signerAddress: string, nonceType: NonceType): Promise<void> {
     const nonceData = this.nonceMap[signerAddress][nonceType];
     if (nonceData.locked !== true || nonceData.lockId !== lockId) {
-        console.log("nonceData.locked: ", nonceData.locked)
-        console.log("nonceData.lockId: ", nonceData.lockId)
-        console.log("If statement: ", nonceData.locked !== true || nonceData.lockId !== lockId)
       throw new Error(
         `Invalid attempt to unlock nonce. Current nonce data: ${JSON.stringify(
           nonceData
@@ -98,7 +95,8 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
       );
     }
 
-    this.nonceMap[signerAddress][nonceType] = { nonce: nonce, lastUpdated: Date.now(), locked: nonceData.locked };
+    nonceData.nonce = nonce;
+    nonceData.lastUpdated = Date.now();
   }
 
   private getLockId(signerAddress: string, nonceType: NonceType, nonce: number): string {
