@@ -194,7 +194,7 @@ export class Send {
     await this.nonceGuard.lock(lockKey);
 
     const requestId = this.api.uuid();
-    log.info(new Date(), ` ${requestId} - Preparing to send ${transactionType} ${JSON.stringify(methodArgs)}`);
+    log.info(`\n\n`, new Date(), ` ${requestId} - Preparing to send ${transactionType} ${JSON.stringify(methodArgs)}`);
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number;
 
     try {
@@ -212,7 +212,7 @@ export class Send {
       const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId);
       const response = await this.postRequest(transactionType, params);
 
-      log.info(new Date(), ` ${requestId} - Response: ${response}\n\n`);
+      log.info(new Date(), ` ${requestId} - Response: ${response}`);
       return response;
     } catch (err) {
       log.error(new Date(), ` ${requestId} - Error sending transaction to the avn gateway: `, err);
