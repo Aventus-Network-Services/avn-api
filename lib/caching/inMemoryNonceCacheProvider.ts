@@ -30,7 +30,8 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
   // Note: this is a "dirty" read from storage
   async getNonceData(signerAddress: string, nonceType: NonceType): Promise<NonceData | undefined> {
-    return this.nonceMap[signerAddress][nonceType];
+    const userCache = this.nonceMap[signerAddress];
+    return userCache ? userCache[nonceType] : undefined;
   }
 
   async getNonceAndLock(signerAddress: string, nonceType: NonceType): Promise<CachedNonceInfo> {
