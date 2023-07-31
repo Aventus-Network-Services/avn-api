@@ -7,7 +7,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
   private nonceMap: { [x: string]: { [x: string]: NonceData } };
   constructor() {
     this.nonceMap = {};
-    this.nonceGuard: new InMemoryLock();
+    this.nonceGuard = new InMemoryLock();
   }
 
   async connect(): Promise<INonceCacheProvider> {
@@ -30,11 +30,12 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
   // Note: this is a "dirty" read from storage
   async getNonceData(signerAddress: string, nonceType: NonceType): Promise<NonceData | undefined> {
-    return this.nonceMap[signerAddress][nonceType];
+    const userCache = this.nonceMap[signerAddress];
+    return userCache ? userCache[nonceType] : undefined;
   }
 
   async getNonceAndLock(signerAddress: string, nonceType: NonceType): Promise<CachedNonceInfo> {
-    const lockKey = `${signerAddress}${nonceType}`;
+    const lockKey = `memNonceCache-${signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockKey);
 
     try {
@@ -95,7 +96,8 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
       );
     }
 
-    this.nonceMap[signerAddress][nonceType] = { nonce: nonce, lastUpdated: Date.now(), locked: false };
+    nonceData.nonce = nonce;
+    nonceData.lastUpdated = Date.now();
   }
 
   private getLockId(signerAddress: string, nonceType: NonceType, nonce: number): string {
