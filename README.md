@@ -7,7 +7,7 @@ $ npm i avn-api
 ```
 
 ## Access
-Any account wishing to access the AvN gateway must initially hold a minimum of 1 AVT. Once a transaction has been sent sucessfully, the minimum balance restriction will be removed.
+Any account wishing to access the AvN gateway must initially hold a minimum of 1 AVT. Once a transaction has been sent successfully, the minimum balance restriction will be removed.
 
 ## Usage
 This SDK can be used in 2 modes as defined in the `SetupMode` enum:
