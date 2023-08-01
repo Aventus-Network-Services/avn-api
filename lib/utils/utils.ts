@@ -75,7 +75,7 @@ export class Utils {
       const hexNftId = new BN(nftId).toString(16);
       if (hexNftId.length > 64) throw nftId;
 
-      return isHex(nftId) ? new BN(nftId.substring(2), 16).toString(10) : nftId
+      return isHex(nftId) ? new BN(nftId.substring(2), 16).toString(10) : nftId;
     } catch (nftId) {
       throw new Error(`Invalid nftId type: ${nftId}`);
     }
