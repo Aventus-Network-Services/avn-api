@@ -6,7 +6,6 @@ import { NonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
 import { Awt, AwtUtils } from './awt';
 import { AccountUtils, Utils } from './utils';
 import { version } from '../package.json';
-
 import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer, NonceType } from './interfaces';
 import { NonceCacheType, InMemoryLock } from './caching';
 import { setLogLevel } from './logger';
@@ -33,7 +32,6 @@ export class AvnApi {
   public awtUtils: AwtUtils;
   public proxyUtils: ProxyUtils;
   public apis: (signerAddress: string) => Promise<Apis>;
-
   public signer: Signer;
   public myAddress: string;
   public myPublicKey: string;
@@ -83,7 +81,6 @@ export class AvnApi {
     options = options || {};
     options.setupMode = options.setupMode || SetupMode.SingleUser;
     options.signingMode = options.signingMode || SigningMode.SuriBased;
-
     options.defaultLogLevel = options.defaultLogLevel || 'info';
 
     if (!options.nonceCacheOptions) {

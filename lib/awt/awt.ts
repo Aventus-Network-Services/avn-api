@@ -22,7 +22,7 @@ export class Awt {
   }
 
   async getToken() {
-    if (!AwtUtils.tokenAgeIsValid(this.awtToken)) {
+    if (AwtUtils.tokenAgeIsValid(this.awtToken) === false) {
       log.debug(` - Awt token for ${this.signerAddress} has expired, refreshing`);
       this.awtToken = await AwtUtils.generateAwtToken(this.splitFeeOptions, {
         sign: this.apiSigner,
