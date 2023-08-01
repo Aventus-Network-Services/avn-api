@@ -153,7 +153,7 @@ export class NonceCache {
     nonceType: string,
     requestId: string
   ): Promise<CachedNonceInfo> {
-    log.debug(new Date(), ` ${requestId} - Wait for nonce to be unlocked. Max wait: ${MAX_NONCE_LOCK_TIME_MS}ms`);
+    log.debug(new Date(), ` ${requestId} - Waiting for nonce to be unlocked. Max wait: ${MAX_NONCE_LOCK_TIME_MS}ms`);
     for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);

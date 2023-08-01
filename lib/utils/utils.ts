@@ -68,14 +68,14 @@ export class Utils {
     }
   }
 
-  static validateNftId(nftId: string) {
+  static formatNftId(nftId: string) {
     try {
-      if (isHex(nftId)) return new BN(nftId.substring(2), 16).toString(10);
-      else {
-        const hexNftId = new BN(nftId).toString(16);
-        if (hexNftId.length <= 64) return nftId;
-        else throw nftId;
-      }
+      if (!nftId) throw nftId;
+
+      const hexNftId = new BN(nftId).toString(16);
+      if (hexNftId.length > 64) throw nftId;
+
+      return isHex(nftId) ? new BN(nftId.substring(2), 16).toString(10) : nftId;
     } catch (nftId) {
       throw new Error(`Invalid nftId type: ${nftId}`);
     }
