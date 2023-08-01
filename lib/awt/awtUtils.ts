@@ -77,7 +77,6 @@ export class AwtUtils {
       const awtToken = JSON.parse(Buffer.from(awtTokenBase64, 'base64').toString('ascii'));
       const issuedAt = new Date(awtToken.iat);
       const tokenAge = new Date().getTime() - issuedAt.getTime();
-
       return tokenAge >= 0 && tokenAge < MAX_TOKEN_AGE_MSEC;
     } catch (err) {
       console.error(`Error checking the age of the awt token: ${err}`);
