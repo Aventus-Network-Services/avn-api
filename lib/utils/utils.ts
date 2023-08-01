@@ -68,7 +68,7 @@ export class Utils {
     }
   }
 
-  static validateNftId(nftId: string) {
+  static formatNftId(nftId: string) {
     try {
       if (!nftId) throw nftId;
 
