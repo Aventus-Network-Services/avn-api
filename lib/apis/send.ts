@@ -21,6 +21,17 @@ interface PaymentArgs {
   transactionType: TxType;
 }
 
+interface ProxyParams {
+  requestId: string;
+  user: string;
+  proxySignature: string;
+  relayer: string;
+  nonce: number;
+  feePaymentSignature?: string;
+  paymentNonce?: number;
+  payer?: string;
+}
+
 export class Send {
   private api: AvnApiConfig;
   private awtManager: Awt;
@@ -196,7 +207,7 @@ export class Send {
 
     const requestId = this.api.uuid();
     log.info(new Date(), ` ${requestId} - Preparing to send ${transactionType} ${JSON.stringify(methodArgs)}`);
-    let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number;
+    let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
 
     try {
       // Handle locking of nonces. This is important to prevent multiple instances of the sdk from
@@ -211,14 +222,16 @@ export class Send {
 
       proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
       const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId);
+      paymentNonce = params?.paymentNonce;
+
       const response = await this.postRequest(transactionType, params);
 
       log.info(new Date(), ` ${requestId} - Response: ${response}`);
       return response;
     } catch (err) {
       log.error(new Date(), ` ${requestId} - Error sending transaction to the avn gateway: `, err);
-      if (proxyNonce)
-        await this.api.nonceCache.setNonce(proxyNonceData.lockId, proxyNonce - 1, this.signerAddress, nonceType, requestId);
+      await this.decrementNonceIfRequired(proxyNonceData.lockId, nonceType, requestId, proxyNonce);
+      await this.decrementNonceIfRequired(paymentNonceData.lockId, NonceType.Payment, requestId, paymentNonce);
       throw err;
     } finally {
       log.debug(new Date(), ` ${requestId} - Unlocking all locks`);
@@ -288,7 +301,7 @@ export class Send {
     paymentNonceData: NonceData,
     methodArgs: object,
     requestId: string
-  ) {
+  ): Promise<ProxyParams> {
     let paymentNonce: number;
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
@@ -327,18 +340,22 @@ export class Send {
           ` ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(methodArgs)}`
         );
 
-        if (paymentNonce)
-          await this.api.nonceCache.setNonce(
-            paymentNonceData.lockId,
-            paymentNonce - 1,
-            this.signerAddress,
-            NonceType.Payment,
-            requestId
-          );
+        await this.decrementNonceIfRequired(paymentNonceData.lockId, NonceType.Payment, requestId, paymentNonce);
         throw err;
       }
     }
 
     return params;
+  }
+
+  private async decrementNonceIfRequired(
+    lockId: string,
+    nonceType: NonceType,
+    requestId: string,
+    currentNonce?: number
+  ): Promise<void> {
+    if (currentNonce) {
+      await this.api.nonceCache.setNonce(lockId, currentNonce - 1, this.signerAddress, nonceType, requestId);
+    }
   }
 }
