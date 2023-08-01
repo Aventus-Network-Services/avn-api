@@ -20,7 +20,7 @@ export interface INonceCacheProvider {
   connect(): Promise<INonceCacheProvider>;
   // Setup a new cache object for the user. This will only be called once per user during the initialisation of the 'apis()'
   initUserNonceCache(signerAddress: string): Promise<void>;
-  // Lock the nonce and return a nonce info
+  // Lock the nonce and return the nonce info
   getNonceAndLock(signerAddress: string, nonceType: string): Promise<CachedNonceInfo>;
   // Read the current nonce data.
   getNonceData(signerAddress: string, nonceType: string): Promise<NonceData>;

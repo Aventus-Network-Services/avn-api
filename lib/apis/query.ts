@@ -155,7 +155,7 @@ export class Query {
   }
 
   async getNftNonce(nftId: string): Promise<string> {
-    nftId = Utils.validateNftId(nftId);
+    nftId = Utils.formatNftId(nftId);
     return await this.postRequest<string>(this.api, 'getNftNonce', { nftId });
   }
 
@@ -170,7 +170,7 @@ export class Query {
   }
 
   async getNftOwner(nftId: string): Promise<string> {
-    nftId = Utils.validateNftId(nftId);
+    nftId = Utils.formatNftId(nftId);
     return await this.postRequest<string>(this.api, 'getNftOwner', { nftId });
   }
 

@@ -90,7 +90,7 @@ export class Send {
   }
 
   async mintBatchNft(batchId: string, index: number, owner: string, externalRef: string): Promise<string> {
-    batchId = Utils.validateNftId(batchId);
+    batchId = Utils.formatNftId(batchId);
     Utils.validateAccount(owner);
     Utils.validateStringIsPopulated(externalRef);
     const methodArgs = { batchId, index, owner, externalRef };
@@ -99,7 +99,7 @@ export class Send {
   }
 
   async listFiatNftForSale(nftId: string): Promise<string> {
-    nftId = Utils.validateNftId(nftId);
+    nftId = Utils.formatNftId(nftId);
     const market = Market.Fiat;
     const methodArgs = { nftId, market };
 
@@ -107,7 +107,7 @@ export class Send {
   }
 
   async listFiatNftBatchForSale(batchId: string): Promise<string> {
-    batchId = Utils.validateNftId(batchId);
+    batchId = Utils.formatNftId(batchId);
     const market = Market.Fiat;
     const methodArgs = { batchId, market };
 
@@ -116,7 +116,7 @@ export class Send {
 
   async transferFiatNft(recipient: string, nftId: string): Promise<string> {
     Utils.validateAccount(recipient);
-    nftId = Utils.validateNftId(nftId);
+    nftId = Utils.formatNftId(nftId);
     recipient = AccountUtils.convertToPublicKeyIfNeeded(recipient);
     const methodArgs = { nftId, recipient };
 
@@ -124,14 +124,14 @@ export class Send {
   }
 
   async endNftBatchSale(batchId: string): Promise<string> {
-    batchId = Utils.validateNftId(batchId);
+    batchId = Utils.formatNftId(batchId);
     const methodArgs = { batchId };
 
     return await this.proxyRequest(methodArgs, TxType.ProxyEndNftBatchSale, NonceType.Batch);
   }
 
   async cancelFiatNftListing(nftId: string): Promise<string> {
-    nftId = Utils.validateNftId(nftId);
+    nftId = Utils.formatNftId(nftId);
     const methodArgs = { nftId };
 
     return await this.proxyRequest(methodArgs, TxType.ProxyCancelListFiatNft, NonceType.Nft);
@@ -275,6 +275,8 @@ export class Send {
   }
 
   private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string) {
+    if (nonceType !== NonceType.Nft && !proxyNonceData) return undefined;
+
     if (nonceType === NonceType.Nft) {
       return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();
     } else if (proxyNonceData) {

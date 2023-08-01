@@ -49,7 +49,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
     updateLastUpdate: boolean
   ): Promise<NonceData> {
     const nonceData = this.nonceMap[signerAddress][nonceType];
-    if (nonceData.locked !== true || nonceData.lockId !== lockId) {
+    if (nonceData.locked === false || nonceData.lockId !== lockId) {
       throw new Error(
         `Invalid attempt to increment lock. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
       );
@@ -65,7 +65,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
   async unlockNonce(lockId: string, signerAddress: string, nonceType: NonceType): Promise<void> {
     const nonceData = this.nonceMap[signerAddress][nonceType];
-    if (nonceData.locked !== true || nonceData.lockId !== lockId) {
+    if (nonceData.locked === false || nonceData.lockId !== lockId) {
       throw new Error(
         `Invalid attempt to unlock nonce. Current nonce data: ${JSON.stringify(
           nonceData
@@ -79,7 +79,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
   async setNonce(lockId: string, signerAddress: string, nonceType: NonceType, nonce: number): Promise<void> {
     const nonceData = this.nonceMap[signerAddress][nonceType];
-    if (nonceData.locked !== true || nonceData.lockId !== lockId) {
+    if (nonceData.locked === false || nonceData.lockId !== lockId) {
       throw new Error(
         `Invalid attempt to set nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
       );
