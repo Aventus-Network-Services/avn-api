@@ -192,7 +192,7 @@ export class Send {
     // Lock while we are sending the transaction to ensure we maintain a correct order
     const lockKey = `send-${this.signerAddress}${nonceType}`;
     await this.nonceGuard.lock(lockKey);
-    log.info(``)
+    log.info(``);
 
     const requestId = this.api.uuid();
     log.info(new Date(), ` ${requestId} - Preparing to send ${transactionType} ${JSON.stringify(methodArgs)}`);
