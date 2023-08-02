@@ -97,7 +97,10 @@ export class AvnApi {
       hasSplitFeeToken: () => this.hasSplitFeeToken(),
       uuid: () => v4(),
       axios: (token: string): AxiosStatic => {
-        log.debug(` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`);
+        log.debug(
+          new Date(),
+          ` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`
+        );
         // Add any middlewares here to configure global axios behaviours
         (Axios as AxiosInstance).defaults.headers.common = { Authorization: `bearer ${token}` };
         return Axios;

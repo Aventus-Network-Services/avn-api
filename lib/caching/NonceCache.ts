@@ -35,25 +35,20 @@ export class NonceCache {
 
   public async lockNonce(signerAddress: string, nonceType: NonceType, requestId: string): Promise<NonceData> {
     signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
-    log.debug(
-      `[lockNonce] ${requestId}, `,
-      new Date(),
-      ` - Locking nonce. signerAddress: ${signerAddress}, nonceType: ${nonceType}`
-    );
+    log.debug(new Date(), ` ${requestId} - Locking nonce. signerAddress: ${signerAddress}, nonceType: ${nonceType}`);
 
     let cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
     if (!cachedNonceInfo) throw new Error(`${requestId} - Nonce not initialised for user ${signerAddress}, type: ${nonceType}`);
 
     if (cachedNonceInfo.lockAquired === false) {
       log.debug(
-        `[lockNonce] ${requestId}, `,
         new Date(),
-        ` - Unable to aquire lock, waiting. signerAddress: ${signerAddress}, nonceType: ${nonceType}`
+        ` ${requestId} - Unable to aquire lock, waiting. signerAddress: ${signerAddress}, nonceType: ${nonceType}`
       );
       cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceType, requestId);
     }
 
-    log.debug(`[lockNonce] ${requestId}, `, new Date(), ` - Response ${JSON.stringify(cachedNonceInfo)}`);
+    log.debug(new Date(), ` ${requestId} - Locked nonce: ${JSON.stringify(cachedNonceInfo)}`);
     return cachedNonceInfo.data;
   }
 
@@ -69,7 +64,7 @@ export class NonceCache {
       const nonceIsExpired = nonceData.lastUpdated == undefined || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
 
       if (nonceIsExpired) {
-        log.debug(`[incrementNonce] ${requestId}, `, new Date(), ` - Nonce expired. Nonce data: ${JSON.stringify(nonceData)}.`);
+        log.debug(new Date(), ` ${requestId} - Nonce expired. Nonce data: ${JSON.stringify(nonceData)}.`);
         return await this.refreshNonceFromChain(nonceData.lockId, signerAddress, nonceType, nonceData, queryApi, requestId);
       }
 
@@ -77,7 +72,7 @@ export class NonceCache {
         await this.cacheProvider.incrementNonce(nonceData.lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.UpdateExpiry)
       ).nonce;
     } catch (err) {
-      log.error(`[incrementNonce] ${requestId}, `, new Date(), ` - Error incrementing nonce in cache: `, err);
+      log.error(new Date(), ` ${requestId} - Error incrementing nonce in cache: `, err);
       throw err;
     }
   }
@@ -86,16 +81,14 @@ export class NonceCache {
     try {
       signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
       log.debug(
-        `[unlockNonce] ${requestId}, `,
         new Date(),
-        ` - Unlocking nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
+        ` ${requestId} - Unlocking nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
       );
       await this.cacheProvider.unlockNonce(lockId, signerAddress, nonceType);
     } catch (err) {
       log.error(
-        `[unlockNonce] ${requestId}, `,
         new Date(),
-        ` - Error unlocking nonce. LockId: ${lockId}, signerAddress: ${signerAddress} nonceType: ${nonceType}`,
+        ` ${requestId} - Error unlocking nonce. LockId: ${lockId}, signerAddress: ${signerAddress} nonceType: ${nonceType}`,
         err
       );
     }
@@ -111,16 +104,14 @@ export class NonceCache {
     try {
       signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
       log.debug(
-        `[setNonce] ${requestId}, `,
         new Date(),
-        ` - Setting nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
+        ` ${requestId} - Setting nonce. LockId: ${lockId}, signerAddress: ${signerAddress}, nonceType: ${nonceType}`
       );
       await this.cacheProvider.setNonce(lockId, signerAddress, nonceType, nonce);
     } catch (err) {
       log.error(
-        `[setNonce] ${requestId}, `,
         new Date(),
-        ` - Error setting nonce. LockId: ${lockId}, signerAddress: ${signerAddress} nonceType: ${nonceType}, nonce: ${nonce}`,
+        ` ${requestId} - Error setting nonce. LockId: ${lockId}, signerAddress: ${signerAddress} nonceType: ${nonceType}, nonce: ${nonce}`,
         err
       );
     }
@@ -141,9 +132,8 @@ export class NonceCache {
       //  - Do not update the expiry
       //  - Give a chance for the chain to create a block
       log.warn(
-        `[refreshNonceFromChain] ${requestId}, `,
         new Date(),
-        ` - Nonce expired but on-chain nonce ${nonceFromChain} is the same as last nonce used ${nonceData.nonce}.`
+        ` ${requestId} - Nonce expired but on-chain nonce ${nonceFromChain} is the same as last nonce used ${nonceData.nonce}.`
       );
       const incrementedNonce = (
         await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceType, EXPIRY_UPDATE_ENUM.DoNotUpade)
@@ -163,16 +153,12 @@ export class NonceCache {
     nonceType: string,
     requestId: string
   ): Promise<CachedNonceInfo> {
-    log.debug(`[waitForLockAndGetNonceInfo] ${requestId}, `, new Date(), ` - Max wait: ${MAX_NONCE_LOCK_TIME_MS}ms`);
+    log.debug(new Date(), ` ${requestId} - Waiting for nonce to be unlocked. Max wait: ${MAX_NONCE_LOCK_TIME_MS}ms`);
     for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
       if (cachedNonceInfo.lockAquired === true) {
-        log.debug(
-          `[waitForLockAndGetNonceInfo] ${requestId}, `,
-          new Date(),
-          ` - Lock aquired. ${JSON.stringify(cachedNonceInfo.data)}\n`
-        );
+        log.debug(new Date(), ` ${requestId} - Lock acquired after ${i} attempts. ${JSON.stringify(cachedNonceInfo.data)}\n`);
         return cachedNonceInfo;
       }
     }
