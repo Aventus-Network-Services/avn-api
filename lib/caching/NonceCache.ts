@@ -158,7 +158,7 @@ export class NonceCache {
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
       const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
       if (cachedNonceInfo.lockAquired === true) {
-        log.debug(new Date(), ` ${requestId} - Lock aquired after ${i} attempts. ${JSON.stringify(cachedNonceInfo.data)}\n`);
+        log.debug(new Date(), ` ${requestId} - Lock acquired after ${i} attempts. ${JSON.stringify(cachedNonceInfo.data)}\n`);
         return cachedNonceInfo;
       }
     }
