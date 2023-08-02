@@ -264,6 +264,10 @@ export class Send {
     try {
       response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
     } catch (err) {
+        log.error("ERROR SENDING")
+        log.error(err, err.response, err.response?.status)
+        log.error(JSON.stringify(err))
+        log.error("ERROR SENDING")
       if (err.response?.status >= 500) {
         log.warn(
           new Date(),
