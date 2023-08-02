@@ -230,8 +230,8 @@ export class Send {
       return response;
     } catch (err) {
       log.error(new Date(), ` ${requestId} - Error sending transaction to the avn gateway: `, err);
-      await this.decrementNonceIfRequired(proxyNonceData.lockId, nonceType, requestId, proxyNonce);
-      await this.decrementNonceIfRequired(paymentNonceData.lockId, NonceType.Payment, requestId, paymentNonce);
+      await this.decrementNonceIfRequired(nonceType, requestId, proxyNonceData?.lockId, proxyNonce);
+      await this.decrementNonceIfRequired(NonceType.Payment, requestId, paymentNonceData?.lockId, paymentNonce);
       throw err;
     } finally {
       log.debug(new Date(), ` ${requestId} - Unlocking all locks`);
@@ -340,7 +340,7 @@ export class Send {
           ` ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(methodArgs)}`
         );
 
-        await this.decrementNonceIfRequired(paymentNonceData.lockId, NonceType.Payment, requestId, paymentNonce);
+        await this.decrementNonceIfRequired(NonceType.Payment, requestId, paymentNonceData.lockId, paymentNonce);
         throw err;
       }
     }
@@ -349,12 +349,12 @@ export class Send {
   }
 
   private async decrementNonceIfRequired(
-    lockId: string,
     nonceType: NonceType,
     requestId: string,
+    lockId?: string,
     currentNonce?: number
   ): Promise<void> {
-    if (currentNonce) {
+    if (lockId && currentNonce) {
       await this.api.nonceCache.setNonce(lockId, currentNonce - 1, this.signerAddress, nonceType, requestId);
     }
   }
