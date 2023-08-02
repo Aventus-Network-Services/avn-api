@@ -8,6 +8,9 @@ import { Awt } from '../awt';
 import { Query } from './query';
 import { InMemoryLock, NonceData } from '../caching';
 import log from 'loglevel';
+import { AxiosResponse } from 'axios';
+
+const RETRY_SEND_INTERVAL_MS: number = 1000;
 
 interface Fees {
   [key: string]: object;
@@ -255,17 +258,28 @@ export class Send {
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
-    const response = await this.api
-      .axios(awtToken)
-      .post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
+    const axios = this.api.axios(awtToken);
 
-    if (!response || !response.data) {
-      throw new Error('Invalid server response');
+    let response: AxiosResponse<any>;
+    try {
+      response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
+    } catch (err) {
+      if (err.response?.status >= 500) {
+        log.warn(
+          new Date(),
+          ` ${requestId} - First attempt at sending transaction to the gateway failed, retrying. Error: `,
+          err
+        );
+        await Utils.sleep(RETRY_SEND_INTERVAL_MS);
+        response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
+      }
     }
 
-    if (response.data.result) {
-      return response.data.result;
+    if (response?.data?.result === null || response?.data?.result === undefined) {
+      throw new Error(`${requestId} - Invalid server response`);
     }
+
+    return response.data.result;
   }
 
   async getRelayerFee(relayer: string, payer: string, transactionType: TxType) {
