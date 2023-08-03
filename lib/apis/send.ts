@@ -272,6 +272,8 @@ export class Send {
         );
         await Utils.sleep(RETRY_SEND_INTERVAL_MS);
         response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
+      } else {
+        throw err;
       }
     }
 
