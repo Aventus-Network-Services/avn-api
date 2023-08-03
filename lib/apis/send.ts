@@ -256,7 +256,7 @@ export class Send {
       params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
       `, proxySig: ${params.proxySignature}`
     );
-    const endpoint = this.api.gateway + '/send1';
+    const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const axios = this.api.axios(awtToken);
 
@@ -264,7 +264,7 @@ export class Send {
     try {
       response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
     } catch (err) {
-      if (err.response?.status >= 400 || err.message === 'TestOnly') {
+      if (err.response?.status >= 500) {
         log.warn(
           new Date(),
           ` ${requestId} - First attempt at sending transaction to the gateway failed, retrying. Error: `,
@@ -272,12 +272,6 @@ export class Send {
         );
         await Utils.sleep(RETRY_SEND_INTERVAL_MS);
         response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
-      } else {
-        log.error("Error sending: ", err)
-        log.error("Response: ", err.response)
-        log.error("Response JSON: ", err.toJSON())
-        log.error("IS 400, ", err.response?.status >= 400)
-        //throw err;
       }
     }
 
