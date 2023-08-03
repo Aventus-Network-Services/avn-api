@@ -274,7 +274,9 @@ export class Send {
         response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
       } else {
         log.error("Error sending: ", err)
-        throw err;
+        log.error("Response: ", err.response)
+        log.error("Response JSON: ", err.toJSON())
+        //throw err;
       }
     }
 
