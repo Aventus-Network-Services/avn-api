@@ -21,6 +21,17 @@ interface PaymentArgs {
   transactionType: TxType;
 }
 
+interface ProxyParams {
+  requestId: string;
+  user: string;
+  proxySignature: string;
+  relayer: string;
+  nonce: number;
+  feePaymentSignature?: string;
+  paymentNonce?: number;
+  payer?: string;
+}
+
 export class Send {
   private api: AvnApiConfig;
   private awtManager: Awt;
@@ -90,7 +101,7 @@ export class Send {
   }
 
   async mintBatchNft(batchId: string, index: number, owner: string, externalRef: string): Promise<string> {
-    batchId = Utils.validateNftId(batchId);
+    batchId = Utils.formatNftId(batchId);
     Utils.validateAccount(owner);
     Utils.validateStringIsPopulated(externalRef);
     const methodArgs = { batchId, index, owner, externalRef };
@@ -99,7 +110,7 @@ export class Send {
   }
 
   async listFiatNftForSale(nftId: string): Promise<string> {
-    nftId = Utils.validateNftId(nftId);
+    nftId = Utils.formatNftId(nftId);
     const market = Market.Fiat;
     const methodArgs = { nftId, market };
 
@@ -107,7 +118,7 @@ export class Send {
   }
 
   async listFiatNftBatchForSale(batchId: string): Promise<string> {
-    batchId = Utils.validateNftId(batchId);
+    batchId = Utils.formatNftId(batchId);
     const market = Market.Fiat;
     const methodArgs = { batchId, market };
 
@@ -116,7 +127,7 @@ export class Send {
 
   async transferFiatNft(recipient: string, nftId: string): Promise<string> {
     Utils.validateAccount(recipient);
-    nftId = Utils.validateNftId(nftId);
+    nftId = Utils.formatNftId(nftId);
     recipient = AccountUtils.convertToPublicKeyIfNeeded(recipient);
     const methodArgs = { nftId, recipient };
 
@@ -124,14 +135,14 @@ export class Send {
   }
 
   async endNftBatchSale(batchId: string): Promise<string> {
-    batchId = Utils.validateNftId(batchId);
+    batchId = Utils.formatNftId(batchId);
     const methodArgs = { batchId };
 
     return await this.proxyRequest(methodArgs, TxType.ProxyEndNftBatchSale, NonceType.Batch);
   }
 
   async cancelFiatNftListing(nftId: string): Promise<string> {
-    nftId = Utils.validateNftId(nftId);
+    nftId = Utils.formatNftId(nftId);
     const methodArgs = { nftId };
 
     return await this.proxyRequest(methodArgs, TxType.ProxyCancelListFiatNft, NonceType.Nft);
@@ -196,7 +207,7 @@ export class Send {
 
     const requestId = this.api.uuid();
     log.info(new Date(), ` ${requestId} - Preparing to send ${transactionType} ${JSON.stringify(methodArgs)}`);
-    let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number;
+    let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
 
     try {
       // Handle locking of nonces. This is important to prevent multiple instances of the sdk from
@@ -211,14 +222,16 @@ export class Send {
 
       proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
       const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId);
+      paymentNonce = params?.paymentNonce;
+
       const response = await this.postRequest(transactionType, params);
 
       log.info(new Date(), ` ${requestId} - Response: ${response}`);
       return response;
     } catch (err) {
       log.error(new Date(), ` ${requestId} - Error sending transaction to the avn gateway: `, err);
-      if (proxyNonce)
-        await this.api.nonceCache.setNonce(proxyNonceData.lockId, proxyNonce - 1, this.signerAddress, nonceType, requestId);
+      await this.decrementNonceIfRequired(nonceType, requestId, proxyNonceData?.lockId, proxyNonce);
+      await this.decrementNonceIfRequired(NonceType.Payment, requestId, paymentNonceData?.lockId, paymentNonce);
       throw err;
     } finally {
       log.debug(new Date(), ` ${requestId} - Unlocking all locks`);
@@ -273,6 +286,8 @@ export class Send {
   }
 
   private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string) {
+    if (nonceType !== NonceType.Nft && !proxyNonceData) return undefined;
+
     if (nonceType === NonceType.Nft) {
       return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();
     } else if (proxyNonceData) {
@@ -286,7 +301,7 @@ export class Send {
     paymentNonceData: NonceData,
     methodArgs: object,
     requestId: string
-  ) {
+  ): Promise<ProxyParams> {
     let paymentNonce: number;
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
@@ -325,18 +340,22 @@ export class Send {
           ` ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(methodArgs)}`
         );
 
-        if (paymentNonce)
-          await this.api.nonceCache.setNonce(
-            paymentNonceData.lockId,
-            paymentNonce - 1,
-            this.signerAddress,
-            NonceType.Payment,
-            requestId
-          );
+        await this.decrementNonceIfRequired(NonceType.Payment, requestId, paymentNonceData.lockId, paymentNonce);
         throw err;
       }
     }
 
     return params;
+  }
+
+  private async decrementNonceIfRequired(
+    nonceType: NonceType,
+    requestId: string,
+    lockId?: string,
+    currentNonce?: number
+  ): Promise<void> {
+    if (lockId && currentNonce) {
+      await this.api.nonceCache.setNonce(lockId, currentNonce - 1, this.signerAddress, nonceType, requestId);
+    }
   }
 }

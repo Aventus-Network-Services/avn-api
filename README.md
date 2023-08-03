@@ -7,7 +7,7 @@ $ npm i avn-api
 ```
 
 ## Access
-Any account wishing to access the AvN gateway must initially hold a minimum of 1 AVT. Once a transaction has been sent sucessfully, the minimum balance restriction will be removed.
+Any account wishing to access the AvN gateway must initially hold a minimum of 1 AVT. Once a transaction has been sent successfully, the minimum balance restriction will be removed.
 
 ## Usage
 This SDK can be used in 2 modes as defined in the `SetupMode` enum:
@@ -39,7 +39,7 @@ There are 2 options to choose from when configuring the signing behaviour of the
 ### Nonce caching
 Part of the sdk functionality is to send transactions via the AvN gateway to the AvN parachain. These transactions require various nonces to be specified to ensure they are safe from replay attacks. This SDK supports 2 types of nonce caching:
 - Local cache (default): this is an in-memory cache attached to the single instance of the sdk. This setup **is not recommended** if there are multiple instances of the SDK processing the same user requests. Example: a multi pod setup running multiple backends for the same frontend application.
-- Remote cache: this allows the user to specify a remote cache [via an INonceCacheProvider interface](./lib/caching/interfaces.ts) enabling multiple separate intances of the SDK to access the same nonce storage. If this mode is selected, a `cacheProvider` must be specified in the options. Please see [this provider](./lib/caching/inMemoryNonceCacheProvider.ts) to get started on how to implement one.
+- Remote cache: this allows the user to specify a remote cache [via an INonceCacheProvider interface](./lib/caching/interfaces.ts) enabling multiple separate instances of the SDK to access the same nonce storage. If this mode is selected, a `cacheProvider` must be specified in the options. Please see [this provider](./lib/caching/inMemoryNonceCacheProvider.ts) to get started on how to implement one.
 
 To set one of these modes, pass in the following options when creating an instance of the SDK
  ```
