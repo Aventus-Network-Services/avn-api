@@ -262,9 +262,10 @@ export class Send {
 
     let response: AxiosResponse<any>;
     try {
+        throw new Error('TestOnly')
       response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
     } catch (err) {
-      if (err.response?.status >= 500) {
+      if (err.response?.status >= 500 || err.message === 'TestOnly') {
         log.warn(
           new Date(),
           ` ${requestId} - First attempt at sending transaction to the gateway failed, retrying. Error: `,
