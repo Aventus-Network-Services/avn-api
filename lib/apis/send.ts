@@ -276,6 +276,7 @@ export class Send {
         log.error("Error sending: ", err)
         log.error("Response: ", err.response)
         log.error("Response JSON: ", err.toJSON())
+        log.error("IS 400, ", err.response?.status >= 400)
         //throw err;
       }
     }
