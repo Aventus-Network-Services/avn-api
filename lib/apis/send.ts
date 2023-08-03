@@ -256,13 +256,12 @@ export class Send {
       params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
       `, proxySig: ${params.proxySignature}`
     );
-    const endpoint = this.api.gateway + '/send';
+    const endpoint = this.api.gateway + '/send1';
     const awtToken = await this.awtManager.getToken();
     const axios = this.api.axios(awtToken);
 
     let response: AxiosResponse<any>;
     try {
-        throw new Error('TestOnly')
       response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
     } catch (err) {
       if (err.response?.status >= 500 || err.message === 'TestOnly') {
