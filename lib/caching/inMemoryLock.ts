@@ -24,7 +24,7 @@ export class InMemoryLock {
         log.debug(new Date(), ` - Resource locked, ${key} added to lock Queue.`);
         this.locks[key].requestQueue.push(request);
       } else {
-        if (Date.now() < this.locks[key].ttl) {
+        if (Date.now() > this.locks[key].ttl) {
           log.debug(new Date(), ` - Resource max lock exceeded for key: ${key}. Unlocking`);
         }
         request();
