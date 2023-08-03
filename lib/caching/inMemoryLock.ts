@@ -1,5 +1,5 @@
 import log from 'loglevel';
-const MAX_LOCK_TIME_MS: number = 1000 * 60 * 5;
+const MAX_LOCK_TIME_MS: number = 1000 * 60 * 2;
 export class InMemoryLock {
   private locks: { [key: string]: { isLocked: boolean; ttl: number; requestQueue: (() => void)[] } };
 
