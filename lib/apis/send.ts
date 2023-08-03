@@ -244,7 +244,8 @@ export class Send {
       if (paymentNonceData)
         await this.api.nonceCache.unlockNonce(paymentNonceData.lockId, this.signerAddress, NonceType.Payment, requestId);
 
-      this.nonceGuard.unlock(lockKey);
+        log.warn("****Locking indefinitely to test auto unlock")
+      //this.nonceGuard.unlock(lockKey);
     }
   }
 
