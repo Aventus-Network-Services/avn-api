@@ -71,16 +71,6 @@ export class Utils {
   static formatNftId(nftId: string) {
     try {
       if (!nftId) throw nftId;
-      // if (isHex(nftId)) {
-      //   const hexNftId = nftId.substring(2);
-      //   if (hexNftId.length > 64) throw nftId;
-      //   return new BN(hexNftId).toString(10);
-      // } else {
-      //   const hexNftId = new BN(nftId).toString(16);
-      //   if (hexNftId.length > 64) throw nftId;
-      //   return nftId;
-      // }
-
       const hexNftId = isHex(nftId) ? nftId.substring(2) : new BN(nftId).toString(16);
       if (hexNftId.length > 64) throw nftId;
       return new BN(hexNftId, 16).toString(10);
