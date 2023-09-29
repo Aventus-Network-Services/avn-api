@@ -71,11 +71,9 @@ export class Utils {
   static formatNftId(nftId: string) {
     try {
       if (!nftId) throw nftId;
-
-      const hexNftId = new BN(nftId).toString(16);
+      const hexNftId = isHex(nftId) ? nftId.substring(2) : new BN(nftId).toString(16);
       if (hexNftId.length > 64) throw nftId;
-
-      return isHex(nftId) ? new BN(nftId.substring(2), 16).toString(10) : nftId;
+      return new BN(hexNftId, 16).toString(10);
     } catch (nftId) {
       throw new Error(`Invalid nftId type: ${nftId}`);
     }
