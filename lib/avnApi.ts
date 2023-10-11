@@ -46,8 +46,6 @@ export class AvnApi {
     this.version = version;
     this.gateway = gateway;
     this.accountUtils = AccountUtils;
-    this.awtUtils = AwtUtils;
-    this.proxyUtils = ProxyUtils;
 
     if (this.options.signingMode === SigningMode.SuriBased) {
       this.#suri = options.suri || process.env.AVN_SURI;
@@ -61,6 +59,9 @@ export class AvnApi {
     setLogLevel(this.options.defaultLogLevel);
 
     if (this.gateway) {
+      this.awtUtils = AwtUtils;
+      this.proxyUtils = ProxyUtils;
+
       const avnApi = await this.buildApiConfig();
 
       if (this.options.setupMode === SetupMode.SingleUser && this.options.signingMode === SigningMode.SuriBased) {
