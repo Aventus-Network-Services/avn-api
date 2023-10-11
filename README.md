@@ -104,7 +104,7 @@ async function main() {
   };
 
   // Single user setup with a remote cache
-  const multiUserOptions = {
+  const singleUserOptions = {
     suri: '0x816...',
     relayer: relayer,
     setupMode : SetupMode.SingleUser,
@@ -126,13 +126,19 @@ async function main() {
     //   and return the signature
   }
 
-  const remoteSignerOptions = {
+  // Note: In single user mode, the user is known in advance so an address is required
+  const remoteSignerSingleUserOptions = {
         sign: (data, signerAddress) => signData(data, signerAddress),
         address: signerAccount
   }
 
+  // Note: In remote signer mode, the signer address is not set in advance
+  const remoteSignerMultiUserOptions = {
+        sign: (data, signerAddress) => signData(data, signerAddress)
+  }
+
   const multiUserOptions = {
-    signer: remoteSignerOptions,
+    signer: remoteSignerMultiUserOptions,
     relayer: relayer,
     setupMode : SetupMode.MultiUser,
     signingMode: SigningMode.RemoteSigner,

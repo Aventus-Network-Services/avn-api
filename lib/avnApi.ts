@@ -180,6 +180,9 @@ function validateOptions(options?: AvnApiOptions) {
       if (typeof options.signer.sign !== 'function') {
         throw new Error('In remote signer mode, you must specify a valid remote signer function');
       }
+      if (options.setupMode === SetupMode.SingleUser && !options.signer.address) {
+        throw new Error('In Single user, remote signer mode, you must specify an address for the signer');
+      }
       break;
     case SigningMode.SuriBased:
       if (options.signer) {
