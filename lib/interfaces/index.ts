@@ -16,7 +16,8 @@ export enum NonceType {
 
 export enum SetupMode {
   SingleUser,
-  MultiUser
+  MultiUser,
+  Offline
 }
 
 export enum SigningMode {

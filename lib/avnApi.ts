@@ -40,7 +40,7 @@ export class AvnApi {
     // Set default values
     options = this.setDefaultOptions(options);
 
-    validateOptions(options);
+    validateOptions(gateway, options);
 
     this.options = options;
     this.version = version;
@@ -157,7 +157,7 @@ export class AvnApi {
   }
 }
 
-function validateOptions(options?: AvnApiOptions) {
+function validateOptions(gatewayUrl: string, options?: AvnApiOptions) {
   if (!options) throw new Error('You must specify a setup mode and a signing mode');
 
   if (options.relayer) {
@@ -188,8 +188,8 @@ function validateOptions(options?: AvnApiOptions) {
       if (options.signer) {
         throw new Error('In suri mode, a remote signer must not be specified');
       }
-      if (!process.env.AVN_SURI && !options.suri) {
-        throw new Error('In suri mode, you must specify a valid suri');
+      if (options.setupMode !== SetupMode.Offline && !process.env.AVN_SURI && !options.suri) {
+        throw new Error('In suri mode, you must specify a valid suri. Run the sdk in offline mode if you do not want to specify a suri or a signer');
       }
       break;
     default:
@@ -198,10 +198,21 @@ function validateOptions(options?: AvnApiOptions) {
 
   switch (options.setupMode) {
     case SetupMode.SingleUser:
+      if (!gatewayUrl) {
+        throw new Error('In Single user mode, you must specify a gateway url');
+      }
       break;
     case SetupMode.MultiUser:
       if (options.signingMode !== SigningMode.RemoteSigner) {
         throw new Error('In multi user mode, you must use a remote signer');
+      }
+      if (!gatewayUrl) {
+        throw new Error('In multi user mode, you must specify a gateway url');
+      }
+      break;
+    case SetupMode.Offline:
+      if (gatewayUrl) {
+        log.warn('Warning: Gateway url is ignored in offline mode');
       }
       break;
     default:
