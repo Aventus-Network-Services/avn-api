@@ -33,7 +33,7 @@ export interface AvnAccount {
 
 export interface Signer {
   sign: ApiSigner;
-  address: string;
+  address?: string;
 }
 
 export interface NonceCacheOptions {
