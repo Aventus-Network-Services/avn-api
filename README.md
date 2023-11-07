@@ -13,14 +13,15 @@ Any account wishing to access the AvN gateway must initially hold a minimum of 1
 This SDK can be used in 2 modes as defined in the `SetupMode` enum:
  - Single user mode (default): In this mode, the SDK acts as a single account wallet.
  - Multi user mode: In this mode, multiple users can use the same instance of the SDK to interact with the Avn gateway.
+ - Offline mode: In this mode, the sdk will not expose any api's to interact with the avn parachain. It will only expose the account utility methods.
 
  To set one of these mode, pass in the following options when creating an instance of the SDK
  ```
  import { AvnApi, SetupMode } from 'avn-api';
 
  const singleUserSdk = new AvnApi( { setupMode : SetupMode.SingleUser } ) // OR
- const multiUserSdk = new AvnApi( { setupMode : SetupMode.MultiUser } )
-
+ const multiUserSdk = new AvnApi( { setupMode : SetupMode.MultiUser } ) // OR
+ const offlineSdk = new AvnApi( { setupMode : SetupMode.Offline } )
  ```
 
 ### Signing
