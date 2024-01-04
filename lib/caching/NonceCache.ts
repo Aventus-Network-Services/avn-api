@@ -180,7 +180,7 @@ export class NonceCache {
     const nonceData = (await this.cacheProvider.getNonceAndLock(signerAddress, nonceType))?.data;
     const nonceIsExpired = this.nonceIsExpired(nonceData);
     if (nonceIsExpired) {
-      log.debug(new Date(), ` ${requestId} - Force unlocking nonce due to expiry. Locked nonce data: ${JSON.stringify(nonceData)}\n`);
+      log.debug(new Date(), ` ${requestId} - Locked nonce has expired, freeing lock. Locked nonce data: ${JSON.stringify(nonceData)}\n`);
       await this.unlockNonce(nonceData.lockId, signerAddress, nonceType, requestId);
     }
   }
