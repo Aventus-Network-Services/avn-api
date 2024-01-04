@@ -190,7 +190,9 @@ function validateOptions(gatewayUrl: string, options?: AvnApiOptions) {
         throw new Error('In suri mode, a remote signer must not be specified');
       }
       if (options.setupMode !== SetupMode.Offline && !process.env.AVN_SURI && !options.suri) {
-        throw new Error('In suri mode, you must specify a valid suri. Run the sdk in offline mode if you do not want to specify a suri or a signer');
+        throw new Error(
+          'In suri mode, you must specify a valid suri. Run the sdk in offline mode if you do not want to specify a suri or a signer'
+        );
       }
       break;
     default:
