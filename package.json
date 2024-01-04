@@ -8,7 +8,6 @@
   "license": "ISC",
   "dependencies": {
     "@polkadot/keyring": "9.7.2",
-    "@polkadot/util-crypto": "9.7.2",
     "@polkadot/types": "9.14.2",
     "axios": "^0.21.4",
     "bn.js": "^5.2.1",
@@ -26,10 +25,6 @@
   },
   "overrides": {
     "@polkadot/keyring": {
-      ".": "9.7.2",
-      "@polkadot/util": "10.4.2"
-    },
-    "@polkadot/util-crypto": {
       ".": "9.7.2",
       "@polkadot/util": "10.4.2"
     },
