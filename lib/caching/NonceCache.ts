@@ -154,7 +154,7 @@ export class NonceCache {
     requestId: string
   ): Promise<CachedNonceInfo> {
     log.debug(new Date(), ` ${requestId} - Waiting for nonce to be unlocked. Max wait: ${MAX_NONCE_LOCK_TIME_MS}ms`);
-    const maxIteration = Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS) + 1;
+    const maxIteration = Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS);
 
     for (let i = 0; i < maxIteration; i++) {
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
