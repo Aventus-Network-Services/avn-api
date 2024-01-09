@@ -61,7 +61,7 @@ export class NonceCache {
   ): Promise<number> {
     try {
       signerAddress = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
-      const nonceIsExpired = nonceData.lastUpdated == undefined || Date.now() - nonceData.lastUpdated >= TX_PROCESSING_TIME_MS;
+      const nonceIsExpired = this.nonceIsExpired(nonceData);
 
       if (nonceIsExpired) {
         log.debug(new Date(), ` ${requestId} - Nonce expired. Nonce data: ${JSON.stringify(nonceData)}.`);
@@ -150,12 +150,20 @@ export class NonceCache {
   // We wait for a maximum of MAX_NONCE_LOCK_TIME_MS until a nonce lock is released
   private async waitForLockAndGetNonceInfo(
     signerAddress: string,
-    nonceType: string,
+    nonceType: NonceType,
     requestId: string
   ): Promise<CachedNonceInfo> {
     log.debug(new Date(), ` ${requestId} - Waiting for nonce to be unlocked. Max wait: ${MAX_NONCE_LOCK_TIME_MS}ms`);
-    for (let i = 0; i < Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS); i++) {
+    const maxIteration = Math.ceil(MAX_NONCE_LOCK_TIME_MS / NONCE_LOCK_POLL_INTERVAL_MS);
+
+    for (let i = 0; i < maxIteration; i++) {
       await Utils.sleep(NONCE_LOCK_POLL_INTERVAL_MS);
+
+      if (i + 1 === maxIteration) {
+        // If this is the last iteration, check if we can force unlock
+        await this.forceUnlockIfNonceIsExpired(signerAddress, nonceType, requestId);
+      }
+
       const cachedNonceInfo = await this.cacheProvider.getNonceAndLock(signerAddress, nonceType);
       if (cachedNonceInfo.lockAquired === true) {
         log.debug(new Date(), ` ${requestId} - Lock acquired after ${i} attempts. ${JSON.stringify(cachedNonceInfo.data)}\n`);
@@ -166,5 +174,18 @@ export class NonceCache {
     throw new Error(
       `[waitForLockAndGetNonceInfo]: ${requestId} - Unable to aquire nonce lock for ${signerAddress} (${nonceType})`
     );
+  }
+
+  private async forceUnlockIfNonceIsExpired(signerAddress: string, nonceType: NonceType, requestId: string) {
+    const nonceData = (await this.cacheProvider.getNonceAndLock(signerAddress, nonceType))?.data;
+    const nonceIsExpired = this.nonceIsExpired(nonceData);
+    if (nonceIsExpired) {
+      log.debug(new Date(), ` ${requestId} - Locked nonce has expired, freeing lock. Locked nonce data: ${JSON.stringify(nonceData)}\n`);
+      await this.unlockNonce(nonceData.lockId, signerAddress, nonceType, requestId);
+    }
+  }
+
+  private nonceIsExpired(nonceData?: NonceData): boolean {
+    return nonceData?.lastUpdated == undefined || Date.now() - nonceData?.lastUpdated >= TX_PROCESSING_TIME_MS;
   }
 }

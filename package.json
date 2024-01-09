@@ -1,15 +1,14 @@
 {
   "name": "avn-api",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "API wrapper around JSON-RPC calls to the AvN",
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
   "author": "Aventus Network Services",
   "license": "ISC",
   "dependencies": {
-    "@polkadot/keyring": "^9.4.3",
-    "@polkadot/util-crypto": "^9.4.3",
-    "@polkadot/types": "^9.4.3",
+    "@polkadot/keyring": "10.4.2",
+    "@polkadot/types": "9.14.2",
     "axios": "^0.21.4",
     "bn.js": "^5.2.1",
     "prettier": "^2.5.1",

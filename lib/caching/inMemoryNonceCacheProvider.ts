@@ -47,7 +47,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
         return { lockAquired: true, data: nonceData };
       }
 
-      return { lockAquired: false, data: undefined };
+      return { lockAquired: false, data: nonceData };
     } finally {
       this.nonceGuard.unlock(lockKey);
     }
