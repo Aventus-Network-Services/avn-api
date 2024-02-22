@@ -77,6 +77,38 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyConfirmTokenLift, NonceType.Confirmation);
   }
 
+  async confirmNftMint(ethereumTransactionHash: string): Promise<string> {
+    Utils.validateEthereumTransactionHash(ethereumTransactionHash);
+    const eventType = EthereumLogEventType.NftMint;
+    const methodArgs = { ethereumTransactionHash, eventType };
+
+    return await this.proxyRequest(methodArgs, TxType.ProxyConfirmNftMint, NonceType.Confirmation);
+  }
+
+  async confirmNftTransfer(ethereumTransactionHash: string): Promise<string> {
+    Utils.validateEthereumTransactionHash(ethereumTransactionHash);
+    const eventType = EthereumLogEventType.NftTransferTo;
+    const methodArgs = { ethereumTransactionHash, eventType };
+
+    return await this.proxyRequest(methodArgs, TxType.ProxyConfirmNftTransfer, NonceType.Confirmation);
+  }
+
+  async confirmNftCancelListing(ethereumTransactionHash: string): Promise<string> {
+    Utils.validateEthereumTransactionHash(ethereumTransactionHash);
+    const eventType = EthereumLogEventType.NftCancelListing;
+    const methodArgs = { ethereumTransactionHash, eventType };
+
+    return await this.proxyRequest(methodArgs, TxType.ProxyConfirmNftCancelListing, NonceType.Confirmation);
+  }
+
+  async confirmNftEndBatchListing(ethereumTransactionHash: string): Promise<string> {
+    Utils.validateEthereumTransactionHash(ethereumTransactionHash);
+    const eventType = EthereumLogEventType.NftEndBatchListing;
+    const methodArgs = { ethereumTransactionHash, eventType };
+
+    return await this.proxyRequest(methodArgs, TxType.ProxyConfirmNftEndBatchListing, NonceType.Confirmation);
+  }
+
   async lowerToken(t1Recipient: string, token: string, amount: string): Promise<string> {
     Utils.validateEthereumAddress(t1Recipient);
     Utils.validateEthereumAddress(token);
