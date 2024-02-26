@@ -48,7 +48,7 @@ export class AvnApi {
     this.accountUtils = AccountUtils;
 
     if (this.options.signingMode === SigningMode.SuriBased) {
-      this.#suri = options.suri || process.env.AVN_SURI;
+      this.#suri = options.suri || process?.env?.AVN_SURI;
       // Prevent the suri from leaking if object is printed
       delete this.options.suri;
     }
@@ -175,7 +175,7 @@ function validateOptions(gatewayUrl: string, options?: AvnApiOptions) {
 
   switch (options.signingMode) {
     case SigningMode.RemoteSigner:
-      if (process.env.AVN_SURI || options.suri) {
+      if (process?.env?.AVN_SURI || options.suri) {
         throw new Error('In remote signer mode, a suri must not be specified');
       }
       if (typeof options.signer.sign !== 'function') {
@@ -189,7 +189,7 @@ function validateOptions(gatewayUrl: string, options?: AvnApiOptions) {
       if (options.signer) {
         throw new Error('In suri mode, a remote signer must not be specified');
       }
-      if (options.setupMode !== SetupMode.Offline && !process.env.AVN_SURI && !options.suri) {
+      if (options.setupMode !== SetupMode.Offline && !process?.env?.AVN_SURI && !options.suri) {
         throw new Error(
           'In suri mode, you must specify a valid suri. Run the sdk in offline mode if you do not want to specify a suri or a signer'
         );
