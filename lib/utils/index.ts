@@ -11,12 +11,21 @@ export enum TxType {
   ProxyAvtTransfer = 'proxyAvtTransfer',
   ProxyTokenTransfer = 'proxyTokenTransfer',
   ProxyConfirmTokenLift = 'proxyConfirmTokenLift',
+
+  // Ethereum events
+  ProxyMintEthereumBatchNft = 'proxyMintEthereumBatchNft',
+  ProxyTransferEthereumNft = 'proxyTransferEthereumNft',
+  ProxyCancelEthereumNftSale = 'proxyCancelEthereumNftSale',
+  ProxyEndEthereumBatchSale = 'proxyEndEthereumBatchSale',
+
   ProxyTokenLower = 'proxyTokenLower',
   ProxyCreateNftBatch = 'proxyCreateNftBatch',
   ProxyMintSingleNft = 'proxyMintSingleNft',
   ProxyMintBatchNft = 'proxyMintBatchNft',
   ProxyListNftOpenForSale = 'proxyListNftOpenForSale',
+  ProxyListEthereumNftForSale = 'proxyListEthereumNftForSale',
   ProxyListNftBatchForSale = 'proxyListNftBatchForSale',
+  ProxyListEthereumNftBatchForSale = 'proxyListEthereumNftBatchForSale',
   ProxyTransferFiatNft = 'proxyTransferFiatNft',
   ProxyCancelListFiatNft = 'proxyCancelListFiatNft',
   ProxyEndNftBatchSale = 'proxyEndNftBatchSale',
@@ -34,7 +43,7 @@ export enum EthereumLogEventType {
   NftMint = 2,
   NftTransferTo = 3,
   NftCancelListing = 4,
-  NftCancelBatchListing = 5
+  NftEndBatchListing = 5
 }
 
 export enum Market {

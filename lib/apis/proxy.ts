@@ -18,13 +18,19 @@ const numTypes = ['AccountId', 'Balance', 'BalanceOf', 'EraIndex', 'u8', 'u32', 
 const signing = {
   proxyAvtTransfer: async proxyArgs => await signProxyTokenTransfer(proxyArgs),
   proxyTokenTransfer: async proxyArgs => await signProxyTokenTransfer(proxyArgs),
-  proxyConfirmTokenLift: async proxyArgs => await signProxyConfirmTokenLift(proxyArgs),
+  proxyConfirmTokenLift: async proxyArgs => await signProxyAddEthereumLog(proxyArgs),
+  proxyMintEthereumBatchNft: async proxyArgs => await signProxyAddEthereumLog(proxyArgs),
+  proxyTransferEthereumNft: async proxyArgs => await signProxyAddEthereumLog(proxyArgs),
+  proxyCancelEthereumNftSale: async proxyArgs => await signProxyAddEthereumLog(proxyArgs),
+  proxyEndEthereumBatchSale: async proxyArgs => await signProxyAddEthereumLog(proxyArgs),
   proxyTokenLower: async proxyArgs => await signProxyTokenLower(proxyArgs),
   proxyCreateNftBatch: async proxyArgs => await signProxyCreateNftBatch(proxyArgs),
   proxyMintSingleNft: async proxyArgs => await signProxyMintSingleNft(proxyArgs),
   proxyMintBatchNft: async proxyArgs => await signProxyMintBatchNft(proxyArgs),
   proxyListNftOpenForSale: async proxyArgs => await signProxyListNftOpenForSale(proxyArgs),
+  proxyListEthereumNftForSale: async proxyArgs => await signProxyListNftOpenForSale(proxyArgs),
   proxyListNftBatchForSale: async proxyArgs => await signProxyListNftBatchForSale(proxyArgs),
+  proxyListEthereumNftBatchForSale: async proxyArgs => await signProxyListNftBatchForSale(proxyArgs),
   proxyTransferFiatNft: async proxyArgs => await signProxyTransferFiatNft(proxyArgs),
   proxyCancelListFiatNft: async proxyArgs => await signProxyCancelListFiatNft(proxyArgs),
   proxyStakeAvt: async proxyArgs => await signProxyNominate(proxyArgs),
@@ -84,7 +90,7 @@ async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxyConfirmTokenLift({ relayer, eventType, ethereumTransactionHash, nonce, signerAddress, api }) {
+async function signProxyAddEthereumLog({ relayer, eventType, ethereumTransactionHash, nonce, signerAddress, api }) {
   relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
