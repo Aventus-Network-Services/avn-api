@@ -159,6 +159,22 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getNftNonce', { nftId });
   }
 
+  async getNftListingStatus(nftId: string): Promise<string> {
+    nftId = Utils.formatNftId(nftId);
+    return await this.postRequest<string>(this.api, 'getNftListingStatus', { nftId });
+  }
+
+  async getBatchListingStatus(batchId: string): Promise<string> {
+    // Nft Ids and Batch Ids have the same format
+    batchId = Utils.formatNftId(batchId);
+    return await this.postRequest<string>(this.api, 'getBatchListingStatus', { batchId });
+  }
+
+  async getNftInfo(nftId: string): Promise<string> {
+    nftId = Utils.formatNftId(nftId);
+    return await this.postRequest<string>(this.api, 'getNftInfo', { nftId });
+  }
+
   async getNftId(externalRef: string): Promise<string> {
     Utils.validateStringIsPopulated(externalRef);
 
