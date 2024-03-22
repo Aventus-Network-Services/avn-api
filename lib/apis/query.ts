@@ -175,6 +175,12 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getNftInfo', { nftId });
   }
 
+  async getBatchInfo(batchId: string): Promise<string> {
+    // Nft Ids and Batch Ids have the same format
+    batchId = Utils.formatNftId(batchId);
+    return await this.postRequest<string>(this.api, 'getBatchInfo', { batchId });
+  }
+
   async getNftId(externalRef: string): Promise<string> {
     Utils.validateStringIsPopulated(externalRef);
 
