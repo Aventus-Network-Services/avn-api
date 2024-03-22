@@ -55,7 +55,7 @@ interface AvnNftInfo {
   infoId: number
   uniqueExternalRef: string
   royalties: Royalty[]
-  marketpalceId: string
+  marketplaceId: string
 }
 
 interface AvnBatchInfo {
@@ -63,7 +63,7 @@ interface AvnBatchInfo {
   totalSupply: number
   infoId: number
   royalties: Royalty[]
-  marketpalceId: string
+  marketplaceId: string
 }
 
 
