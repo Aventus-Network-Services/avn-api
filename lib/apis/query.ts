@@ -97,11 +97,7 @@ export class Query {
       throw new Error('Invalid server response');
     }
 
-    if (response.data.result) {
-      return response.data.result;
-    }
-
-    throw new Error(`Error processing query. Response: ${JSON.stringify(response.data)}`);
+    return response.data.result;
   }
 
   async getRequest<R>(api: AvnApiConfig, accountAddress: string, handler = 'query'): Promise<R> {
