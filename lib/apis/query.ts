@@ -184,12 +184,12 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getBatchListingStatus', { batchId });
   }
 
-  async getNftInfo(nftId: string): Promise<AvnNftInfo | undefined> {
+  async getNftInfo(nftId: string): Promise<AvnNftInfo | null> {
     nftId = Utils.formatNftId(nftId);
     return await this.postRequest<AvnNftInfo>(this.api, 'getNftInfo', { nftId });
   }
 
-  async getBatchInfo(batchId: string): Promise<AvnBatchInfo | undefined> {
+  async getBatchInfo(batchId: string): Promise<AvnBatchInfo | null> {
     // Nft Ids and Batch Ids have the same format
     batchId = Utils.formatNftId(batchId);
     return await this.postRequest<AvnBatchInfo>(this.api, 'getBatchInfo', { batchId });
