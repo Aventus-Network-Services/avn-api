@@ -50,22 +50,21 @@ interface LowerClaimData {
 }
 
 interface AvnNftInfo {
-  ownerAddress: string
-  nonce: number
-  infoId: number
-  uniqueExternalRef: string
-  royalties: Royalty[]
-  marketplaceId: string
+  ownerAddress: string;
+  nonce: number;
+  infoId: number;
+  uniqueExternalRef: string;
+  royalties: Royalty[];
+  marketplaceId: string;
 }
 
 interface AvnBatchInfo {
-  ownerAddress: string
-  totalSupply: number
-  infoId: number
-  royalties: Royalty[]
-  marketplaceId: string
+  ownerAddress: string;
+  totalSupply: number;
+  infoId: number;
+  royalties: Royalty[];
+  marketplaceId: string;
 }
-
 
 export class Query {
   private api: AvnApiConfig;
