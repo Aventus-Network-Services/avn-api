@@ -2,7 +2,7 @@
 
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
-import { AvnApiConfig, NonceType } from '../interfaces';
+import { AvnApiConfig, NonceType, Royalty } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
 
@@ -49,6 +49,23 @@ interface LowerClaimData {
   merklePath: string[];
 }
 
+interface AvnNftInfo {
+  ownerAddress: string;
+  nonce: number;
+  infoId: number;
+  uniqueExternalRef: string;
+  royalties: Royalty[];
+  marketplaceId: string;
+}
+
+interface AvnBatchInfo {
+  ownerAddress: string;
+  totalSupply: number;
+  infoId: number;
+  royalties: Royalty[];
+  marketplaceId: string;
+}
+
 export class Query {
   private api: AvnApiConfig;
   private awtManager: Awt;
@@ -79,11 +96,7 @@ export class Query {
       throw new Error('Invalid server response');
     }
 
-    if (response.data.result) {
-      return response.data.result;
-    }
-
-    throw new Error(`Error processing query. Response: ${JSON.stringify(response.data)}`);
+    return response.data.result;
   }
 
   async getRequest<R>(api: AvnApiConfig, accountAddress: string, handler = 'query'): Promise<R> {
@@ -170,9 +183,15 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getBatchListingStatus', { batchId });
   }
 
-  async getNftInfo(nftId: string): Promise<string> {
+  async getNftInfo(nftId: string): Promise<AvnNftInfo | null> {
     nftId = Utils.formatNftId(nftId);
-    return await this.postRequest<string>(this.api, 'getNftInfo', { nftId });
+    return await this.postRequest<AvnNftInfo>(this.api, 'getNftInfo', { nftId });
+  }
+
+  async getBatchInfo(batchId: string): Promise<AvnBatchInfo | null> {
+    // Nft Ids and Batch Ids have the same format
+    batchId = Utils.formatNftId(batchId);
+    return await this.postRequest<AvnBatchInfo>(this.api, 'getBatchInfo', { batchId });
   }
 
   async getNftId(externalRef: string): Promise<string> {
