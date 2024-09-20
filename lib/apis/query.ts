@@ -253,7 +253,12 @@ export class Query {
     return await this.postRequest<StakingStats>(this.api, 'getStakingStats');
   }
 
-  async getRelayerFees(relayerAddress: string, currencyToken: string, userAddress: string, transactionType?: TxType): Promise<RelayerFees | number> {
+  async getRelayerFees(
+    relayerAddress: string,
+    currencyToken: string,
+    userAddress: string,
+    transactionType?: TxType
+  ): Promise<RelayerFees | number> {
     Utils.validateAccount(relayerAddress);
     if (userAddress) Utils.validateAccount(userAddress);
 

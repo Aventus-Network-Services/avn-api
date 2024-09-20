@@ -126,7 +126,7 @@ export class AvnApi {
         }
         return this.paymentCurrencyToken;
       },
-      nonceCache: await this.buildNonceCache(),
+      nonceCache: await this.buildNonceCache()
     };
 
     return avnApi;

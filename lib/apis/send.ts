@@ -274,7 +274,14 @@ export class Send {
       }
 
       proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
-      const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId, currencyToken);
+      const params = await this.getProxyParams(
+        proxyNonce,
+        transactionType,
+        paymentNonceData,
+        methodArgs,
+        requestId,
+        currencyToken
+      );
       paymentNonce = params?.paymentNonce;
 
       const response = await this.postRequest(transactionType, params);
@@ -336,11 +343,17 @@ export class Send {
     payer = AccountUtils.convertToPublicKeyIfNeeded(payer);
     if (!this.feesMap[relayer]) this.feesMap[relayer] = {};
     if (!this.feesMap[relayer][currencyToken]) this.feesMap[relayer][currencyToken] = {};
-    if (!this.feesMap[relayer][currencyToken][payer]) this.feesMap[relayer][currencyToken][payer] = await this.queryApi.getRelayerFees(relayer, currencyToken, payer);
+    if (!this.feesMap[relayer][currencyToken][payer])
+      this.feesMap[relayer][currencyToken][payer] = await this.queryApi.getRelayerFees(relayer, currencyToken, payer);
     return this.feesMap[relayer][currencyToken][payer][transactionType];
   }
 
-  async getPaymentSignature(requestId: string, paymentNonce: number, paymentArgs: PaymentArgs, currencyToken: string): Promise<string> {
+  async getPaymentSignature(
+    requestId: string,
+    paymentNonce: number,
+    paymentArgs: PaymentArgs,
+    currencyToken: string
+  ): Promise<string> {
     const { relayer, user, payer, proxySignature, transactionType } = paymentArgs;
     const relayerFee = await this.getRelayerFee(relayer, payer, transactionType, currencyToken);
     const feePaymentArgs = { relayer, user, proxySignature, relayerFee, paymentNonce, signerAddress: this.signerAddress };

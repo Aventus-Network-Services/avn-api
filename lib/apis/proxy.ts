@@ -67,17 +67,17 @@ export default class ProxyUtils {
       { u64: feeData.paymentNonce }
     ];
 
-    log.debug(`\nPayment signature raw data: `, JSON.stringify(orderedData, null, 2))
+    log.debug(`\nPayment signature raw data: `, JSON.stringify(orderedData, null, 2));
 
     const encodedDataToSign = encodeOrderedData(orderedData);
 
-    log.debug(`\nPayment signature encoded data: `, u8aToHex(encodedDataToSign))
+    log.debug(`\nPayment signature encoded data: `, u8aToHex(encodedDataToSign));
 
     const sig = await signData(api, signerAddress, encodedDataToSign);
 
-    log.warn(`\nPayment signature: `, sig)
+    log.warn(`\nPayment signature: `, sig);
 
-    return sig
+    return sig;
   }
 }
 
