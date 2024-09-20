@@ -119,6 +119,10 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getDefaultRelayer');
   }
 
+  async getNativeCurrencyToken(): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getNativeCurrencyToken');
+  }
+
   async getAvtContractAddress(): Promise<string> {
     if (this.contracts.avt === undefined) {
       this.contracts.avt = await this.postRequest<string>(this.api, 'getAvtContractAddress');
@@ -249,14 +253,15 @@ export class Query {
     return await this.postRequest<StakingStats>(this.api, 'getStakingStats');
   }
 
-  async getRelayerFees(relayerAddress: string, userAddress: string, transactionType?: TxType): Promise<RelayerFees | number> {
+  async getRelayerFees(relayerAddress: string, currencyToken: string, userAddress: string, transactionType?: TxType): Promise<RelayerFees | number> {
     Utils.validateAccount(relayerAddress);
     if (userAddress) Utils.validateAccount(userAddress);
 
     return await this.postRequest<RelayerFees | number>(this.api, 'getRelayerFees', {
       relayer: relayerAddress,
       user: userAddress,
-      transactionType
+      transactionType,
+      currencyToken
     });
   }
 

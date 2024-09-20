@@ -3,8 +3,9 @@
 import { TxType, Utils, registry } from '../utils';
 import { AvnApiConfig, Royalty } from '../interfaces';
 import { AccountUtils } from '../utils/accountUtils';
-import { u8aConcat } from '@polkadot/util';
+import { u8aConcat, u8aToHex } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
+import log from 'loglevel';
 
 export interface FeePaymentData {
   relayer: string;
@@ -66,8 +67,17 @@ export default class ProxyUtils {
       { u64: feeData.paymentNonce }
     ];
 
+    log.debug(`\nPayment signature raw data: `, JSON.stringify(orderedData, null, 2))
+
     const encodedDataToSign = encodeOrderedData(orderedData);
-    return await signData(api, signerAddress, encodedDataToSign);
+
+    log.debug(`\nPayment signature encoded data: `, u8aToHex(encodedDataToSign))
+
+    const sig = await signData(api, signerAddress, encodedDataToSign);
+
+    log.warn(`\nPayment signature: `, sig)
+
+    return sig
   }
 }
 

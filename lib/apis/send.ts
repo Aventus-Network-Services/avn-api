@@ -33,6 +33,7 @@ interface ProxyParams {
   feePaymentSignature?: string;
   paymentNonce?: number;
   payer?: string;
+  currencyToken: string;
 }
 
 export class Send {
@@ -261,6 +262,7 @@ export class Send {
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
 
     try {
+      const currencyToken = await this.api.paymentCurrencyToken(this.queryApi);
       // Handle locking of nonces. This is important to prevent multiple instances of the sdk from
       // accessing the same nonce concurrently
       if (nonceType !== NonceType.None && nonceType !== NonceType.Nft) {
@@ -272,7 +274,7 @@ export class Send {
       }
 
       proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
-      const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId);
+      const params = await this.getProxyParams(proxyNonce, transactionType, paymentNonceData, methodArgs, requestId, currencyToken);
       paymentNonce = params?.paymentNonce;
 
       const response = await this.postRequest(transactionType, params);
@@ -302,7 +304,7 @@ export class Send {
       new Date(),
       ` ${requestId} - Sending transaction. proxy nonce: ${params.nonce}, signer: ${params.user}`,
       params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
-      `, proxySig: ${params.proxySignature}`
+      `, proxySig: ${params.proxySignature}, payment signature: ${params.feePaymentSignature}`
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
@@ -330,16 +332,17 @@ export class Send {
     return response.data.result;
   }
 
-  async getRelayerFee(relayer: string, payer: string, transactionType: TxType) {
+  async getRelayerFee(relayer: string, payer: string, transactionType: TxType, currencyToken: string) {
     payer = AccountUtils.convertToPublicKeyIfNeeded(payer);
     if (!this.feesMap[relayer]) this.feesMap[relayer] = {};
-    if (!this.feesMap[relayer][payer]) this.feesMap[relayer][payer] = await this.queryApi.getRelayerFees(relayer, payer);
-    return this.feesMap[relayer][payer][transactionType];
+    if (!this.feesMap[relayer][currencyToken]) this.feesMap[relayer][currencyToken] = {};
+    if (!this.feesMap[relayer][currencyToken][payer]) this.feesMap[relayer][currencyToken][payer] = await this.queryApi.getRelayerFees(relayer, currencyToken, payer);
+    return this.feesMap[relayer][currencyToken][payer][transactionType];
   }
 
-  async getPaymentSignature(requestId: string, paymentNonce: number, paymentArgs: PaymentArgs): Promise<string> {
+  async getPaymentSignature(requestId: string, paymentNonce: number, paymentArgs: PaymentArgs, currencyToken: string): Promise<string> {
     const { relayer, user, payer, proxySignature, transactionType } = paymentArgs;
-    const relayerFee = await this.getRelayerFee(relayer, payer, transactionType);
+    const relayerFee = await this.getRelayerFee(relayer, payer, transactionType, currencyToken);
     const feePaymentArgs = { relayer, user, proxySignature, relayerFee, paymentNonce, signerAddress: this.signerAddress };
 
     log.debug(new Date(), ` ${requestId} - Generating fee payment signature. ${JSON.stringify(feePaymentArgs)}`);
@@ -362,13 +365,14 @@ export class Send {
     txType: TxType,
     paymentNonceData: NonceData,
     methodArgs: object,
-    requestId: string
+    requestId: string,
+    currencyToken: string
   ): Promise<ProxyParams> {
     let paymentNonce: number;
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
     const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, txType, proxyArgs);
-    let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature };
+    let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature, currencyToken };
 
     // Only populate paymentInfo if this is a self pay transaction
     if (this.api.hasSplitFeeToken() === false) {
@@ -390,7 +394,7 @@ export class Send {
           transactionType: txType
         };
 
-        const feePaymentSignature = await this.getPaymentSignature(requestId, paymentNonce, paymentArgs);
+        const feePaymentSignature = await this.getPaymentSignature(requestId, paymentNonce, paymentArgs, currencyToken);
         params = Object.assign(params, {
           feePaymentSignature,
           paymentNonce,
