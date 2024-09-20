@@ -311,7 +311,7 @@ export class Send {
       new Date(),
       ` ${requestId} - Sending transaction. proxy nonce: ${params.nonce}, signer: ${params.user}`,
       params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
-      `, proxySig: ${params.proxySignature}, payment signature: ${params.feePaymentSignature}`
+      `, proxySig: ${params.proxySignature}, payer: ${params.payer}, payment signature: ${params.feePaymentSignature}`
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
