@@ -95,6 +95,7 @@ async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce
     { u64: nonce }
   ];
 
+  log.debug(new Date(), ` - Proxy payment raw data: `, JSON.stringify(orderedData));
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
