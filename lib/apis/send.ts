@@ -425,6 +425,7 @@ export class Send {
       }
     }
 
+    log.debug(new Date(), ` ${requestId} - getProxyParams result: ${JSON.stringify(proxySignature, null, 2)}`);
     return params;
   }
 
