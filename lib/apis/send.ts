@@ -311,7 +311,7 @@ export class Send {
       new Date(),
       ` ${requestId} - Sending transaction. proxy nonce: ${params.nonce}, signer: ${params.user}`,
       params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
-      `, proxySig: ${params.proxySignature}, payer: ${params.payer}, payment signature: ${params.feePaymentSignature}`
+      `, proxy signature: ${params.proxySignature}, payer: ${params.payer}, payment signature: ${params.feePaymentSignature}`
     );
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
@@ -385,6 +385,7 @@ export class Send {
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
     const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, txType, proxyArgs);
+    log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature: ${proxySignature}`);
     let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature, currencyToken };
 
     // Only populate paymentInfo if this is a self pay transaction
