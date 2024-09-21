@@ -49,7 +49,7 @@ export default class ProxyUtils {
     return await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
   }
 
-  static async generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig) {
+  static async generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig, requestId: string) {
     feeData.relayer = AccountUtils.convertToPublicKeyIfNeeded(feeData.relayer);
     const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
@@ -67,9 +67,12 @@ export default class ProxyUtils {
       { u64: feeData.paymentNonce }
     ];
 
-    log.debug(`\nPayment signature raw data: `, JSON.stringify(orderedData, null, 2));
     const encodedDataToSign = encodeOrderedData(orderedData);
-    log.debug(`\nPayment signature encoded data: `, u8aToHex(encodedDataToSign));
+    log.debug(
+      new Date(),
+      ` ${requestId} - Payment signature encoded data: ${u8aToHex(encodedDataToSign)}`
+    );
+
     const sig = await signData(api, signerAddress, encodedDataToSign);
 
     return sig;
