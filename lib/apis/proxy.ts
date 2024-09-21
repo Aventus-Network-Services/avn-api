@@ -49,7 +49,7 @@ export default class ProxyUtils {
     return await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
   }
 
-  static async generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig, requestId: string) {
+  static async generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig, requestId: string, currencyToken: string) {
     feeData.relayer = AccountUtils.convertToPublicKeyIfNeeded(feeData.relayer);
     const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
@@ -64,6 +64,7 @@ export default class ProxyUtils {
       { SkipEncode: encodeOrderedData(proxyProofData) },
       { AccountId: feeData.relayer },
       { Balance: feeData.relayerFee },
+      { H160: currencyToken },
       { u64: feeData.paymentNonce }
     ];
 
