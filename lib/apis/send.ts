@@ -387,6 +387,7 @@ export class Send {
     const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, txType, proxyArgs);
     log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature: ${proxySignature}`);
     let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature, currencyToken };
+    log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 2: ${proxySignature}\n ${JSON.stringify(params)}`);
 
     // Only populate paymentInfo if this is a self pay transaction
     if (this.api.hasSplitFeeToken() === false) {
@@ -408,6 +409,8 @@ export class Send {
           transactionType: txType
         };
 
+        log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 3: ${proxySignature}\n ${JSON.stringify(params)}`);
+
         const feePaymentSignature = await this.getPaymentSignature(requestId, paymentNonce, paymentArgs, currencyToken);
         params = Object.assign(params, {
           feePaymentSignature,
@@ -420,11 +423,14 @@ export class Send {
           ` ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(methodArgs)}`
         );
 
+        log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 4: ${proxySignature}\n ${JSON.stringify(params)}`);
+
         await this.decrementNonceIfRequired(NonceType.Payment, requestId, paymentNonceData.lockId, paymentNonce);
         throw err;
       }
     }
 
+    log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 5: ${JSON.stringify(params)}\n ${JSON.stringify(params)}`);
     log.debug(new Date(), ` ${requestId} - getProxyParams result: ${JSON.stringify(proxySignature, null, 2)}`);
     return params;
   }
