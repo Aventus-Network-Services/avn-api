@@ -68,14 +68,9 @@ export default class ProxyUtils {
     ];
 
     log.debug(`\nPayment signature raw data: `, JSON.stringify(orderedData, null, 2));
-
     const encodedDataToSign = encodeOrderedData(orderedData);
-
     log.debug(`\nPayment signature encoded data: `, u8aToHex(encodedDataToSign));
-
     const sig = await signData(api, signerAddress, encodedDataToSign);
-
-    log.warn(`\nPayment signature: `, sig);
 
     return sig;
   }
