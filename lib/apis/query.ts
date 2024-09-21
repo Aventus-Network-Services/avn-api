@@ -120,7 +120,8 @@ export class Query {
   }
 
   async getNativeCurrencyToken(): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getNativeCurrencyToken');
+    const result = await this.postRequest<{nativeCurrencyToken: string}>(this.api, 'getNativeCurrencyToken');
+    return result?.nativeCurrencyToken;
   }
 
   async getAvtContractAddress(): Promise<string> {
