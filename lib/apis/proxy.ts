@@ -362,6 +362,7 @@ function encodeRoyalties(royalties: Royalty[]) {
 // handle hex and bytes return types here.
 async function signData(api: AvnApiConfig, signerAddress: string, encodedDataToSign: string | Uint8Array) {
   encodedDataToSign = Utils.convertToHexIfNeeded(encodedDataToSign);
+  log.debug(new Date(), ` - Proxy payment encoded data: ${encodedDataToSign}, Signer: ${signerAddress}`);
   const signature = await api.sign(encodedDataToSign, signerAddress);
   return Utils.convertToHexIfNeeded(signature);
 }
