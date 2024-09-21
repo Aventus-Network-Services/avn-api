@@ -95,7 +95,7 @@ async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce
     { u64: nonce }
   ];
 
-  log.debug(new Date(), ` - Proxy payment raw data: `, JSON.stringify(orderedData));
+  log.debug(new Date(), ` - Proxy signature raw data: `, JSON.stringify(orderedData));
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
@@ -363,7 +363,8 @@ function encodeRoyalties(royalties: Royalty[]) {
 // handle hex and bytes return types here.
 async function signData(api: AvnApiConfig, signerAddress: string, encodedDataToSign: string | Uint8Array) {
   encodedDataToSign = Utils.convertToHexIfNeeded(encodedDataToSign);
-  log.debug(new Date(), ` - Proxy payment encoded data: ${encodedDataToSign}, Signer: ${signerAddress}`);
+  log.debug(new Date(), ` - Proxy signature encoded data: ${encodedDataToSign}, Signer: ${signerAddress}`);
   const signature = await api.sign(encodedDataToSign, signerAddress);
+  log.debug(new Date(), ` - Proxy signature: ${signature}`);
   return Utils.convertToHexIfNeeded(signature);
 }
