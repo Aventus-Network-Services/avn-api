@@ -385,7 +385,7 @@ export class Send {
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
     const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, txType, proxyArgs);
-    log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature: ${proxySignature}`);
+
     let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature, currencyToken };
     log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 2: ${proxySignature}\n ${JSON.stringify(params)}`);
 
@@ -430,8 +430,7 @@ export class Send {
       }
     }
 
-    log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 5: ${JSON.stringify(params)}\n ${JSON.stringify(params)}`);
-    log.debug(new Date(), ` ${requestId} - getProxyParams result: ${JSON.stringify(proxySignature, null, 2)}`);
+    log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 5: ${proxySignature}\n ${JSON.stringify(params)}`);
     return params;
   }
 

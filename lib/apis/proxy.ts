@@ -76,6 +76,11 @@ export default class ProxyUtils {
 
     const sig = await signData(api, signerAddress, encodedDataToSign);
 
+    log.debug(
+      new Date(),
+      ` ${requestId} - Payment signature: ${sig}`
+    );
+
     return sig;
   }
 }
@@ -97,7 +102,9 @@ async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce
 
   log.debug(new Date(), ` - Proxy signature raw data: `, JSON.stringify(orderedData));
   const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
+  const sig = await signData(api, signerAddress, encodedDataToSign);
+  log.debug(new Date(), ` - Proxy signature: `, sig);
+  return sig;
 }
 
 async function signProxyAddEthereumLog({ relayer, eventType, ethereumTransactionHash, nonce, signerAddress, api }) {
@@ -363,8 +370,6 @@ function encodeRoyalties(royalties: Royalty[]) {
 // handle hex and bytes return types here.
 async function signData(api: AvnApiConfig, signerAddress: string, encodedDataToSign: string | Uint8Array) {
   encodedDataToSign = Utils.convertToHexIfNeeded(encodedDataToSign);
-  log.debug(new Date(), ` - Proxy signature encoded data: ${encodedDataToSign}, Signer: ${signerAddress}`);
   const signature = await api.sign(encodedDataToSign, signerAddress);
-  log.debug(new Date(), ` - Proxy signature: ${signature}`);
   return Utils.convertToHexIfNeeded(signature);
 }
