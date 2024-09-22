@@ -307,12 +307,16 @@ export class Send {
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const requestId = params.requestId || this.api.uuid();
-    log.info(
-      new Date(),
-      ` ${requestId} - Sending transaction. proxy nonce: ${params.nonce}, signer: ${params.user}`,
-      params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
-      `, proxy signature: ${params.proxySignature}, payer: ${params.payer}, payment signature: ${params.feePaymentSignature}`
-    );
+    // log.info(
+    //   new Date(),
+    //   ` ${requestId} - Sending transaction. proxy nonce: ${params.nonce}, signer: ${params.user}`,
+    //   params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
+    //   `, proxy signature: ${params.proxySignature}, payer: ${params.payer}, payment signature: ${params.feePaymentSignature}`
+    // );
+
+    log.info(new Date(),` ${requestId} - Sending transaction: ${JSON.stringify(params)}`);
+
+    return "Test";
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const axios = this.api.axios(awtToken);
@@ -422,8 +426,6 @@ export class Send {
           new Date(),
           ` ${requestId} - Error getting proxy params. Transaction: ${txType}, args: ${JSON.stringify(methodArgs)}`
         );
-
-        log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 4: ${proxySignature}\n ${JSON.stringify(params)}`);
 
         await this.decrementNonceIfRequired(NonceType.Payment, requestId, paymentNonceData.lockId, paymentNonce);
         throw err;

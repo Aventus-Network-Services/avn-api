@@ -102,6 +102,7 @@ async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce
 
   log.debug(new Date(), ` - Proxy signature raw data: `, JSON.stringify(orderedData));
   const encodedDataToSign = encodeOrderedData(orderedData);
+  log.debug(new Date(), ` - Proxy signature encoded data: `, Utils.convertToHexIfNeeded(encodedDataToSign));
   const sig = await signData(api, signerAddress, encodedDataToSign);
   log.debug(new Date(), ` - Proxy signature: `, sig);
   return sig;
