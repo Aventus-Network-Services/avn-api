@@ -316,7 +316,7 @@ export class Send {
 
     log.info(new Date(),` ${requestId} - Sending transaction: ${JSON.stringify(params)}`);
 
-    return "Test";
+    //return "Test";
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
     const axios = this.api.axios(awtToken);
