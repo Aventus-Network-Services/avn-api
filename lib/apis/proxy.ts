@@ -49,7 +49,13 @@ export default class ProxyUtils {
     return await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
   }
 
-  static async generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig, requestId: string, currencyToken: string) {
+  static async generateFeePaymentSignature(
+    feeData: FeePaymentData,
+    signerAddress: string,
+    api: AvnApiConfig,
+    requestId: string,
+    currencyToken: string
+  ) {
     feeData.relayer = AccountUtils.convertToPublicKeyIfNeeded(feeData.relayer);
     const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
@@ -69,19 +75,9 @@ export default class ProxyUtils {
     ];
 
     const encodedDataToSign = encodeOrderedData(orderedData);
-    log.debug(
-      new Date(),
-      ` ${requestId} - Payment signature encoded data: ${u8aToHex(encodedDataToSign)}`
-    );
+    log.debug(new Date(), ` ${requestId} - Payment signature encoded data: ${u8aToHex(encodedDataToSign)}`);
 
-    const sig = await signData(api, signerAddress, encodedDataToSign);
-
-    log.debug(
-      new Date(),
-      ` ${requestId} - Payment signature: ${sig}`
-    );
-
-    return sig;
+    return await signData(api, signerAddress, encodedDataToSign);
   }
 }
 
@@ -100,12 +96,9 @@ async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce
     { u64: nonce }
   ];
 
-  log.debug(new Date(), ` - Proxy signature raw data: `, JSON.stringify(orderedData));
   const encodedDataToSign = encodeOrderedData(orderedData);
   log.debug(new Date(), ` - Proxy signature encoded data: `, Utils.convertToHexIfNeeded(encodedDataToSign));
-  const sig = await signData(api, signerAddress, encodedDataToSign);
-  log.debug(new Date(), ` - Proxy signature: `, sig);
-  return sig;
+  return await signData(api, signerAddress, encodedDataToSign);
 }
 
 async function signProxyAddEthereumLog({ relayer, eventType, ethereumTransactionHash, nonce, signerAddress, api }) {

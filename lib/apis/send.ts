@@ -307,14 +307,8 @@ export class Send {
 
   async postRequest(method: TxType, params: any): Promise<string> {
     const requestId = params.requestId || this.api.uuid();
-    // log.info(
-    //   new Date(),
-    //   ` ${requestId} - Sending transaction. proxy nonce: ${params.nonce}, signer: ${params.user}`,
-    //   params.paymentNonce ? `, payment nonce: ${params.paymentNonce}` : '',
-    //   `, proxy signature: ${params.proxySignature}, payer: ${params.payer}, payment signature: ${params.feePaymentSignature}`
-    // );
 
-    log.info(new Date(),` ${requestId} - Sending transaction: ${JSON.stringify(params)}`);
+    log.info(new Date(), ` ${requestId} - Sending transaction: ${JSON.stringify(params)}`);
 
     const endpoint = this.api.gateway + '/send';
     const awtToken = await this.awtManager.getToken();
@@ -362,7 +356,13 @@ export class Send {
     const feePaymentArgs = { relayer, user, proxySignature, relayerFee, paymentNonce, signerAddress: this.signerAddress };
 
     log.debug(new Date(), ` ${requestId} - Generating fee payment signature. ${JSON.stringify(feePaymentArgs)}`);
-    const feePaymentSignature = await ProxyUtils.generateFeePaymentSignature(feePaymentArgs, this.signerAddress, this.api, requestId, currencyToken);
+    const feePaymentSignature = await ProxyUtils.generateFeePaymentSignature(
+      feePaymentArgs,
+      this.signerAddress,
+      this.api,
+      requestId,
+      currencyToken
+    );
     return feePaymentSignature;
   }
 
@@ -388,9 +388,7 @@ export class Send {
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
     const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, txType, proxyArgs);
-
     let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature, currencyToken };
-    log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 2: ${proxySignature}\n ${JSON.stringify(params)}`);
 
     // Only populate paymentInfo if this is a self pay transaction
     if (this.api.hasSplitFeeToken() === false) {
@@ -412,8 +410,6 @@ export class Send {
           transactionType: txType
         };
 
-        log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 3: ${proxySignature}\n ${JSON.stringify(params)}`);
-
         const feePaymentSignature = await this.getPaymentSignature(requestId, paymentNonce, paymentArgs, currencyToken);
         params = Object.assign(params, {
           feePaymentSignature,
@@ -431,7 +427,6 @@ export class Send {
       }
     }
 
-    log.debug(new Date(), ` ${requestId} - getProxyParams proxy signature 5: ${proxySignature}\n ${JSON.stringify(params)}`);
     return params;
   }
 
