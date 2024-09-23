@@ -280,4 +280,12 @@ export class Query {
     const account = u8a.length === 20 ? ethereumEncode(u8a) : u8aToHex(u8a);
     return await this.getRequest<LowerData>(this.api, account, 'lowers');
   }
+
+  async getSupportedCurrencies(): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getSupportedCurrencies');
+  }
+
+  async getLoweringStatus(): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getLoweringStatus');
+  }
 }
