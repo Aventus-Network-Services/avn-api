@@ -259,15 +259,15 @@ export class Query {
     currencyToken: string,
     userAddress: string,
     transactionType?: TxType
-  ): Promise<RelayerFees | number> {
+  ): Promise<any | number> {
     Utils.validateAccount(relayerAddress);
     if (userAddress) Utils.validateAccount(userAddress);
 
-    return await this.postRequest<RelayerFees | number>(this.api, 'getRelayerFees', {
+    return await this.postRequest<any | number>(this.api, 'getRelayerFees', {
       relayer: relayerAddress,
       user: userAddress,
+      currencyToken,
       transactionType,
-      currencyToken
     });
   }
 
