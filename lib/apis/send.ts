@@ -343,6 +343,7 @@ export class Send {
     if (!this.feesMap[relayer][currencyToken][payer])
       this.feesMap[relayer][currencyToken][payer] = await this.queryApi.getRelayerFees(relayer, currencyToken, payer);
     console.log("Relayer fees: ", JSON.stringify(this.feesMap[relayer][currencyToken][payer]))
+    log.debug("Relayer fees: ", JSON.stringify(this.feesMap[relayer][currencyToken][payer]))
     return this.feesMap[relayer][currencyToken][payer][transactionType];
   }
 
