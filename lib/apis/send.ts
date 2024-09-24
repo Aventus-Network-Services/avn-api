@@ -338,7 +338,9 @@ export class Send {
 
   async getRelayerFee(relayer: string, payer: string, transactionType: TxType, currencyToken: string) {
     payer = AccountUtils.convertToPublicKeyIfNeeded(payer);
-    console.log("Relayer fees: ", JSON.stringify(await this.queryApi.getRelayerFees(relayer, currencyToken, payer)))
+    log.warn("Getting fees for: ", relayer, currencyToken, payer);
+    const f = await this.queryApi.getRelayerFees(relayer, currencyToken, payer);
+    log.warn("Relayer fees: ", JSON.stringify(f))
 
     if (!this.feesMap[relayer]) this.feesMap[relayer] = {};
     if (!this.feesMap[relayer][currencyToken]) this.feesMap[relayer][currencyToken] = {};
