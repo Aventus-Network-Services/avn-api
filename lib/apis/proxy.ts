@@ -3,8 +3,9 @@
 import { TxType, Utils, registry } from '../utils';
 import { AvnApiConfig, Royalty } from '../interfaces';
 import { AccountUtils } from '../utils/accountUtils';
-import { u8aConcat } from '@polkadot/util';
+import { u8aConcat, u8aToHex } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
+import log from 'loglevel';
 
 export interface FeePaymentData {
   relayer: string;
@@ -48,7 +49,13 @@ export default class ProxyUtils {
     return await signing[transactionType](Object.assign({}, proxyArgs, { api, signerAddress }));
   }
 
-  static async generateFeePaymentSignature(feeData: FeePaymentData, signerAddress: string, api: AvnApiConfig) {
+  static async generateFeePaymentSignature(
+    feeData: FeePaymentData,
+    signerAddress: string,
+    api: AvnApiConfig,
+    requestId: string,
+    currencyToken: string
+  ) {
     feeData.relayer = AccountUtils.convertToPublicKeyIfNeeded(feeData.relayer);
     const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
@@ -63,10 +70,13 @@ export default class ProxyUtils {
       { SkipEncode: encodeOrderedData(proxyProofData) },
       { AccountId: feeData.relayer },
       { Balance: feeData.relayerFee },
+      { H160: currencyToken },
       { u64: feeData.paymentNonce }
     ];
 
     const encodedDataToSign = encodeOrderedData(orderedData);
+    log.debug(new Date(), ` ${requestId} - Payment signature encoded data: ${u8aToHex(encodedDataToSign)}`);
+
     return await signData(api, signerAddress, encodedDataToSign);
   }
 }
@@ -87,6 +97,7 @@ async function signProxyTokenTransfer({ relayer, recipient, token, amount, nonce
   ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
+  log.debug(new Date(), ` - Proxy signature encoded data: `, Utils.convertToHexIfNeeded(encodedDataToSign));
   return await signData(api, signerAddress, encodedDataToSign);
 }
 

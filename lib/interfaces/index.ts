@@ -53,6 +53,7 @@ export interface AvnApiOptions {
   hasPayer?: boolean;
   payerAddress?: string;
   defaultLogLevel?: LogLevelNames;
+  paymentCurrencyToken?: string;
 }
 
 export interface IAwt {
@@ -72,6 +73,7 @@ export interface AvnApiConfig {
   axios(token: string): AxiosStatic;
   relayer(queryApi: Query): Promise<string>;
   sign(data: string, signerAddress: string): Promise<string>;
+  paymentCurrencyToken(queryApi: Query): Promise<string>;
   nonceCache: NonceCache;
 }
 

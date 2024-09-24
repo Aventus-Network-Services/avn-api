@@ -35,6 +35,7 @@ export class AvnApi {
   public signer: Signer;
   public myAddress: string;
   public myPublicKey: string;
+  public paymentCurrencyToken: string;
 
   constructor(gateway?: string, options?: AvnApiOptions) {
     // Set default values
@@ -118,6 +119,12 @@ export class AvnApi {
         } else if (this.options.signingMode === SigningMode.SuriBased) {
           return this.signer.sign(data, this.signer.address);
         }
+      },
+      paymentCurrencyToken: async (queryApi: Query) => {
+        if (!this.paymentCurrencyToken) {
+          this.paymentCurrencyToken = this.options.paymentCurrencyToken || (await queryApi.getNativeCurrencyToken());
+        }
+        return this.paymentCurrencyToken;
       },
       nonceCache: await this.buildNonceCache()
     };

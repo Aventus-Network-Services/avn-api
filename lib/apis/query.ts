@@ -119,6 +119,11 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getDefaultRelayer');
   }
 
+  async getNativeCurrencyToken(): Promise<string> {
+    const result = await this.postRequest<{ nativeCurrencyToken: string }>(this.api, 'getNativeCurrencyToken');
+    return result?.nativeCurrencyToken;
+  }
+
   async getAvtContractAddress(): Promise<string> {
     if (this.contracts.avt === undefined) {
       this.contracts.avt = await this.postRequest<string>(this.api, 'getAvtContractAddress');
@@ -249,14 +254,20 @@ export class Query {
     return await this.postRequest<StakingStats>(this.api, 'getStakingStats');
   }
 
-  async getRelayerFees(relayerAddress: string, userAddress: string, transactionType?: TxType): Promise<RelayerFees | number> {
+  async getRelayerFees(
+    relayerAddress: string,
+    currencyToken: string,
+    userAddress: string,
+    transactionType?: TxType
+  ): Promise<RelayerFees | number> {
     Utils.validateAccount(relayerAddress);
     if (userAddress) Utils.validateAccount(userAddress);
 
     return await this.postRequest<RelayerFees | number>(this.api, 'getRelayerFees', {
       relayer: relayerAddress,
       user: userAddress,
-      transactionType
+      transactionType,
+      currencyToken
     });
   }
 
@@ -268,5 +279,13 @@ export class Query {
     const u8a = isHex(accountAddress) ? hexToU8a(accountAddress) : AccountUtils.convertToPublicKeyBytes(accountAddress);
     const account = u8a.length === 20 ? ethereumEncode(u8a) : u8aToHex(u8a);
     return await this.getRequest<LowerData>(this.api, account, 'lowers');
+  }
+
+  async getSupportedCurrencies(): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getSupportedCurrencies');
+  }
+
+  async getLoweringStatus(): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getLoweringStatus');
   }
 }
