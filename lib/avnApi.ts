@@ -105,13 +105,15 @@ export class AvnApi {
           ` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`
         );
 
-        const axiosInstance = axios.create();
-        console.log("axios 3: ", axios.defaults);
-        console.log("axios 3: ", axiosInstance.defaults);
-        console.log("axios 3: ", axios2.defaults);
+
+        console.log("axios 4: ", axios.defaults);
+        console.log("axios 4: ", axios2.defaults);
+
+        // const axiosInstance = axios.create();
+        // console.log("axios 3: ", axiosInstance.defaults);
 
         // Add any middlewares here to configure global axios behaviours
-        axios.defaults.headers.common = { Authorization: `bearer ${token}` };
+        axios2.defaults.headers.common = { Authorization: `bearer ${token}` };
         return axios;
       },
       relayer: async (queryApi: Query) => {
