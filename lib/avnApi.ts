@@ -1,5 +1,4 @@
 import { v4 } from 'uuid';
-import axios, { AxiosInstance, AxiosStatic } from 'axios';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
 import { NonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
@@ -11,6 +10,7 @@ import { NonceCacheType, InMemoryLock } from './caching';
 import { setLogLevel } from './logger';
 import log from 'loglevel';
 import ProxyUtils from './apis/proxy';
+const axios = require('axios').default;
 
 interface Apis {
   query: Query;
@@ -94,11 +94,13 @@ export class AvnApi {
   }
 
   private async buildApiConfig(): Promise<AvnApiConfig> {
+
+    console.log("AXIOS-DEFAULT: ", axios);
     const avnApi = {
       gateway: this.gateway,
       hasSplitFeeToken: () => this.hasSplitFeeToken(),
       uuid: () => v4(),
-      axios: (token: string): AxiosStatic => {
+      axios: (token: string): any => {
         log.debug(
           new Date(),
           ` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`
