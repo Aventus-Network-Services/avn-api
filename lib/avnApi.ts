@@ -1,3 +1,4 @@
+import Axios, { AxiosInstance, AxiosStatic } from 'axios';
 import { v4 } from 'uuid';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
@@ -10,7 +11,6 @@ import { NonceCacheType, InMemoryLock } from './caching';
 import { setLogLevel } from './logger';
 import log from 'loglevel';
 import ProxyUtils from './apis/proxy';
-const axios = require('axios').default;
 
 interface Apis {
   query: Query;
@@ -94,30 +94,17 @@ export class AvnApi {
   }
 
   private async buildApiConfig(): Promise<AvnApiConfig> {
-
-    console.log("AXIOS-DEFAULT: ", axios);
     const avnApi = {
       gateway: this.gateway,
       hasSplitFeeToken: () => this.hasSplitFeeToken(),
       uuid: () => v4(),
-      axios: (token: string): any => {
+      axios: (token: string): AxiosStatic => {
         log.debug(
           new Date(),
           ` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`
         );
-
-
-        console.log("axios 6 0: ", axios.defaults);
-        axios.defaults.headers.common = { Authorization: `bearer ${token}` };
-
-        console.log("axios 6: using instance");
-        const axiosInstance = axios.create();
-        console.log("axios 6 1: ", axiosInstance.defaults);
-
-        // Add any middlewares here to configure global axios behaviours
-
-        axiosInstance.defaults.headers.common = { Authorization: `bearer ${token}` };
-        return axios;
+        (Axios as AxiosInstance).defaults.headers.common = { Authorization: `bearer ${token}` };
+        return Axios;
       },
       relayer: async (queryApi: Query) => {
         if (!this.relayer) {
