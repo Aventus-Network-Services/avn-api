@@ -1,5 +1,5 @@
-import Axios, { AxiosInstance, AxiosStatic } from 'axios';
 import { v4 } from 'uuid';
+import Axios, { AxiosInstance, AxiosStatic } from 'axios';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
 import { NonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
