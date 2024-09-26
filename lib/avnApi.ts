@@ -107,7 +107,7 @@ export class AvnApi {
         console.log("axios 1: ", axios);
 
         // Add any middlewares here to configure global axios behaviours
-        (axios as AxiosInstance).defaults.headers.common = { Authorization: `bearer ${token}` };
+        axios.defaults.headers.common = { Authorization: `bearer ${token}` };
         return axios;
       },
       relayer: async (queryApi: Query) => {
