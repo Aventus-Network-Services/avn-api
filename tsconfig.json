@@ -4,7 +4,7 @@
     "declaration": true,
     "allowJs": true,
     "target": "ES6",
-    "module": "commonjs",
+    "module": "ES6",
     "moduleResolution": "node",
     "outDir": "./build",
     "emitDecoratorMetadata": true,

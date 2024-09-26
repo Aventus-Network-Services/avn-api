@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import axios, { AxiosStatic } from 'axios';
+import axios, { AxiosInstance, AxiosStatic } from 'axios';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
 import { NonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
@@ -11,7 +11,6 @@ import { NonceCacheType, InMemoryLock } from './caching';
 import { setLogLevel } from './logger';
 import log from 'loglevel';
 import ProxyUtils from './apis/proxy';
-const axios2 = require('axios').default;
 
 interface Apis {
   query: Query;
@@ -106,14 +105,16 @@ export class AvnApi {
         );
 
 
-        console.log("axios 4: ", axios.defaults);
-        console.log("axios 4: ", axios2.defaults);
+        console.log("axios 6 0: ", axios.defaults);
+        axios.defaults.headers.common = { Authorization: `bearer ${token}` };
 
-        // const axiosInstance = axios.create();
-        // console.log("axios 3: ", axiosInstance.defaults);
+        console.log("axios 6: using instance");
+        const axiosInstance = axios.create();
+        console.log("axios 6 1: ", axiosInstance.defaults);
 
         // Add any middlewares here to configure global axios behaviours
-        axios2.defaults.headers.common = { Authorization: `bearer ${token}` };
+
+        axiosInstance.defaults.headers.common = { Authorization: `bearer ${token}` };
         return axios;
       },
       relayer: async (queryApi: Query) => {
