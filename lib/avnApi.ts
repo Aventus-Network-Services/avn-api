@@ -104,7 +104,7 @@ export class AvnApi {
           ` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`
         );
 
-        console.log("axios: ", axios);
+        console.log("axios 1: ", axios);
 
         // Add any middlewares here to configure global axios behaviours
         (axios as AxiosInstance).defaults.headers.common = { Authorization: `bearer ${token}` };
