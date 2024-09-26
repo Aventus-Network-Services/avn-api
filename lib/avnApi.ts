@@ -103,6 +103,7 @@ export class AvnApi {
           new Date(),
           ` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`
         );
+        // Add any middlewares here to configure global axios behaviours
         (Axios as AxiosInstance).defaults.headers.common = { Authorization: `bearer ${token}` };
         return Axios;
       },
