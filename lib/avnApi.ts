@@ -104,8 +104,8 @@ export class AvnApi {
           ` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`
         );
 
-        log.debug(`AXIOS: ${JSON.stringify((Axios as AxiosInstance).defaults)}`);
-        log.debug(`\n\nAXIOS2: ${JSON.stringify((Axios as AxiosInstance))}`);
+        log.debug(`AXIOS: `, (Axios as AxiosInstance).defaults);
+        log.debug(`\n\nAXIOS2: `, (Axios as AxiosInstance));
 
         // Add any middlewares here to configure global axios behaviours
         (Axios as AxiosInstance).defaults.headers.common = { Authorization: `bearer ${token}` };
