@@ -9,7 +9,7 @@
   "dependencies": {
     "@polkadot/keyring": "10.4.2",
     "@polkadot/types": "9.14.2",
-    "axios": "^1.6.7",
+    "axios": "1.6.7",
     "bn.js": "^5.2.1",
     "prettier": "^2.5.1",
     "uuid": "^8.3.2",

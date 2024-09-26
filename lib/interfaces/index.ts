@@ -2,7 +2,7 @@ import { NonceCache } from '../caching';
 import { INonceCacheProvider, NonceCacheType } from '../caching';
 import { Query } from '../apis/query';
 import { LogLevelNames } from 'loglevel';
-import { AxiosInstance } from 'axios';
+import { AxiosStatic } from 'axios';
 
 export enum NonceType {
   Token = 'token',
@@ -70,7 +70,7 @@ export interface AvnApiConfig {
   gateway: string;
   hasSplitFeeToken(): boolean;
   uuid(): string;
-  axios(token: string): AxiosInstance;
+  axios(token: string): AxiosStatic;
   relayer(queryApi: Query): Promise<string>;
   sign(data: string, signerAddress: string): Promise<string>;
   paymentCurrencyToken(queryApi: Query): Promise<string>;
