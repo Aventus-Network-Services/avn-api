@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import Axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { cryptoWaitReady } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
 import { NonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
@@ -104,7 +104,8 @@ export class AvnApi {
           ` - Axios called with token: ${token.substring(0, 8) + '...' + token.substring(token.length - 8)}`
         );
 
-        const axiosInstance = Axios.create();
+        console.log("axios: ", axios);
+        const axiosInstance = axios.create();
 
         // Add any middlewares here to configure global axios behaviours
         axiosInstance.defaults.headers.common = { Authorization: `bearer ${token}` };
