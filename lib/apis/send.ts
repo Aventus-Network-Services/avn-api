@@ -61,7 +61,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyAvtTransfer, NonceType.Token);
   }
 
-  async transferToken(recipient: string, token: string, amount: string): Promise<string> {
+   async transferToken(recipient: string, token: string, amount: string): Promise<string> {
     Utils.validateAccount(recipient);
     Utils.validateEthereumAddress(token);
     amount = Utils.validateAndConvertAmountToString(amount);
@@ -249,6 +249,21 @@ export class Send {
   async executeLeaveNominators(): Promise<string> {
     const methodArgs = {};
     return await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, NonceType.Staking);
+  }
+
+  async registerHandler(handler: string, name: string): Promise<string> {
+    Utils.validateAccount(handler);
+    Utils.validateChainName(name);
+    const methodArgs = { handler, name };
+    return await this.proxyRequest(methodArgs, TxType.ProxyRegisterHander, NonceType.None);
+  }
+
+  async submitCheckpoint(handler: string, checkpoint: string, chainId: string): Promise<string> {
+    Utils.validateAccount(handler);
+    Utils.validateCheckpointFormat(checkpoint);
+    Utils.validateNumber(chainId)
+    const methodArgs = { handler, checkpoint, chainId };
+    return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, NonceType.Anchor);
   }
 
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {

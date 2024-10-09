@@ -11,6 +11,7 @@ export enum NonceType {
   Confirmation = 'confirmation',
   Nft = 'nft',
   Batch = 'batch',
+  Anchor = 'anchor',
   None = 'none'
 }
 

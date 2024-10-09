@@ -133,4 +133,30 @@ export class Utils {
 
     return u8aToHex(input as Uint8Array).toLowerCase();
   }
+
+  static validateCheckpointFormat(checkpoint: string) {
+    if (!isHex(checkpoint)) {
+      throw new Error('Checkpoint is not a valid hex string');
+    }
+  
+    if (checkpoint.length !== 66) {
+      throw new Error(`Checkpoint length is invalid. Expected 66 characters, got ${checkpoint.length}`);
+    }
+  
+    if (checkpoint === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+      throw new Error('Checkpoint is a zero value');
+    }
+  }
+
+  static validateChainName(name: string){
+    if (!name || name.trim() === '') {
+      throw new Error('Chain name cannot be empty');
+    }
+
+    const CHAIN_NAME_LIMIT = 32;
+    const nameBytes = new TextEncoder().encode(name);
+    if (nameBytes.length > CHAIN_NAME_LIMIT) {
+      throw new Error(`Chain name exceeds the limit of ${CHAIN_NAME_LIMIT} bytes`);
+    }
+  }
 }
