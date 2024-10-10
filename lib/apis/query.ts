@@ -288,4 +288,8 @@ export class Query {
   async getLoweringStatus(): Promise<string> {
     return await this.postRequest<string>(this.api, 'getLoweringStatus');
   }
+
+  async isHandlerRegistered(handler:string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'isHandlerRegistered', { handler });
+  }
 }

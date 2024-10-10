@@ -34,7 +34,10 @@ export enum TxType {
   ProxyUnstake = 'proxyUnstake',
   ProxyWithdrawUnlocked = 'proxyWithdrawUnlocked',
   ProxyScheduleLeaveNominators = 'proxyScheduleLeaveNominators',
-  ProxyExecuteLeaveNominators = 'proxyExecuteLeaveNominators'
+  ProxyExecuteLeaveNominators = 'proxyExecuteLeaveNominators',
+  ProxyRegisterHander = 'proxyRegisterHandler',
+  ProxySubmitCheckpoint = 'proxySubmitCheckpoint',
+
 }
 
 export enum EthereumLogEventType {

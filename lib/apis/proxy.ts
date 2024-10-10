@@ -40,7 +40,9 @@ const signing = {
   proxyUnstake: async proxyArgs => await signProxyUnstake(proxyArgs),
   proxyWithdrawUnlocked: async proxyArgs => await signProxyWithdrawUnlocked(proxyArgs),
   proxyScheduleLeaveNominators: async proxyArgs => await signProxyScheduleLeaveNominators(proxyArgs),
-  proxyExecuteLeaveNominators: async proxyArgs => await signProxyExecuteLeaveNominators(proxyArgs)
+  proxyExecuteLeaveNominators: async proxyArgs => await signProxyExecuteLeaveNominators(proxyArgs),
+  proxyRegisterHandler: async proxyArgs => await signProxyRegisterChainHandler(proxyArgs),
+  proxySubmitCheckpoint: async proxyArgs => await signProxySubmitCheckpointWithIdentity(proxyArgs)
 };
 
 export default class ProxyUtils {
@@ -340,6 +342,39 @@ async function signProxyExecuteLeaveNominators({ relayer, nonce, signerAddress, 
 
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyRegisterChainHandler({ relayer, name, signerAddress, api }){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const handler = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+
+  const orderedData = [
+    { Text: 'register chain to be anchored' },
+    { AccountId: dataRelayer },
+    { AccountId: handler },
+    { 'Vec<u8>': name },
+  ]
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign)
+
+}
+
+async function signProxySubmitCheckpointWithIdentity({relayer, signerAddress, checkpoint, chainId, nonce, api}) {
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const handler = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+
+  const orderedData = [
+    { Text: 'submit checkpoint for anchored chain' },
+    { AccountId: dataRelayer },
+    { AccountId: handler },
+    { H256: checkpoint },
+    { u32: chainId },
+    { u64: nonce }
+  ]
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign)
 }
 
 function encodeOrderedData(data: object[]) {

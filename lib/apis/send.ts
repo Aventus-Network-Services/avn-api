@@ -251,6 +251,21 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, NonceType.Staking);
   }
 
+  async registerHandler(handler: string, name: string): Promise<string> {
+    Utils.validateAccount(handler);
+    Utils.validateChainName(name);
+    const methodArgs = { handler, name };
+    return await this.proxyRequest(methodArgs, TxType.ProxyRegisterHander, NonceType.None);
+  }
+
+  async submitCheckpoint(handler: string, checkpoint: string, chainId: string): Promise<string> {
+    Utils.validateAccount(handler);
+    Utils.validateCheckpointFormat(checkpoint);
+    Utils.validateNumber(chainId)
+    const methodArgs = { handler, checkpoint, chainId };
+    return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, NonceType.Anchor);
+  }
+
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
     // Lock while we are sending the transaction to ensure we maintain a correct order
     const lockKey = `send-${this.signerAddress}${nonceType}`;
