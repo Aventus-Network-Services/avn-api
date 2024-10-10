@@ -61,7 +61,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyAvtTransfer, NonceType.Token);
   }
 
-   async transferToken(recipient: string, token: string, amount: string): Promise<string> {
+  async transferToken(recipient: string, token: string, amount: string): Promise<string> {
     Utils.validateAccount(recipient);
     Utils.validateEthereumAddress(token);
     amount = Utils.validateAndConvertAmountToString(amount);
