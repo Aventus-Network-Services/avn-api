@@ -154,8 +154,7 @@ export class Utils {
     }
 
     const CHAIN_NAME_LIMIT = 32;
-    const nameBytes = new TextEncoder().encode(name);
-    if (nameBytes.length > CHAIN_NAME_LIMIT) {
+    if (name.length > CHAIN_NAME_LIMIT) {
       throw new Error(`Chain name exceeds the limit of ${CHAIN_NAME_LIMIT} bytes`);
     }
   }
