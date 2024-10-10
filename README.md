@@ -57,7 +57,7 @@ To set one of these modes, pass in the following options when creating an instan
  ### Multi currency payment options
 The AvN Gateway allows for the use of multiple tokens as payment, with the number of supported tokens being configurable. To select a specific token for payment, include its address in the SDK's `options` object. If no token is provided, the SDK will default to using the chain's native token.
 
-When submitting a transaction directly to the AvN Gateway (without the SDK), you can omit the token address only for split-fee transactions. For self-pay transactions, the token must be included in the `PaymentSignature` you generate.
+When submitting a transaction directly to the AvN Gateway (without using this SDK), the token address is optional for split-fee transactions. For self-pay transactions, the token **must be** included in the `PaymentSignature` you generate.
 
 To specify a token in the options object, use the following approach:
  ```
@@ -108,14 +108,14 @@ async function main() {
   // For split fee functionality we can specify the payer in the options object.
   const splitFeeOptions = {
     suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f',
-    paymentCurrencyToken: '0x123...',
+    hasPayer: true,
     payerAddress: PAYER
   };
 
   // If a default payer account is added we can simply set the hasPayer flag to true.
   const defaultSplitFeeOptions = {
-    suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f', hasPayer: true,
-    paymentCurrencyToken: '0x123...'
+    suri: '0x816ef9f2c7f9e8c013fd5fca220a1bf23ff2f3b268f8bcd94d4b5df96534173f',
+    hasPayer: true,
   };
 
   // Relayer defaults to Aventus if none is passed
@@ -183,17 +183,34 @@ async function main() {
   // View API version, gateway (if connected), and all available top level functions and properties:
   console.log(avnSdk);
 
-  // Return your account's address:
-  const MY_ADDRESS = avnSdk.myAddress();
+  // SINGLE USER WITH SURI
+  //-----------------------
 
-  // In a Single user, Suri based signing setup, you can get access to the apis provided by the SDK without specifying a user address.
+  // In a Single user, Suri based signing setup, you can get access to additional properties and to the apis provided by the SDK without specifying a user address.
+
+  // Return your account's address:
+  const MY_ADDRESS = avnSdk.myAddress;
+
+  // Return your account's public key:
+  const MY_PUBLIC_KEY = avnSdk.myPublicKey;
+
+  // Return a signer object that can sign messages:
+  const MY_SIGNER = avnSdk.signer;
+
   // `userAddress` is ommited because the sdk can calculate it based on the SURI
   const api = await avnSdk.apis()
+
+  // MULTI USER SETUP WITH REMOTE SIGNING
+  //-------------------------------------
+
   // In a Remote signing setup, to get access to the apis provided by the SDK, you have to pass in a user address.
   //This user will be the signer for any transactions or token generated.
   const api = await avnSdk.apis(USER_ADDRESS)
 
-  // View all the public endpoint you can call on the AvN blockchain via the apis:
+  // API DATA
+  //---------
+
+  // View all the public endpoint you can call on the api:
   console.log(api);
 
   // Get information about the connected chain:
@@ -208,16 +225,20 @@ async function main() {
   console.log('NFT listings:', await api.query.getNftContractAddress());
 
   // Get the total amount of AVT held on the AvN:
-  console.log(await api.query.getTotalAvt());
+  console.log('Total Avt:', await api.query.getTotalAvt());
 
   // Get the AVT balance of an AvN account:
-  console.log(await api.query.getAvtBalance(MY_ADDRESS));
+  console.log('My balance:', await api.query.getAvtBalance(MY_ADDRESS));
+
+  // Return the native currency token address:
+  const CURRENCY_TOKEN_ADDRESS = await api.query.getNativeCurrencyToken()
 
   // Get the AVT fees a relayer charges for processing transactions:
-  const relayer = api.relayer; // get the relayer currently being used
-  console.log(await api.query.getRelayerFees(relayer, TOKEN_ADDRESS)); // default fees for any user per currency
-  console.log(await api.query.getRelayerFees(relayer, TOKEN_ADDRESS, MY_ADDRESS)); // user specific fees per currency
-  console.log(await api.query.getRelayerFees(relayer, TOKEN_ADDRESS, MY_ADDRESS, 'proxyTokenTransfer')); // for a specific transaction type and currency
+  const queryApi = api.query;
+  const relayer = await queryApi.api.relayer(queryApi); // get the relayer currently being used
+  console.log('Fees per currency:', await queryApi.getRelayerFees(relayer, CURRENCY_TOKEN_ADDRESS)); // default fees for any user per currency
+  console.log('Fees per currency and user:', await queryApi.getRelayerFees(relayer, CURRENCY_TOKEN_ADDRESS, MY_ADDRESS)); // user specific fees per currency
+  console.log('Fees per currency, user and transaction:', await queryApi.getRelayerFees(relayer, CURRENCY_TOKEN_ADDRESS, MY_ADDRESS, 'proxyTokenTransfer:')); // for a specific transaction type and currency
 
   // ******* TOKEN OPERATIONS *******
   const someAccount = '5Gc8PokrcM6BsRPhJ63oHAiZhdm1L26wg7iekBE1FMbaUBde';
@@ -252,9 +273,9 @@ async function main() {
 
   // Get all available lowers and the data to complete them
   // by Ethereum recipient address:
-  console.log(await await api.query.getOutstandingLowersForAccount(recipientEthereumAddress));
+  console.log(await api.query.getOutstandingLowersForAccount(recipientEthereumAddress));
   // or by AvN sender public key:
-  console.log(await await api.query.getOutstandingLowersForAccount(publicKey));
+  console.log(await api.query.getOutstandingLowersForAccount(avnSdk.myPublicKey));
 
   // ******* NFT OPERATIONS *******
 
@@ -345,13 +366,15 @@ async function main() {
   await confirmTransaction(api.poll, requestId);
 
   // ******* ACCOUNT OPERATIONS *******
+
   // Generate a new AvN account (account generation is local and will also work offline):
-  const newAccount = api.accountUtils.generateNewAccount();
+  const newAccount = avnSdk.accountUtils.generateNewAccount();
   console.log(newAccount);
 
   // ******* CACHED NONCES *******
+
   // View current token nonce
-  const nonceData = api.proxyNonce(USER_ADDRESS, 'token')
+  const nonceData = await api.proxyNonce(USER_ADDRESS, 'token')
   console.log(nonceData);
 }
 
