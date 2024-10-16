@@ -281,8 +281,8 @@ export class Query {
     return await this.getRequest<LowerData>(this.api, account, 'lowers');
   }
 
-  async getSupportedCurrencies(): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getSupportedCurrencies');
+  async getSupportedCurrencies(): Promise<string[]> {
+    return await this.postRequest<string[]>(this.api, 'getSupportedCurrencies');
   }
 
   async getLoweringStatus(): Promise<string> {
