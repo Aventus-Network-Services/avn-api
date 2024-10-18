@@ -365,7 +365,7 @@ async function signProxySubmitCheckpointWithIdentity({relayer, signerAddress, ch
   const handler = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
   const orderedData = [
-    { Text: 'submit checkpoint for anchored chain' },
+    { Text: 'submit_checkpoint' },
     { AccountId: dataRelayer },
     { AccountId: handler },
     { H256: checkpoint },
