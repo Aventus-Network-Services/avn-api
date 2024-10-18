@@ -258,11 +258,10 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterHander, NonceType.None);
   }
 
-  async submitCheckpoint(handler: string, checkpoint: string, chainId: string): Promise<string> {
+  async submitCheckpoint(handler: string, checkpoint: string): Promise<string> {
     Utils.validateAccount(handler);
     Utils.validateCheckpointFormat(checkpoint);
-    Utils.validateNumber(chainId)
-    const methodArgs = { handler, checkpoint, chainId };
+    const methodArgs = { handler, checkpoint };
     return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, NonceType.Anchor);
   }
 
