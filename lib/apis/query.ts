@@ -172,6 +172,10 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getNonce', { accountId: accountAddress, nonceType });
   }
 
+  async getAnchorNonce(chainId: string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getAnchorNonce', { chainId });
+  }
+
   async getNftNonce(nftId: string): Promise<string> {
     nftId = Utils.formatNftId(nftId);
     return await this.postRequest<string>(this.api, 'getNftNonce', { nftId });

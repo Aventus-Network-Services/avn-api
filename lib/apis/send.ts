@@ -287,7 +287,7 @@ export class Send {
         paymentNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, NonceType.Payment, requestId);
       }
 
-      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
+      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId, methodArgs.chainId);
       const params = await this.getProxyParams(
         proxyNonce,
         transactionType,
@@ -381,11 +381,13 @@ export class Send {
     return feePaymentSignature;
   }
 
-  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string) {
+  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: string) {
     if (nonceType !== NonceType.Nft && !proxyNonceData) return undefined;
 
     if (nonceType === NonceType.Nft) {
       return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();
+    } else if(nonceType === NonceType.Anchor) {
+      return new BN(await this.queryApi.getAnchorNonce(chainId)).toNumber();
     } else if (proxyNonceData) {
       return await this.api.nonceCache.incrementNonce(proxyNonceData, this.signerAddress, nonceType, this.queryApi, requestId);
     }
