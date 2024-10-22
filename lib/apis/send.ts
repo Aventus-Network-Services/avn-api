@@ -258,10 +258,9 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterHander, NonceType.None);
   }
 
-  async submitCheckpoint(handler: string, checkpoint: string, chainId: string): Promise<string> {
+  async submitCheckpoint(handler: string, checkpoint: string, chainId:number): Promise<string> {
     Utils.validateAccount(handler);
     Utils.validateCheckpointFormat(checkpoint);
-    Utils.validateNumber(chainId)
     const methodArgs = { handler, checkpoint, chainId };
     return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, NonceType.Anchor);
   }
@@ -288,7 +287,7 @@ export class Send {
         paymentNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, NonceType.Payment, requestId);
       }
 
-      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId);
+      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId, methodArgs.chainId);
       const params = await this.getProxyParams(
         proxyNonce,
         transactionType,
@@ -382,11 +381,13 @@ export class Send {
     return feePaymentSignature;
   }
 
-  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string) {
-    if (nonceType !== NonceType.Nft && !proxyNonceData) return undefined;
+  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: number) {
+    if (nonceType !== NonceType.Nft && nonceType !== NonceType.Anchor && !proxyNonceData) return undefined;
 
     if (nonceType === NonceType.Nft) {
       return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();
+    } else if(nonceType === NonceType.Anchor) {
+      return new BN(await this.queryApi.getAnchorNonce(chainId)).toNumber();
     } else if (proxyNonceData) {
       return await this.api.nonceCache.incrementNonce(proxyNonceData, this.signerAddress, nonceType, this.queryApi, requestId);
     }
