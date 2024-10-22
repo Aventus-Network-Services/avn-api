@@ -258,10 +258,10 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterHander, NonceType.None);
   }
 
-  async submitCheckpoint(handler: string, checkpoint: string): Promise<string> {
+  async submitCheckpoint(handler: string, checkpoint: string, chainId:number): Promise<string> {
     Utils.validateAccount(handler);
     Utils.validateCheckpointFormat(checkpoint);
-    const methodArgs = { handler, checkpoint };
+    const methodArgs = { handler, checkpoint, chainId };
     return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, NonceType.Anchor);
   }
 
@@ -382,7 +382,7 @@ export class Send {
   }
 
   private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: string) {
-    if (nonceType !== NonceType.Nft && !proxyNonceData) return undefined;
+    if (nonceType !== NonceType.Nft && nonceType !== NonceType.Anchor && !proxyNonceData) return undefined;
 
     if (nonceType === NonceType.Nft) {
       return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();
