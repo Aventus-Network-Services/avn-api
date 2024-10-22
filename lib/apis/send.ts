@@ -381,7 +381,7 @@ export class Send {
     return feePaymentSignature;
   }
 
-  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: string) {
+  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: number) {
     if (nonceType !== NonceType.Nft && nonceType !== NonceType.Anchor && !proxyNonceData) return undefined;
 
     if (nonceType === NonceType.Nft) {
