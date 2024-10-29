@@ -349,7 +349,7 @@ async function signProxyRegisterChainHandler({ relayer, name, signerAddress, api
   const handler = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
   const orderedData = [
-    { Text: 'register chain to be anchored' },
+    { Text: 'register_chain_handler' },
     { AccountId: dataRelayer },
     { AccountId: handler },
     { 'Vec<u8>': name },
@@ -365,7 +365,7 @@ async function signProxySubmitCheckpointWithIdentity({relayer, signerAddress, ch
   const handler = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
   const orderedData = [
-    { Text: 'submit checkpoint for anchored chain' },
+    { Text: 'submit_checkpoint' },
     { AccountId: dataRelayer },
     { AccountId: handler },
     { H256: checkpoint },
