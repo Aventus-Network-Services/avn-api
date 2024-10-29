@@ -173,7 +173,7 @@ export class Query {
   }
 
   async getAnchorNonce(chainId: number): Promise<string> {
-    const parsedChainId = chainId === 0 ? `${chainId}`: chainId
+    const parsedChainId = `${chainId}`
     return await this.postRequest<string>(this.api, 'getAnchorNonce', { chainId: parsedChainId });
   }
 
