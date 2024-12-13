@@ -12,6 +12,8 @@ export enum NonceType {
   Nft = 'nft',
   Batch = 'batch',
   Anchor = 'anchor',
+  PredictionMarkets = 'predictionMarkets',
+  HybridRouter = 'hybridRouter',
   None = 'none'
 }
 
