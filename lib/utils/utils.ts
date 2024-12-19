@@ -158,4 +158,8 @@ export class Utils {
       throw new Error(`Chain name exceeds the limit of ${CHAIN_NAME_LIMIT} bytes`);
     }
   }
+
+  static stringToU8a(str:string){
+    return Uint8Array.from(str.split('').map(char => char.charCodeAt(0)));
+  }
 }
