@@ -40,6 +40,7 @@ export enum TxType {
 
   ProxyCreateMarketAndDeployPool = 'proxyCreateMarketAndDeployPool',
   ProxyReport = 'proxyReport',
+  ProxyRedeemShares = 'proxyRedeemShares',
   ProxyBuy = 'proxyBuy',
   ProxySell = 'proxySell',
 

@@ -297,6 +297,11 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyReport, NonceType.PredictionMarkets);
   }
 
+  async redeemShares(marketId): Promise<string>{
+    const methodArgs = {marketId}
+    return await this.proxyRequest(methodArgs, TxType.ProxyRedeemShares, NonceType.PredictionMarkets);
+  }
+
   async buy(marketId, assetCount, asset, amountIn, maxPrice, orders, strategy): Promise<string> {
     const methodArgs = {
       marketId, assetCount, asset, amountIn, maxPrice, orders, strategy
