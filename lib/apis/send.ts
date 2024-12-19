@@ -264,6 +264,34 @@ export class Send {
     const methodArgs = { handler, checkpoint, chainId };
     return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, NonceType.Anchor);
   }
+  // TODO: stub
+  async submitBuy(handler: string, checkpoint: string, chainId: number): Promise<string> {
+    Utils.validateAccount(handler);
+    Utils.validateCheckpointFormat(checkpoint);
+    const methodArgs = { handler, checkpoint, chainId };
+    return await this.proxyRequest(methodArgs, TxType.ProxyBuy, NonceType.HybridRouter);
+  }
+// TODO: stub
+  async submitSell(handler: string, checkpoint: string, chainId: number): Promise<string> {
+    Utils.validateAccount(handler);
+    Utils.validateCheckpointFormat(checkpoint);
+    const methodArgs = { handler, checkpoint, chainId };
+    return await this.proxyRequest(methodArgs, TxType.ProxySell, NonceType.HybridRouter);
+  }
+// TODO: stub
+  async submitReport(handler: string, checkpoint: string, chainId: number): Promise<string> {
+    Utils.validateAccount(handler);
+    Utils.validateCheckpointFormat(checkpoint);
+    const methodArgs = { handler, checkpoint, chainId };
+    return await this.proxyRequest(methodArgs, TxType.ProxyReport, NonceType.PredictionMarkets);
+  }
+// TODO: stub
+  async submitCreateMarketAndDeployPool(handler: string, checkpoint: string, chainId: number): Promise<string> {
+    Utils.validateAccount(handler);
+    Utils.validateCheckpointFormat(checkpoint);
+    const methodArgs = { handler, checkpoint, chainId };
+    return await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, NonceType.PredictionMarkets);
+  }
 
   async createMarketAndDeployPool(baseAsset,
     creatorFee,
@@ -430,13 +458,17 @@ export class Send {
     return feePaymentSignature;
   }
 
-  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: number) {
-    if (nonceType !== NonceType.Nft && nonceType !== NonceType.Anchor && !proxyNonceData) return undefined;
+  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: number, marketId?: string) {
+    if (nonceType !== NonceType.Nft && nonceType !== NonceType.Anchor && nonceType !== NonceType.PredictionMarkets && nonceType !== NonceType.HybridRouter && !proxyNonceData) return undefined;
 
     if (nonceType === NonceType.Nft) {
       return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();
     } else if (nonceType === NonceType.Anchor) {
       return new BN(await this.queryApi.getAnchorNonce(chainId)).toNumber();
+    } else if (nonceType === NonceType.PredictionMarkets) {
+      return new BN(await this.queryApi.getPredictionMarketsNonce(marketId, this.signerAddress)).toNumber();
+    } else if (nonceType === NonceType.HybridRouter) {
+      return new BN(await this.queryApi.getHybridRouterNonce(marketId, this.signerAddress)).toNumber();
     } else if (proxyNonceData) {
       return await this.api.nonceCache.incrementNonce(proxyNonceData, this.signerAddress, nonceType, this.queryApi, requestId);
     }
