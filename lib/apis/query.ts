@@ -177,6 +177,14 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getAnchorNonce', { chainId: parsedChainId });
   }
 
+  async getPredictionMarketsNonce(marketId:string, accountAddress:string): Promise<string>{
+    return await this.postRequest<string>(this.api, 'getPredictionMarketsNonce', { marketId, accountId: accountAddress });
+  }
+
+  async getHybridRouterNonce(marketId:string, accountAddress:string): Promise<string>{
+    return await this.postRequest<string>(this.api, 'getHybridRouterNonce', { marketId, accountId: accountAddress });
+  }
+
   async getNftNonce(nftId: string): Promise<string> {
     nftId = Utils.formatNftId(nftId);
     return await this.postRequest<string>(this.api, 'getNftNonce', { nftId });
