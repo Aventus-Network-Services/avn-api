@@ -266,26 +266,23 @@ export class Send {
   }
 
   async createMarketAndDeployPool(baseAsset,
-    creatorFee,
     oracle,
     period,
     deadlines,
     metadata,
-    marketType,
-    disputeMechanism,
     amount,
     spotPrices,
     swapFee,): Promise<string> {
     Utils.validateAccount(oracle)
     const methodArgs = {
       baseAsset,
-      creatorFee,
+      creatorFee:0,
       oracle,
       period,
       deadlines,
       metadata,
-      marketType,
-      disputeMechanism,
+      marketType: 'Categorical',
+      disputeMechanism: 'Authorised',
       amount,
       spotPrices,
       swapFee,
