@@ -264,34 +264,6 @@ export class Send {
     const methodArgs = { handler, checkpoint, chainId };
     return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, NonceType.Anchor);
   }
-  // TODO: stub
-  async submitBuy(handler: string, checkpoint: string, chainId: number): Promise<string> {
-    Utils.validateAccount(handler);
-    Utils.validateCheckpointFormat(checkpoint);
-    const methodArgs = { handler, checkpoint, chainId };
-    return await this.proxyRequest(methodArgs, TxType.ProxyBuy, NonceType.HybridRouter);
-  }
-// TODO: stub
-  async submitSell(handler: string, checkpoint: string, chainId: number): Promise<string> {
-    Utils.validateAccount(handler);
-    Utils.validateCheckpointFormat(checkpoint);
-    const methodArgs = { handler, checkpoint, chainId };
-    return await this.proxyRequest(methodArgs, TxType.ProxySell, NonceType.HybridRouter);
-  }
-// TODO: stub
-  async submitReport(handler: string, checkpoint: string, chainId: number): Promise<string> {
-    Utils.validateAccount(handler);
-    Utils.validateCheckpointFormat(checkpoint);
-    const methodArgs = { handler, checkpoint, chainId };
-    return await this.proxyRequest(methodArgs, TxType.ProxyReport, NonceType.PredictionMarkets);
-  }
-// TODO: stub
-  async submitCreateMarketAndDeployPool(handler: string, checkpoint: string, chainId: number): Promise<string> {
-    Utils.validateAccount(handler);
-    Utils.validateCheckpointFormat(checkpoint);
-    const methodArgs = { handler, checkpoint, chainId };
-    return await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, NonceType.PredictionMarkets);
-  }
 
   async createMarketAndDeployPool(baseAsset,
     creatorFee,
