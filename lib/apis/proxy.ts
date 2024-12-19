@@ -420,7 +420,7 @@ async function signProxyBuy({ relayer, nonce, signerAddress, marketId, assetCoun
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
-    { Text: 'buy' },
+    { Text: 'buy outcome tokens' },
       { AccountId: dataRelayer },
       { u64: nonce },
       { u32: marketId },
@@ -439,7 +439,7 @@ async function signProxySell({relayer, nonce, signerAddress, marketId, assetCoun
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
-    { Text: 'sell' },
+    { Text: 'sell outcome tokens' },
     { AccountId: dataRelayer },
     { u64: nonce },
     { u32: marketId },
@@ -459,7 +459,7 @@ async function signProxyReport({relayer, nonce, signerAddress, outcome, api}){
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
-    { Text: 'report' },
+    { Text: 'report_market_outcome_context' },
       { AccountId: dataRelayer },
       { u64: nonce },
       { u32: outcome }
