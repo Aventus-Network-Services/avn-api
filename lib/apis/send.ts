@@ -319,6 +319,14 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxySell, NonceType.HybridRouter);
   }
 
+  async transferAsset(token, who, to, amount): Promise<string> {
+    const methodArgs = {
+      token, who, to, amount
+    }
+    return await this.proxyRequest(methodArgs, TxType.ProxyTransferAsset, NonceType.PredictionMarkets);
+  }
+
+
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
     // Lock while we are sending the transaction to ensure we maintain a correct order
     const lockKey = `send-${this.signerAddress}${nonceType}`;

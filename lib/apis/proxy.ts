@@ -46,7 +46,9 @@ const signing = {
   proxyCreateMarketAndDeployPool: async proxyArgs => await signProxyCreateMarketAndDeployPool(proxyArgs),
   proxyBuy: async proxyArgs => await signProxyBuy(proxyArgs),
   proxySell: async proxyArgs => await signProxySell(proxyArgs),
-  proxyReport: async proxyArgs => await signProxyReport(proxyArgs)
+  proxyReport: async proxyArgs => await signProxyReport(proxyArgs),
+  proxyRedeemShares: async proxyArgs => await signProxyRedeemShares(proxyArgs),
+  proxyTransferAsset: async proxyArgs => await signProxyTransferAsset(proxyArgs)
 };
 
 export default class ProxyUtils {
@@ -405,7 +407,7 @@ async function signProxyCreateMarketAndDeployPool({relayer,signerAddress,baseAss
       { MarketPeriodOf: period },
       { DeadlinePeriodOf: deadlines },
       { MultiHash: metadata },
-      { u128: marketType },
+      { MarkeType: marketType },
       { u8: disputeMechanism },
       { BalanceOf: amount },
       { 'Vec<u8>': spotPrices },
@@ -463,6 +465,35 @@ async function signProxyReport({relayer, nonce, signerAddress, outcome, api}){
       { AccountId: dataRelayer },
       { u64: nonce },
       { u32: outcome }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyRedeemShares({relayer, nonce, signerAddress, marketId, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'redeem_shares_context' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { u32: marketId }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyTransferAsset({relayer, nonce, signerAddress, token, who, to,amount, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'redeem_shares_context' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { H160: token },
+      { AccountId: who },
+      { AccountId: to },
+      { BalanceOf: amount }
   ]
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
