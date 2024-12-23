@@ -42,7 +42,13 @@ const signing = {
   proxyScheduleLeaveNominators: async proxyArgs => await signProxyScheduleLeaveNominators(proxyArgs),
   proxyExecuteLeaveNominators: async proxyArgs => await signProxyExecuteLeaveNominators(proxyArgs),
   proxyRegisterHandler: async proxyArgs => await signProxyRegisterChainHandler(proxyArgs),
-  proxySubmitCheckpoint: async proxyArgs => await signProxySubmitCheckpointWithIdentity(proxyArgs)
+  proxySubmitCheckpoint: async proxyArgs => await signProxySubmitCheckpointWithIdentity(proxyArgs),
+  proxyCreateMarketAndDeployPool: async proxyArgs => await signProxyCreateMarketAndDeployPool(proxyArgs),
+  proxyBuy: async proxyArgs => await signProxyBuy(proxyArgs),
+  proxySell: async proxyArgs => await signProxySell(proxyArgs),
+  proxyReport: async proxyArgs => await signProxyReport(proxyArgs),
+  proxyRedeemShares: async proxyArgs => await signProxyRedeemShares(proxyArgs),
+  proxyTransferAsset: async proxyArgs => await signProxyTransferAsset(proxyArgs)
 };
 
 export default class ProxyUtils {
@@ -375,6 +381,116 @@ async function signProxySubmitCheckpointWithIdentity({relayer, signerAddress, ch
 
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign)
+}
+
+async function signProxyCreateMarketAndDeployPool({relayer,signerAddress,baseAsset,
+  oracle,
+  period,
+  deadlines,
+  metadata,
+  amount,
+  spotPrices,
+  swapFee,nonce, api}){
+    const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+    const validatedOracle = AccountUtils.convertToPublicKeyIfNeeded(oracle);
+
+    const orderedData = [
+      { Text: 'create_market_and_deploy_pool' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { AssetOf: baseAsset },
+      { AccountId: validatedOracle },
+      { MarketPeriodOf: period },
+      { DeadlinePeriodOf: deadlines },
+      { MultiHash: metadata },
+      { BalanceOf: amount },
+      { 'Vec<u8>': spotPrices },
+      { BalanceOf: swapFee },
+    ]
+
+    const encodedDataToSign = encodeOrderedData(orderedData);
+    return await signData(api, signerAddress, encodedDataToSign);
+  }
+
+async function signProxyBuy({ relayer, nonce, signerAddress, marketId, assetCount, asset, amountIn, maxPrice, orders, strategy, api }){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'buy outcome tokens' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { u32: marketId },
+      { u16: assetCount },
+      { AssetOf: asset },
+      { BalanceOf: amountIn },
+      { BalanceOf: maxPrice },
+      { 'Vec<u128>': orders },
+      { u8: strategy }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxySell({relayer, nonce, signerAddress, marketId, assetCount, asset, amountIn, minPrice, orders, strategy, api,}) {
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'sell outcome tokens' },
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { u32: marketId },
+    { u16: assetCount },
+    { AssetOf: asset },
+    { BalanceOf: amountIn },
+    { BalanceOf: minPrice },
+    { 'Vec<u128>': orders },
+    { u8: strategy }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+
+}
+
+async function signProxyReport({relayer, nonce, signerAddress, outcome, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'report_market_outcome_context' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { u32: outcome }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyRedeemShares({relayer, nonce, signerAddress, marketId, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'redeem_shares_context' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { u32: marketId }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyTransferAsset({relayer, nonce, signerAddress, token, who, to,amount, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'redeem_shares_context' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { H160: token },
+      { AccountId: who },
+      { AccountId: to },
+      { BalanceOf: amount }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
 }
 
 function encodeOrderedData(data: object[]) {

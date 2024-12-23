@@ -12,6 +12,8 @@ export enum NonceType {
   Nft = 'nft',
   Batch = 'batch',
   Anchor = 'anchor',
+  PredictionMarkets = 'predictionMarkets',
+  HybridRouter = 'hybridRouter',
   None = 'none'
 }
 
@@ -88,4 +90,70 @@ export interface Royalty {
   rate: {
     parts_per_million: number;
   };
+}
+
+export type PredictionMarketConstants = {
+    advisoryBond: number;
+    validityBond: number,
+    closeEarlyBlockPeriod: number;
+    closeEarlyTimeFramePeriod: number;
+    closeEarlyDisputeBond: number;
+    closeEarlyProtectionTimeFramePeriod: number;
+    closeEarlyProtectionBlockPeriod: number;
+    closeEarlyRequestBond: number;
+    disputeBond: number;
+    maxDisputes: number;
+    minDisputeDuration: number;
+    maxDisputeDuration: number;
+    maxCreatorFee: number;
+    minCategories: number;
+    maxCategories: number;
+    outsiderBond: number;
+    oracleBond: number;
+    maxOracleDuration: number;
+    minOracleDuration: number;
+    maxGracePeriod: number;
+    maxSwapFee: number
+}
+
+export type CreateMarketBaseParams = {
+   // The base asset of the market.
+  baseAsset: string // AssetId
+  //  How much does the creator take in fees pr trade in PerBill.
+  // Its a value between 0 and 1 billion. Where 1 billion is 100% trade fee.
+  creatorFee?: Number | Uint8Array
+  // The resolver of the market outcome
+  oracle: string
+  // The fee to swap in and out of the pool.
+  swapFee: string
+  // Spot prices of the assets.
+  spotPrices: Array<string>
+  // Market dispute mechanism.
+  disputeMechanism?: | 'Authorized'
+  //Type of market, categorical or scalar
+  marketType:
+    | {
+        Categorical: number
+      }
+
+  // The period of the market in tuple of timestamps or block numbers.
+  period:
+    | {
+        // The start and end block of the market.
+        Block: [number, number]
+      }
+    | {
+        // The start and end timestamp of the market.
+        Timestamp: [number, number]
+      }
+
+  deadlines: {
+    // The number of blocks to wait after trading ends and before the oracle can resolve the market.
+    gracePeriod: number
+    // The number of blocks to wait for the oracle to resolve the market.
+    // If this period is exceeded, the market will go into open resolving where anyone can resolve the market.
+    oracleDuration: number
+    // The number of blocks to await possible disputes after market is resolved.
+    disputeDuration: number
+  }
 }
