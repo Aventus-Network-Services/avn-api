@@ -324,6 +324,8 @@ export class Query {
   }
 
   async getPredictionMarketConstants(): Promise<PredictionMarketConstants> {
+    console.log("1: ", this.predictionMarketConsts);
+    console.log("2: ", Object.keys(this.predictionMarketConsts).length);
     if (Object.keys(this.predictionMarketConsts).length === 0) {
       const r = await this.postRequest<PredictionMarketConstants>(this.api, 'getPredictionMarketConstants');
       this.predictionMarketConsts = r;
