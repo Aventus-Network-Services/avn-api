@@ -329,6 +329,8 @@ export class Query {
     if (Object.keys(this.predictionMarketConsts).length === 0) {
       const r = await this.postRequest<PredictionMarketConstants>(this.api, 'getPredictionMarketConstants');
       this.predictionMarketConsts = r;
+      console.log("11: ", this.predictionMarketConsts);
+    console.log("22: ", Object.keys(this.predictionMarketConsts).length);
     }
 
     return this.predictionMarketConsts;
