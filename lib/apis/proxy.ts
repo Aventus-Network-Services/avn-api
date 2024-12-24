@@ -446,7 +446,13 @@ async function signProxySubmitCheckpointWithIdentity({relayer, signerAddress, ch
   return await signData(api, signerAddress, encodedDataToSign)
 }
 
-async function signProxyCreateMarketAndDeployPool({relayer,signerAddress,baseAsset,
+async function signProxyCreateMarketAndDeployPool({
+  relayer,
+  signerAddress,
+  baseAsset,
+  creatorFee,
+  marketType,
+  disputeMechanism,
   oracle,
   period,
   deadlines,
@@ -462,13 +468,15 @@ async function signProxyCreateMarketAndDeployPool({relayer,signerAddress,baseAss
       { AccountId: dataRelayer },
       { u64: nonce },
       { AssetOf: baseAsset },
-      { Asset: baseAsset },
+      { CreatorFee: creatorFee },
       { AccountId: validatedOracle },
       { MarketPeriodOf: period },
       { DeadlinePeriodOf: deadlines },
       { MultiHash: metadata },
+      { MarketType: marketType },
+      { MarketDisputeMechanism: disputeMechanism },
       { BalanceOf: amount },
-      { 'Vec<u8>': spotPrices },
+      { 'Vec<BalanceOf>': spotPrices },
       { BalanceOf: swapFee },
     ]
 
