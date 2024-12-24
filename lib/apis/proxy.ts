@@ -559,7 +559,7 @@ async function signProxyTransferAsset({relayer, nonce, signerAddress, token, who
 function encodeOrderedData(data: object[]) {
   const encodedDataToSign = data.map(d => {
     const [type, value] = Object.entries(d)[0];
-    console.log(`Encoding ${type} with value ${value}`);
+    console.log(`Encoding ${type} with value ${JSON.stringify(value)} gives: ${registry.createType(type as any, value).toU8a(numTypes.includes(type))}`);
     return type === 'SkipEncode' ? value : registry.createType(type as any, value).toU8a(numTypes.includes(type));
   });
   return u8aConcat(...encodedDataToSign);
