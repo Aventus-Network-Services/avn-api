@@ -289,12 +289,8 @@ export class Send {
       throw new Error(`Oracle duration exceeds min period of ${market_constants.minOracleDuration}`);
     }
 
-    if (deadlines.disputeDuration < market_constants.minDisputeDuration) {
-      throw new Error(`Dispute duration exceeds min period of ${market_constants.minDisputeDuration}`);
-    }
-
-    if (deadlines.disputeDuration > market_constants.maxDisputeDuration) {
-      throw new Error(`Dispute duration exceeds max period of ${market_constants.maxDisputeDuration}`);
+    if (deadlines.disputeDuration > 0) {
+      throw new Error(`Dispute duration must be 0 when Authorised is used as dispute mechanism`);
     }
 
     const baseAsset = await this.queryApi.getAssetIdFromEthToken(baseAssetEthAddress);
