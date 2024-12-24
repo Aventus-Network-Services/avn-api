@@ -468,7 +468,7 @@ async function signProxyCreateMarketAndDeployPool({
       { AccountId: dataRelayer },
       { u64: nonce },
       { AssetOf: baseAsset },
-      { CreatorFee: creatorFee },
+      { BalanceOf: creatorFee },
       { AccountId: validatedOracle },
       { MarketPeriodOf: period },
       { DeadlinePeriodOf: deadlines },
