@@ -14,6 +14,66 @@ export interface FeePaymentData {
   paymentNonce: number;
 }
 
+const customTypes = {
+  "Range<BlockNumber>": {
+    "start": "BlockNumber",
+    "end": "BlockNumber"
+  },
+  "Range<Moment>": {
+    "start": "Moment",
+    "end": "Moment"
+  },
+  "MarketPeriod<BlockNumber,Moment>": {
+    "_enum": {
+      "Block": "Range<BlockNumber>",
+      "Timestamp": "Range<Moment>"
+    }
+  },
+  "AssetOf": "Asset<MarketId",
+  "MarketPeriodOf": "MarketPeriod<BlockNumber,Moment>",
+  "MarketId" : "u128",
+  "CategoryIndex": "u16",
+  "PoolId": "u128",
+  "MultiHash": {
+    "_enum": {
+      "Sha3_384": "[u8; 50]",
+    }
+  },
+  "Asset<MarketId>" : {
+    "_enum": {
+      "CategoricalOutcome" : "(MarketId, CategoryIndex)",
+      "ScalarOutcome": "(MarketId, ScalarPosition)",
+      "CombinatorialOutcome": null,
+      "PoolShare": "PoolId",
+      "Vow": null,
+      "ForeignAsset": "u32",
+      "ParimutuelShare": "(MarketId, CategoryIndex)",
+    }
+  },
+  "ScalarPosition" : {
+    "_enum": {
+      "Long": null,
+      "Short": null
+    }
+  },
+  "MarketType": {
+    /// A market with a number of categorical outcomes.
+    "Categorical": "u16"
+  },
+  "MarketDisputeMechanism": {
+    "Authorized": null,
+    "Court": null,
+  },
+  "Deadlines<BlockNumber>" : {
+    "grace_period": "BlockNumber",
+    "oracle_duration": "BlockNumber",
+    "dispute_duration": "BlockNumber",
+  }
+};
+
+// Register these custom types so the registry knows how to decode/encode them
+registry.register(customTypes);
+
 const numTypes = ['AccountId', 'Balance', 'BalanceOf', 'EraIndex', 'u8', 'u32', 'u64', 'u128', 'U256', 'H160', 'H256'];
 
 const signing = {
