@@ -101,8 +101,6 @@ export class Query {
       .axios(awtToken)
       .post(endpoint, { jsonrpc: '2.0', id: api.uuid(), method: method, params: params });
 
-      console.log("Post Request: ", response);
-
     if (!response || !response.data) {
       throw new Error('Invalid server response');
     }
@@ -326,13 +324,9 @@ export class Query {
   }
 
   async getPredictionMarketConstants(): Promise<PredictionMarketConstants> {
-    console.log("1: ", this.predictionMarketConsts);
-    console.log("2: ", Object.keys(this.predictionMarketConsts).length);
     if (Object.keys(this.predictionMarketConsts).length === 0) {
       const r = await this.postRequest<PredictionMarketConstants>(this.api, 'getPredictionMarketConstants');
       this.predictionMarketConsts = r;
-      console.log("11: ", this.predictionMarketConsts);
-    console.log("22: ", Object.keys(this.predictionMarketConsts).length);
     }
 
     return this.predictionMarketConsts;

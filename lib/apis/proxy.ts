@@ -29,7 +29,7 @@ const customTypes = {
       "Timestamp": "Range<Moment>"
     }
   },
-  "AssetOf": "Asset<MarketId",
+  "AssetOf": "Asset<MarketId>",
   "MarketPeriodOf": "MarketPeriod<BlockNumber,Moment>",
   "MarketId" : "u128",
   "CategoryIndex": "u16",
