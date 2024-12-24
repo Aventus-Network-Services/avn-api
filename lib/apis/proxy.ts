@@ -40,7 +40,7 @@ const customTypes = {
       "Sha3_384": "[u8; 50]",
     }
   },
-  "Asset<MarketId>" : {
+  "Asset" : {
     "_enum": {
       "CategoricalOutcome" : "(MarketId, CategoryIndex)",
       "ScalarOutcome": "(MarketId, ScalarPosition)",
@@ -65,7 +65,7 @@ const customTypes = {
     "Authorized": null,
     "Court": null,
   },
-  "Deadlines<BlockNumber>" : {
+  "Deadlines" : {
     "grace_period": "BlockNumber",
     "oracle_duration": "BlockNumber",
     "dispute_duration": "BlockNumber",
@@ -460,6 +460,7 @@ async function signProxyCreateMarketAndDeployPool({relayer,signerAddress,baseAss
       { AccountId: dataRelayer },
       { u64: nonce },
       { AssetOf: baseAsset },
+      { Asset: baseAsset },
       { AccountId: validatedOracle },
       { MarketPeriodOf: period },
       { DeadlinePeriodOf: deadlines },
@@ -469,6 +470,7 @@ async function signProxyCreateMarketAndDeployPool({relayer,signerAddress,baseAss
       { BalanceOf: swapFee },
     ]
 
+    console.log("Encoding create market: ", orderedData);
     const encodedDataToSign = encodeOrderedData(orderedData);
     return await signData(api, signerAddress, encodedDataToSign);
   }
@@ -557,6 +559,7 @@ async function signProxyTransferAsset({relayer, nonce, signerAddress, token, who
 function encodeOrderedData(data: object[]) {
   const encodedDataToSign = data.map(d => {
     const [type, value] = Object.entries(d)[0];
+    console.log(`Encoding ${type} with value ${value}`);
     return type === 'SkipEncode' ? value : registry.createType(type as any, value).toU8a(numTypes.includes(type));
   });
   return u8aConcat(...encodedDataToSign);
