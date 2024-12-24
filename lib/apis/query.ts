@@ -101,6 +101,8 @@ export class Query {
       .axios(awtToken)
       .post(endpoint, { jsonrpc: '2.0', id: api.uuid(), method: method, params: params });
 
+      console.log("Post Request: ", JSON.stringify(response));
+
     if (!response || !response.data) {
       throw new Error('Invalid server response');
     }
