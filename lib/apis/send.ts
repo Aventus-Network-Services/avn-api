@@ -293,12 +293,6 @@ export class Send {
       throw new Error(`Dispute duration must be 0 when Authorised is used as dispute mechanism`);
     }
 
-    const baseAsset = await this.queryApi.getAssetIdFromEthToken(baseAssetEthAddress);
-
-    if (!baseAsset) {
-      throw new Error(`Invalid base asset eth address: ${baseAssetEthAddress}. Asset not found`);
-    }
-
     const creatorFee: CreateMarketBaseParams["creatorFee"] = 0;
     const marketType: CreateMarketBaseParams["marketType"] = {
         Categorical: 2,
@@ -308,7 +302,7 @@ export class Send {
     const swapFee: CreateMarketBaseParams["swapFee"] = "30000000"; //0.3% (remember its 10 decimal places not 18)
 
     const methodArgs = {
-      baseAsset,
+      baseAssetEthAddress,
       creatorFee,
       oracle,
       period,
