@@ -463,7 +463,7 @@ async function signProxyCreateMarketAndDeployPool({relayer,signerAddress,baseAss
       { AccountId: validatedOracle },
       { MarketPeriodOf: period },
       { DeadlinePeriodOf: deadlines },
-      { MultiHash: metadata },
+      //{ MultiHash: metadata },
       { BalanceOf: amount },
       { 'Vec<u8>': spotPrices },
       { BalanceOf: swapFee },
