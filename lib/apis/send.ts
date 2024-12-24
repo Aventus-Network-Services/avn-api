@@ -298,6 +298,11 @@ export class Send {
     }
 
     const baseAsset = await this.queryApi.getAssetIdFromEthToken(baseAssetEthAddress);
+
+    if (!baseAsset) {
+      throw new Error(`Invalid base asset eth address: ${baseAssetEthAddress}. Asset not found`);
+    }
+
     const creatorFee: CreateMarketBaseParams["creatorFee"] = 0;
     const marketType: CreateMarketBaseParams["marketType"] = {
         Categorical: 2,

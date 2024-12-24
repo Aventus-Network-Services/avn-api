@@ -121,7 +121,7 @@ export type CreateMarketBaseParams = {
   baseAsset: string // AssetId
   //  How much does the creator take in fees pr trade in PerBill.
   // Its a value between 0 and 1 billion. Where 1 billion is 100% trade fee.
-  creatorFee?: Number | Uint8Array
+  creatorFee?: number | Uint8Array
   // The resolver of the market outcome
   oracle: string
   // The fee to swap in and out of the pool.
