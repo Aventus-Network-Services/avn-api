@@ -315,12 +315,12 @@ export class Query {
     return await this.postRequest<string>(this.api, 'isHandlerRegistered', { handler });
   }
 
-  async getAssetIdFromEthToken(token: string): Promise<string> {
-    if (!this.assets[token]) {
-      this.assets[token] = await this.postRequest<string>(this.api, 'getAssetIdFromEthToken', { token });
+  async getAssetIdFromEthToken(ethTokenAddress: string): Promise<string> {
+    if (!this.assets[ethTokenAddress]) {
+      this.assets[ethTokenAddress] = await this.postRequest<string>(this.api, 'getAssetIdFromEthToken', { ethTokenAddress });
     }
 
-    return this.assets[token];
+    return this.assets[ethTokenAddress];
   }
 
   async getPredictionMarketConstants(): Promise<PredictionMarketConstants> {
