@@ -23,7 +23,7 @@ const customTypes = {
     "start": "Moment",
     "end": "Moment"
   },
-  "MarketPeriod<BlockNumber,Moment>": {
+  "MarketPeriod": {
     "_enum": {
       "Block": "Range<BlockNumber>",
       "Timestamp": "Range<Moment>"
