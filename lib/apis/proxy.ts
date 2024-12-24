@@ -62,8 +62,10 @@ const customTypes = {
     "Categorical": "u16"
   },
   "MarketDisputeMechanism": {
+    "_enum": {
     "Authorized": null,
     "Court": null,
+    }
   },
   "Deadlines" : {
     "grace_period": "BlockNumber",
