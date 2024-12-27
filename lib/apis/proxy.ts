@@ -477,9 +477,9 @@ async function signProxyCreateMarketAndDeployPool({
       { MultiHash: metadata },
       { MarketType: marketType },
       { 'Option<MarketDisputeMechanism>': disputeMechanism },
-      { 'Compact<BalanceOf>': amount },
+      { 'BalanceOf': amount },
       { 'Vec<BalanceOf>': spotPrices },
-      { 'Compact<BalanceOf>': swapFee },
+      { 'BalanceOf': swapFee },
     ]
 
     console.log("Encoding create market: ", orderedData);
