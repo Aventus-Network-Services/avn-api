@@ -474,7 +474,7 @@ async function signProxyCreateMarketAndDeployPool({
       { DeadlinePeriodOf: deadlines },
       { MultiHash: metadata },
       { MarketType: marketType },
-      { MarketDisputeMechanism: disputeMechanism },
+      { 'Option<MarketDisputeMechanism>': disputeMechanism },
       { 'Compact<BalanceOf>': amount },
       { 'Vec<BalanceOf>': spotPrices },
       { 'Compact<BalanceOf>': swapFee },

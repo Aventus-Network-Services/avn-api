@@ -277,21 +277,21 @@ export class Send {
 
     const market_constants = await this.queryApi.getPredictionMarketConstants();
 
-    if (deadlines.gracePeriod > market_constants.maxGracePeriod) {
-      throw new Error(`Grace period exceeds max grace period of ${market_constants.maxGracePeriod}`);
-    }
+    // if (deadlines.gracePeriod > market_constants.maxGracePeriod) {
+    //   throw new Error(`Grace period exceeds max grace period of ${market_constants.maxGracePeriod}`);
+    // }
 
-    if (deadlines.oracleDuration > market_constants.maxOracleDuration) {
-      throw new Error(`Oracle duration exceeds max period of ${market_constants.maxOracleDuration}`);
-    }
+    // if (deadlines.oracleDuration > market_constants.maxOracleDuration) {
+    //   throw new Error(`Oracle duration exceeds max period of ${market_constants.maxOracleDuration}`);
+    // }
 
-    if (deadlines.oracleDuration < market_constants.minOracleDuration) {
-      throw new Error(`Oracle duration exceeds min period of ${market_constants.minOracleDuration}`);
-    }
+    // if (deadlines.oracleDuration < market_constants.minOracleDuration) {
+    //   throw new Error(`Oracle duration exceeds min period of ${market_constants.minOracleDuration}`);
+    // }
 
-    if (deadlines.disputeDuration > 0) {
-      throw new Error(`Dispute duration must be 0 when Authorised is used as dispute mechanism`);
-    }
+    // if (deadlines.disputeDuration > 0) {
+    //   throw new Error(`Dispute duration must be 0 when Authorised is used as dispute mechanism`);
+    // }
 
     const baseAsset = await this.queryApi.getAssetIdFromEthToken(baseAssetEthAddress);
 
