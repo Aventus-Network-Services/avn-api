@@ -149,11 +149,11 @@ export type CreateMarketBaseParams = {
 
   deadlines: {
     // The number of blocks to wait after trading ends and before the oracle can resolve the market.
-    gracePeriod: number
+    grace_period: number
     // The number of blocks to wait for the oracle to resolve the market.
     // If this period is exceeded, the market will go into open resolving where anyone can resolve the market.
-    oracleDuration: number
+    oracle_duration: number
     // The number of blocks to await possible disputes after market is resolved.
-    disputeDuration: number
+    dispute_duration: number
   }
 }
