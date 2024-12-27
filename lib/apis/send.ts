@@ -304,7 +304,7 @@ export class Send {
         Categorical: 2,
     };
 
-    const disputeMechanism: CreateMarketBaseParams["disputeMechanism"] = "Authorized";
+    const disputeMechanism: CreateMarketBaseParams["disputeMechanism"] = undefined; // Trusted market
     const swapFee: CreateMarketBaseParams["swapFee"] = "30000000"; //0.3% (remember its 10 decimal places not 18)
 
     const methodArgs = {
