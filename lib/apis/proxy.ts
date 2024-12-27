@@ -509,6 +509,8 @@ async function signProxyBuy({ relayer, nonce, signerAddress, marketId, assetCoun
       { 'Vec<u128>': orders },
       { u8: strategy }
   ]
+
+  console.log("BUY DATA: ", orderedData);
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
@@ -529,7 +531,7 @@ async function signProxySell({relayer, nonce, signerAddress, marketId, assetCoun
     { 'Strategy': strategy }
   ]
 
-  console.log("BUY DATA: ", orderedData);
+  console.log("SELL DATA: ", orderedData);
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
