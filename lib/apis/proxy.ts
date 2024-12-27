@@ -73,7 +73,13 @@ const customTypes = {
     "grace_period": "BlockNumber",
     "oracle_duration": "BlockNumber",
     "dispute_duration": "BlockNumber",
-  }
+  },
+  "Strategy": {
+    "_enum": {
+      "ImmediateOrCancel": null,
+      "LimitOrder": null,
+    }
+  },
 };
 
 // Register these custom types so the registry knows how to decode/encode them
@@ -495,7 +501,7 @@ async function signProxyBuy({ relayer, nonce, signerAddress, marketId, assetCoun
     { Text: 'buy outcome tokens' },
       { AccountId: dataRelayer },
       { u64: nonce },
-      { u32: marketId },
+      { u128: marketId },
       { u16: assetCount },
       { AssetOf: asset },
       { BalanceOf: amountIn },
@@ -514,17 +520,16 @@ async function signProxySell({relayer, nonce, signerAddress, marketId, assetCoun
     { Text: 'sell outcome tokens' },
     { AccountId: dataRelayer },
     { u64: nonce },
-    { u32: marketId },
+    { u128: marketId },
     { u16: assetCount },
     { AssetOf: asset },
     { BalanceOf: amountIn },
     { BalanceOf: minPrice },
     { 'Vec<u128>': orders },
-    { u8: strategy }
+    { 'Strategy': strategy }
   ]
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
-
 }
 
 async function signProxyReport({relayer, nonce, signerAddress, outcome, api}){

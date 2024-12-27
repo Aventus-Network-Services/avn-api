@@ -116,6 +116,14 @@ export type PredictionMarketConstants = {
     maxSwapFee: number
 }
 
+export enum Strategy {
+    /// The trade is rolled back if it cannot be executed fully.
+    ImmediateOrCancel = "ImmediateOrCancel",
+    /// Partially fulfills the order if possible, placing the remainder in the order book. Favors
+    /// achieving a specific price rather than immediate execution.
+    LimitOrder = "LimitOrder",
+}
+
 export type CreateMarketBaseParams = {
    // The base asset of the market.
   baseAsset: string // AssetId

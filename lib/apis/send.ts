@@ -1,7 +1,7 @@
 'use strict';
 
 import { AccountUtils, EthereumLogEventType, Market, StakingStatus, TxType, Utils } from '../utils';
-import { AvnApiConfig, NonceType, Royalty, CreateMarketBaseParams } from '../interfaces/index';
+import { AvnApiConfig, NonceType, Royalty, CreateMarketBaseParams, Strategy } from '../interfaces/index';
 import ProxyUtils from './proxy';
 import BN from 'bn.js';
 import { Awt } from '../awt';
@@ -277,21 +277,21 @@ export class Send {
 
     const market_constants = await this.queryApi.getPredictionMarketConstants();
 
-    // if (deadlines.gracePeriod > market_constants.maxGracePeriod) {
-    //   throw new Error(`Grace period exceeds max grace period of ${market_constants.maxGracePeriod}`);
-    // }
+    if (deadlines.grace_period > market_constants.maxGracePeriod) {
+      throw new Error(`Grace period exceeds max grace period of ${market_constants.maxGracePeriod}`);
+    }
 
-    // if (deadlines.oracleDuration > market_constants.maxOracleDuration) {
-    //   throw new Error(`Oracle duration exceeds max period of ${market_constants.maxOracleDuration}`);
-    // }
+    if (deadlines.oracle_duration > market_constants.maxOracleDuration) {
+      throw new Error(`Oracle duration exceeds max period of ${market_constants.maxOracleDuration}`);
+    }
 
-    // if (deadlines.oracleDuration < market_constants.minOracleDuration) {
-    //   throw new Error(`Oracle duration exceeds min period of ${market_constants.minOracleDuration}`);
-    // }
+    if (deadlines.oracle_duration < market_constants.minOracleDuration) {
+      throw new Error(`Oracle duration exceeds min period of ${market_constants.minOracleDuration}`);
+    }
 
-    // if (deadlines.disputeDuration > 0) {
-    //   throw new Error(`Dispute duration must be 0 when Authorised is used as dispute mechanism`);
-    // }
+    if (deadlines.dispute_duration > 0) {
+      throw new Error(`Dispute duration must be 0 when Authorised is used as dispute mechanism`);
+    }
 
     const baseAsset = await this.queryApi.getAssetIdFromEthToken(baseAssetEthAddress);
 
@@ -336,14 +336,24 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRedeemShares, NonceType.PredictionMarkets);
   }
 
-  async buyWithUsdc(marketId, assetCount, asset, amountIn, maxPrice, orders, strategy): Promise<string> {
+  async buyWithUsdc(marketId: string, usdcEthAddress: string, amountIn: string, maxPrice: string): Promise<string> {
+    const assetCount = 2;
+    const orders = [];
+    const strategy = Strategy.ImmediateOrCancel;
+    const asset = await this.queryApi.getAssetIdFromEthToken(usdcEthAddress);
+
     const methodArgs = {
       marketId, assetCount, asset, amountIn, maxPrice, orders, strategy
     }
     return await this.proxyRequest(methodArgs, TxType.ProxyBuy, NonceType.HybridRouter);
   }
 
-  async sellForUsdc(marketId, assetCount, asset, amountIn, minPrice, orders, strategy): Promise<string> {
+  async sellForUsdc(marketId: string, usdcEthAddress: string, amountIn: string, minPrice: string): Promise<string> {
+    const assetCount = 2;
+    const orders = [];
+    const strategy = Strategy.ImmediateOrCancel;
+    const asset = await this.queryApi.getAssetIdFromEthToken(usdcEthAddress);
+
     const methodArgs = {
       marketId, assetCount, asset, amountIn, minPrice, orders, strategy
     }
