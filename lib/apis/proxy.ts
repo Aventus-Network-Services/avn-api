@@ -15,22 +15,22 @@ export interface FeePaymentData {
 }
 
 const customTypes = {
-  "Range<BlockNumber>": {
+  "BlockRange": {
     "start": "BlockNumber",
     "end": "BlockNumber"
   },
-  "Range<Moment>": {
+  "TimeRange": {
     "start": "Moment",
     "end": "Moment"
   },
   "MarketPeriod": {
     "_enum": {
-      "Block": "Range<BlockNumber>",
-      "Timestamp": "Range<Moment>"
+      "Block": "BlockRange",
+      "Timestamp": "TimeRange"
     }
   },
   "AssetOf": "Asset<MarketId>",
-  "MarketPeriodOf": "MarketPeriod<BlockNumber,Moment>",
+  "MarketPeriodOf": "MarketPeriod<BlockNumber, Moment>",
   "DeadlinePeriodOf": "Deadlines<BlockNumber>",
   "MarketId" : "u128",
   "CategoryIndex": "u16",
