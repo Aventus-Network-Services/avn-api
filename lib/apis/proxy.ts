@@ -484,6 +484,7 @@ async function signProxyCreateMarketAndDeployPool({
 
     console.log("Encoding create market: ", orderedData);
     const encodedDataToSign = encodeOrderedData(orderedData);
+    console.log("Encoded create market: ", encodedDataToSign);
     return await signData(api, signerAddress, encodedDataToSign);
   }
 
