@@ -331,7 +331,9 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyReport, NonceType.PredictionMarkets);
   }
 
-  async redeemShares(marketId): Promise<string>{
+  async redeemShares(marketId: string): Promise<string>{
+    // The name of the property (marketId) is used to get the correct nonce so do not change it.
+    // This is hacky and fragile. Come up with a better way to handle this.
     const methodArgs = {marketId}
     return await this.proxyRequest(methodArgs, TxType.ProxyRedeemShares, NonceType.PredictionMarkets);
   }
@@ -404,7 +406,8 @@ export class Send {
         paymentNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, NonceType.Payment, requestId);
       }
 
-      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId, methodArgs.chainId);
+      // TODO: Passing context specific methodArgs properties is hacky and fragile. Come up with a better way to handle this.
+      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId, methodArgs.chainId, methodArgs.marketId);
       const params = await this.getProxyParams(
         proxyNonce,
         transactionType,
