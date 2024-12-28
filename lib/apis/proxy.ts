@@ -510,12 +510,11 @@ async function signProxyBuy({ relayer, nonce, signerAddress, marketId, assetCoun
       { u8: strategy }
   ]
 
-  console.log("BUY DATA: ", orderedData);
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxySell({relayer, nonce, signerAddress, marketId, assetCount, asset, amountIn, minPrice, orders, strategy, api,}) {
+async function signProxySell({ relayer, nonce, signerAddress, marketId, assetCount, asset, amountIn, minPrice, orders, strategy, api }) {
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
@@ -531,7 +530,6 @@ async function signProxySell({relayer, nonce, signerAddress, marketId, assetCoun
     { 'Strategy': strategy }
   ]
 
-  console.log("SELL DATA: ", orderedData);
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
@@ -556,21 +554,21 @@ async function signProxyRedeemShares({relayer, nonce, signerAddress, marketId, a
     { Text: 'redeem_shares_context' },
       { AccountId: dataRelayer },
       { u64: nonce },
-      { u32: marketId }
+      { u128: marketId }
   ]
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxyTransferAsset({relayer, nonce, signerAddress, token, who, to,amount, api}){
+async function signProxyTransferAsset({relayer, nonce, signerAddress, assetEthAddress, from, to, amount, api}){
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
-    { Text: 'redeem_shares_context' },
+    { Text: 'transfer_tokens_context' },
       { AccountId: dataRelayer },
       { u64: nonce },
-      { H160: token },
-      { AccountId: who },
+      { H160: assetEthAddress },
+      { AccountId: from },
       { AccountId: to },
       { BalanceOf: amount }
   ]

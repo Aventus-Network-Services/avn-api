@@ -374,9 +374,9 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxySell, NonceType.HybridRouter);
   }
 
-  async transferAsset(token: string, from: string, to: string, amount: string): Promise<string> {
+  async transferAsset(assetEthAddress: string, from: string, to: string, amount: string): Promise<string> {
     const methodArgs = {
-      token, from, to, amount
+      assetEthAddress, from, to, amount
     }
     return await this.proxyRequest(methodArgs, TxType.ProxyTransferAsset, NonceType.PredictionMarkets);
   }
