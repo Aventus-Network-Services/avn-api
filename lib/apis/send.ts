@@ -336,11 +336,18 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRedeemShares, NonceType.PredictionMarkets);
   }
 
-  async buyWithUsdc(marketId: string, usdcEthAddress: string, amountIn: string, maxPrice: string): Promise<string> {
+  async buyWithUsdc(marketId: string, assetIndex: number, amountIn: string, maxPrice: string): Promise<string> {
     const assetCount = 2;
     const orders = [];
     const strategy = Strategy.ImmediateOrCancel;
-    const asset = await this.queryApi.getAssetIdFromEthToken(usdcEthAddress);
+
+    if (assetIndex < 0 || assetIndex > 1) {
+      throw new Error(`Invalid asset index: ${assetIndex}`);
+    }
+
+    const asset = {
+      CategoricalOutcome: [marketId, assetIndex]
+    }
 
     const methodArgs = {
       marketId, assetCount, asset, amountIn, maxPrice, orders, strategy
@@ -348,11 +355,18 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyBuy, NonceType.HybridRouter);
   }
 
-  async sellForUsdc(marketId: string, usdcEthAddress: string, amountIn: string, minPrice: string): Promise<string> {
+  async sellForUsdc(marketId: string, assetIndex: number, amountIn: string, minPrice: string): Promise<string> {
     const assetCount = 2;
     const orders = [];
     const strategy = Strategy.ImmediateOrCancel;
-    const asset = await this.queryApi.getAssetIdFromEthToken(usdcEthAddress);
+
+    if (assetIndex < 0 || assetIndex > 1) {
+      throw new Error(`Invalid asset index: ${assetIndex}`);
+    }
+
+    const asset = {
+      CategoricalOutcome: [marketId, assetIndex]
+    }
 
     const methodArgs = {
       marketId, assetCount, asset, amountIn, minPrice, orders, strategy
