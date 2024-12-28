@@ -336,7 +336,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRedeemShares, NonceType.PredictionMarkets);
   }
 
-  async buyWithUsdc(marketId: string, assetIndex: number, amountIn: string, maxPrice: string): Promise<string> {
+  async buyMarketTokens(marketId: string, assetIndex: number, amountIn: string, maxPrice: string): Promise<string> {
     const assetCount = 2;
     const orders = [];
     const strategy = Strategy.ImmediateOrCancel;
@@ -355,7 +355,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyBuy, NonceType.HybridRouter);
   }
 
-  async sellForUsdc(marketId: string, assetIndex: number, amountIn: string, minPrice: string): Promise<string> {
+  async sellMarketTokens(marketId: string, assetIndex: number, amountIn: string, minPrice: string): Promise<string> {
     const assetCount = 2;
     const orders = [];
     const strategy = Strategy.ImmediateOrCancel;
