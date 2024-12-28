@@ -562,13 +562,14 @@ async function signProxyRedeemShares({relayer, nonce, signerAddress, marketId, a
 
 async function signProxyTransferAsset({relayer, nonce, signerAddress, assetEthAddress, to, amount, api}){
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const from = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
   const orderedData = [
     { Text: 'transfer_tokens_context' },
       { AccountId: dataRelayer },
       { u64: nonce },
       { H160: assetEthAddress },
-      { AccountId: signerAddress },
+      { AccountId: from },
       { AccountId: to },
       { BalanceOf: amount }
   ]
