@@ -495,9 +495,7 @@ async function signProxyCreateMarketAndDeployPool({
       { BalanceOf: swapFee }
     ]
 
-    console.log("Encoding create market: ", orderedData);
     const encodedDataToSign = encodeOrderedData(orderedData);
-    console.log("Encoded create market: ", JSON.stringify(encodedDataToSign));
     return await signData(api, signerAddress, encodedDataToSign);
   }
 
@@ -604,7 +602,6 @@ async function signProxyWithdrawMarketToken({relayer, nonce, signerAddress, asse
 function encodeOrderedData(data: object[]) {
   const encodedDataToSign = data.map(d => {
     const [type, value] = Object.entries(d)[0];
-    console.log(`\nEncoding ${type} with value ${JSON.stringify(value)} \ngives: ${type === 'SkipEncode' ? value : registry.createType(type as any, value).toU8a(numTypes.includes(type))}`);
     return type === 'SkipEncode' ? value : registry.createType(type as any, value).toU8a(numTypes.includes(type));
   });
   return u8aConcat(...encodedDataToSign);
