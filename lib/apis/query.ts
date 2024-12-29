@@ -336,6 +336,10 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getPredictionMarketInfo', { marketId });
   }
 
+  async getMarketPoolInfo(marketId: string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getPredictionMarketPoolInfo', { marketId });
+  }
+
   async getLiftStatus(txHash: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'getEthereumEventStatus', { txHash });
   }
