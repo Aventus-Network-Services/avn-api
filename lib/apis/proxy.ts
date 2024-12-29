@@ -120,7 +120,7 @@ const signing = {
   proxyReportMarketOutcome: async proxyArgs => await signProxyReport(proxyArgs),
   proxyRedeemMarketShares: async proxyArgs => await signProxyRedeemShares(proxyArgs),
   proxyTransferMarketTokens: async proxyArgs => await signProxyTransferAsset(proxyArgs),
-  ProxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
+  proxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
 };
 
 export default class ProxyUtils {
