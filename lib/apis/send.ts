@@ -324,14 +324,14 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, NonceType.PredictionMarkets);
   }
 
-  async reportMarketOutcome(assetIndex: number): Promise<string> {
+  async reportMarketOutcome(marketId: string, assetIndex: number): Promise<string> {
+    // The name of the property (marketId) is used to get the correct nonce so do not change it.
+    // This is hacky and fragile. Come up with a better way to handle this.
     const outcome = {
       Categorical: assetIndex
     };
 
-    const methodArgs = {
-      outcome
-    }
+    const methodArgs = { marketId, outcome };
     return await this.proxyRequest(methodArgs, TxType.ProxyReportMarketOutcome, NonceType.PredictionMarkets);
   }
 
