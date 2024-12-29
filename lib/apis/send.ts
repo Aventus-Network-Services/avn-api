@@ -324,21 +324,25 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, NonceType.PredictionMarkets);
   }
 
-  async report(outcome): Promise<string> {
+  async reportMarketOutcome(assetIndex: number): Promise<string> {
+    const outcome = {
+      Categorical: assetIndex
+    };
+
     const methodArgs = {
       outcome
     }
-    return await this.proxyRequest(methodArgs, TxType.ProxyReport, NonceType.PredictionMarkets);
+    return await this.proxyRequest(methodArgs, TxType.ProxyReportMarketOutcome, NonceType.PredictionMarkets);
   }
 
-  async redeemShares(marketId: string): Promise<string>{
+  async redeemMarketShares(marketId: string): Promise<string>{
     // The name of the property (marketId) is used to get the correct nonce so do not change it.
     // This is hacky and fragile. Come up with a better way to handle this.
     const methodArgs = {marketId}
-    return await this.proxyRequest(methodArgs, TxType.ProxyRedeemShares, NonceType.PredictionMarkets);
+    return await this.proxyRequest(methodArgs, TxType.ProxyRedeemMarketShares, NonceType.PredictionMarkets);
   }
 
-  async buyMarketTokens(marketId: string, assetIndex: number, amountIn: string, maxPrice: string): Promise<string> {
+  async buyMarketOutcomeTokens(marketId: string, assetIndex: number, amountIn: string, maxPrice: string): Promise<string> {
     const assetCount = 2;
     const orders = [];
     const strategy = Strategy.ImmediateOrCancel;
@@ -354,10 +358,10 @@ export class Send {
     const methodArgs = {
       marketId, assetCount, asset, amountIn, maxPrice, orders, strategy
     }
-    return await this.proxyRequest(methodArgs, TxType.ProxyBuy, NonceType.HybridRouter);
+    return await this.proxyRequest(methodArgs, TxType.ProxyBuyMarketOutcomeTokens, NonceType.HybridRouter);
   }
 
-  async sellMarketTokens(marketId: string, assetIndex: number, amountIn: string, minPrice: string): Promise<string> {
+  async sellMarketOutcomeTokens(marketId: string, assetIndex: number, amountIn: string, minPrice: string): Promise<string> {
     const assetCount = 2;
     const orders = [];
     const strategy = Strategy.ImmediateOrCancel;
@@ -373,16 +377,22 @@ export class Send {
     const methodArgs = {
       marketId, assetCount, asset, amountIn, minPrice, orders, strategy
     }
-    return await this.proxyRequest(methodArgs, TxType.ProxySell, NonceType.HybridRouter);
+    return await this.proxyRequest(methodArgs, TxType.ProxySellMarketOutcomeTokens, NonceType.HybridRouter);
   }
 
-  async transferAsset(assetEthAddress: string, to: string, amount: string): Promise<string> {
+  async transferMarketToken(assetEthAddress: string, to: string, amount: string): Promise<string> {
     const methodArgs = {
       assetEthAddress, to, amount
     }
-    return await this.proxyRequest(methodArgs, TxType.ProxyTransferAsset, NonceType.PredictionMarkets);
+    return await this.proxyRequest(methodArgs, TxType.ProxyTransferMarketTokens, NonceType.PredictionMarkets);
   }
 
+  async withdrawMarketTokens(assetEthAddress: string, amount: string): Promise<string> {
+    const methodArgs = {
+      assetEthAddress, amount
+    }
+    return await this.proxyRequest(methodArgs, TxType.ProxyWithdrawMarketTokens, NonceType.PredictionMarkets);
+  }
 
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
     // Lock while we are sending the transaction to ensure we maintain a correct order

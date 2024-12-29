@@ -115,11 +115,12 @@ const signing = {
   proxyRegisterHandler: async proxyArgs => await signProxyRegisterChainHandler(proxyArgs),
   proxySubmitCheckpoint: async proxyArgs => await signProxySubmitCheckpointWithIdentity(proxyArgs),
   proxyCreateMarketAndDeployPool: async proxyArgs => await signProxyCreateMarketAndDeployPool(proxyArgs),
-  proxyBuy: async proxyArgs => await signProxyBuy(proxyArgs),
-  proxySell: async proxyArgs => await signProxySell(proxyArgs),
-  proxyReport: async proxyArgs => await signProxyReport(proxyArgs),
-  proxyRedeemShares: async proxyArgs => await signProxyRedeemShares(proxyArgs),
-  proxyTransferAsset: async proxyArgs => await signProxyTransferAsset(proxyArgs)
+  proxyBuyMarketOutcomeTokens: async proxyArgs => await signProxyBuy(proxyArgs),
+  proxySellMarketOutcomeTokens: async proxyArgs => await signProxySell(proxyArgs),
+  proxyReportMarketOutcome: async proxyArgs => await signProxyReport(proxyArgs),
+  proxyRedeemMarketShares: async proxyArgs => await signProxyRedeemShares(proxyArgs),
+  proxyTransferMarketTokens: async proxyArgs => await signProxyTransferAsset(proxyArgs),
+  ProxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
 };
 
 export default class ProxyUtils {
@@ -539,9 +540,9 @@ async function signProxyReport({relayer, nonce, signerAddress, outcome, api}){
 
   const orderedData = [
     { Text: 'report_market_outcome_context' },
-      { AccountId: dataRelayer },
-      { u64: nonce },
-      { u32: outcome }
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { u32: outcome }
   ]
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
@@ -552,9 +553,9 @@ async function signProxyRedeemShares({relayer, nonce, signerAddress, marketId, a
 
   const orderedData = [
     { Text: 'redeem_shares_context' },
-      { AccountId: dataRelayer },
-      { u64: nonce },
-      { u128: marketId }
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { u128: marketId }
   ]
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
@@ -566,12 +567,28 @@ async function signProxyTransferAsset({relayer, nonce, signerAddress, assetEthAd
 
   const orderedData = [
     { Text: 'transfer_tokens_context' },
-      { AccountId: dataRelayer },
-      { u64: nonce },
-      { H160: assetEthAddress },
-      { AccountId: from },
-      { AccountId: to },
-      { BalanceOf: amount }
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { H160: assetEthAddress },
+    { AccountId: from },
+    { AccountId: to },
+    { BalanceOf: amount }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyWithdrawMarketToken({relayer, nonce, signerAddress, assetEthAddress, amount, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const owner = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+
+  const orderedData = [
+    { Text: 'withdraw_tokens_context' },
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { H160: assetEthAddress },
+    { AccountId: owner },
+    { BalanceOf: amount }
   ]
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
