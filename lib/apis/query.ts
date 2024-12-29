@@ -333,7 +333,7 @@ export class Query {
   }
 
   async getMarketInfo(marketId: string): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getMarketInfo', { marketId });
+    return await this.postRequest<string>(this.api, 'getPredictionMarketInfo', { marketId });
   }
 
   async getLiftStatus(txHash: string): Promise<string> {
