@@ -80,6 +80,12 @@ const customTypes = {
       "LimitOrder": null,
     }
   },
+  "OutcomeReport": {
+    "_enum": {
+      "Categorical": "CategoryIndex",
+      "Scalar": "u128",
+    }
+  }
 };
 
 // Register these custom types so the registry knows how to decode/encode them
@@ -535,14 +541,15 @@ async function signProxySell({ relayer, nonce, signerAddress, marketId, assetCou
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxyReport({relayer, nonce, signerAddress, outcome, api}){
+async function signProxyReport({relayer, nonce, signerAddress, marketId, outcome, api}){
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
     { Text: 'report_market_outcome_context' },
     { AccountId: dataRelayer },
     { u64: nonce },
-    { u32: outcome }
+    { u128: marketId },
+    { OutcomeReport: outcome }
   ]
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);

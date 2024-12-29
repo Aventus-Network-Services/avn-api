@@ -164,4 +164,7 @@ export type CreateMarketBaseParams = {
     // The number of blocks to await possible disputes after market is resolved.
     dispute_duration: number
   }
+  outcome: {
+    Categorical: number
+  }
 }
