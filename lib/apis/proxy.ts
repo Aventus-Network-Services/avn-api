@@ -14,6 +14,83 @@ export interface FeePaymentData {
   paymentNonce: number;
 }
 
+const customTypes = {
+  "BlockRange": {
+    "start": "BlockNumber",
+    "end": "BlockNumber"
+  },
+  "TimeRange": {
+    "start": "Moment",
+    "end": "Moment"
+  },
+  "MarketPeriod": {
+    "_enum": {
+      "Block": "BlockRange",
+      "Timestamp": "TimeRange"
+    }
+  },
+  "AssetOf": "Asset<MarketId>",
+  "MarketPeriodOf": "MarketPeriod<BlockNumber, Moment>",
+  "DeadlinePeriodOf": "Deadlines<BlockNumber>",
+  "MarketId" : "u128",
+  "CategoryIndex": "u16",
+  "PoolId": "u128",
+  "MultiHash": {
+    "_enum": {
+      "Sha3_384": "[u8; 50]",
+    }
+  },
+  "Asset" : {
+    "_enum": {
+      "CategoricalOutcome" : "(MarketId, CategoryIndex)",
+      "ScalarOutcome": "(MarketId, ScalarPosition)",
+      "CombinatorialOutcome": null,
+      "PoolShare": "PoolId",
+      "Vow": null,
+      "ForeignAsset": "u32",
+      "ParimutuelShare": "(MarketId, CategoryIndex)",
+    }
+  },
+  "ScalarPosition" : {
+    "_enum": {
+      "Long": null,
+      "Short": null
+    }
+  },
+  "MarketType": {
+    "_enum": {
+      /// A market with a number of categorical outcomes.
+      "Categorical": "u16"
+    }
+  },
+  "MarketDisputeMechanism": {
+    "_enum": {
+    "Authorized": null,
+    "Court": null,
+    }
+  },
+  "Deadlines" : {
+    "grace_period": "BlockNumber",
+    "oracle_duration": "BlockNumber",
+    "dispute_duration": "BlockNumber",
+  },
+  "Strategy": {
+    "_enum": {
+      "ImmediateOrCancel": null,
+      "LimitOrder": null,
+    }
+  },
+  "OutcomeReport": {
+    "_enum": {
+      "Categorical": "CategoryIndex",
+      "Scalar": "u128",
+    }
+  }
+};
+
+// Register these custom types so the registry knows how to decode/encode them
+registry.register(customTypes);
+
 const numTypes = ['AccountId', 'Balance', 'BalanceOf', 'EraIndex', 'u8', 'u32', 'u64', 'u128', 'U256', 'H160', 'H256'];
 
 const signing = {
@@ -42,7 +119,14 @@ const signing = {
   proxyScheduleLeaveNominators: async proxyArgs => await signProxyScheduleLeaveNominators(proxyArgs),
   proxyExecuteLeaveNominators: async proxyArgs => await signProxyExecuteLeaveNominators(proxyArgs),
   proxyRegisterHandler: async proxyArgs => await signProxyRegisterChainHandler(proxyArgs),
-  proxySubmitCheckpoint: async proxyArgs => await signProxySubmitCheckpointWithIdentity(proxyArgs)
+  proxySubmitCheckpoint: async proxyArgs => await signProxySubmitCheckpointWithIdentity(proxyArgs),
+  proxyCreateMarketAndDeployPool: async proxyArgs => await signProxyCreateMarketAndDeployPool(proxyArgs),
+  proxyBuyMarketOutcomeTokens: async proxyArgs => await signProxyBuy(proxyArgs),
+  proxySellMarketOutcomeTokens: async proxyArgs => await signProxySell(proxyArgs),
+  proxyReportMarketOutcome: async proxyArgs => await signProxyReport(proxyArgs),
+  proxyRedeemMarketShares: async proxyArgs => await signProxyRedeemShares(proxyArgs),
+  proxyTransferMarketTokens: async proxyArgs => await signProxyTransferAsset(proxyArgs),
+  proxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
 };
 
 export default class ProxyUtils {
@@ -375,6 +459,144 @@ async function signProxySubmitCheckpointWithIdentity({relayer, signerAddress, ch
 
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign)
+}
+
+async function signProxyCreateMarketAndDeployPool({
+  relayer,
+  signerAddress,
+  baseAsset,
+  creatorFee,
+  marketType,
+  disputeMechanism,
+  oracle,
+  period,
+  deadlines,
+  metadata,
+  amount,
+  spotPrices,
+  swapFee,nonce, api}){
+    const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+    const validatedOracle = AccountUtils.convertToPublicKeyIfNeeded(oracle);
+
+    const orderedData = [
+      { Text: 'create_market_and_deploy_pool' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { AssetOf: baseAsset },
+      { Perbill: creatorFee },
+      { AccountId: validatedOracle },
+      { MarketPeriodOf: period },
+      { DeadlinePeriodOf: deadlines },
+      { MultiHash: metadata },
+      { MarketType: marketType },
+      { 'Option<MarketDisputeMechanism>': disputeMechanism },
+      { BalanceOf: amount },
+      { 'Vec<BalanceOf>': spotPrices },
+      { BalanceOf: swapFee }
+    ]
+
+    const encodedDataToSign = encodeOrderedData(orderedData);
+    return await signData(api, signerAddress, encodedDataToSign);
+  }
+
+async function signProxyBuy({ relayer, nonce, signerAddress, marketId, assetCount, asset, amountIn, maxPrice, orders, strategy, api }){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'buy outcome tokens' },
+      { AccountId: dataRelayer },
+      { u64: nonce },
+      { u128: marketId },
+      { u16: assetCount },
+      { AssetOf: asset },
+      { BalanceOf: amountIn },
+      { BalanceOf: maxPrice },
+      { 'Vec<u128>': orders },
+      { u8: strategy }
+  ]
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxySell({ relayer, nonce, signerAddress, marketId, assetCount, asset, amountIn, minPrice, orders, strategy, api }) {
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'sell outcome tokens' },
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { u128: marketId },
+    { u16: assetCount },
+    { AssetOf: asset },
+    { BalanceOf: amountIn },
+    { BalanceOf: minPrice },
+    { 'Vec<u128>': orders },
+    { 'Strategy': strategy }
+  ]
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyReport({relayer, nonce, signerAddress, marketId, outcome, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'report_market_outcome_context' },
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { u128: marketId },
+    { OutcomeReport: outcome }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyRedeemShares({relayer, nonce, signerAddress, marketId, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'redeem_shares_context' },
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { u128: marketId }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyTransferAsset({relayer, nonce, signerAddress, assetEthAddress, to, amount, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const from = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+
+  const orderedData = [
+    { Text: 'transfer_tokens_context' },
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { H160: assetEthAddress },
+    { AccountId: from },
+    { AccountId: to },
+    { BalanceOf: amount }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyWithdrawMarketToken({relayer, nonce, signerAddress, assetEthAddress, amount, api}){
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const owner = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
+
+  const orderedData = [
+    { Text: 'withdraw_tokens_context' },
+    { AccountId: dataRelayer },
+    { u64: nonce },
+    { H160: assetEthAddress },
+    { AccountId: owner },
+    { BalanceOf: amount }
+  ]
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
 }
 
 function encodeOrderedData(data: object[]) {

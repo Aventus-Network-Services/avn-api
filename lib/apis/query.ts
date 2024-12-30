@@ -2,7 +2,7 @@
 
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
-import { AvnApiConfig, NonceType, Royalty } from '../interfaces';
+import { AvnApiConfig, NonceType, PredictionMarketConstants, Royalty } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
 
@@ -13,6 +13,10 @@ interface T1Contracts {
 }
 
 interface Nfts {
+  [key: string]: string;
+}
+
+interface Assets {
   [key: string]: string;
 }
 
@@ -72,6 +76,8 @@ export class Query {
 
   private contracts: T1Contracts;
   private nftsMap: Nfts;
+  private assets: Assets;
+  private predictionMarketConsts: PredictionMarketConstants;
   constructor(api: AvnApiConfig, awtManager: Awt) {
     this.awtManager = awtManager;
     this.api = api;
@@ -83,6 +89,9 @@ export class Query {
     };
 
     this.nftsMap = {};
+    this.assets = {};
+    // Keep this empty to allow checking when its not set
+    this.predictionMarketConsts = {} as PredictionMarketConstants;
   }
 
   async postRequest<R>(api: AvnApiConfig, method: string, params: object = {}, handler = 'query'): Promise<R> {
@@ -175,6 +184,14 @@ export class Query {
   async getAnchorNonce(chainId: number): Promise<string> {
     const parsedChainId = `${chainId}`
     return await this.postRequest<string>(this.api, 'getAnchorNonce', { chainId: parsedChainId });
+  }
+
+  async getPredictionMarketsNonce(marketId:string, accountAddress:string): Promise<string>{
+    return await this.postRequest<string>(this.api, 'getPredictionMarketsNonce', { marketId, accountId: accountAddress });
+  }
+
+  async getHybridRouterNonce(marketId:string, accountAddress:string): Promise<string>{
+    return await this.postRequest<string>(this.api, 'getHybridRouterNonce', { marketId, accountId: accountAddress });
   }
 
   async getNftNonce(nftId: string): Promise<string> {
@@ -296,5 +313,34 @@ export class Query {
 
   async isHandlerRegistered(handler:string): Promise<string> {
     return await this.postRequest<string>(this.api, 'isHandlerRegistered', { handler });
+  }
+
+  async getAssetIdFromEthToken(ethTokenAddress: string): Promise<string> {
+    if (!this.assets[ethTokenAddress]) {
+      this.assets[ethTokenAddress] = await this.postRequest<string>(this.api, 'getAssetIdFromEthToken', { ethTokenAddress });
+    }
+
+    return this.assets[ethTokenAddress];
+  }
+
+  async getPredictionMarketConstants(): Promise<PredictionMarketConstants> {
+    if (Object.keys(this.predictionMarketConsts).length === 0) {
+      const r = await this.postRequest<PredictionMarketConstants>(this.api, 'getPredictionMarketConstants');
+      this.predictionMarketConsts = r;
+    }
+
+    return this.predictionMarketConsts;
+  }
+
+  async getMarketInfo(marketId: string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getPredictionMarketInfo', { marketId });
+  }
+
+  async getMarketPoolInfo(marketId: string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getPredictionMarketPoolInfo', { marketId });
+  }
+
+  async getLiftStatus(txHash: string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getEthereumEventStatus', { txHash });
   }
 }

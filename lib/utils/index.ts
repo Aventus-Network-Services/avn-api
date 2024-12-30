@@ -38,6 +38,14 @@ export enum TxType {
   ProxyRegisterHander = 'proxyRegisterHandler',
   ProxySubmitCheckpoint = 'proxySubmitCheckpoint',
 
+  // Prediction market
+  ProxyCreateMarketAndDeployPool = 'proxyCreateMarketAndDeployPool',
+  ProxyReportMarketOutcome = 'proxyReportMarketOutcome',
+  ProxyRedeemMarketShares = 'proxyRedeemMarketShares',
+  ProxyTransferMarketTokens = 'proxyTransferMarketTokens',
+  ProxyBuyMarketOutcomeTokens = 'proxyBuyMarketOutcomeTokens',
+  ProxySellMarketOutcomeTokens = 'proxySellMarketOutcomeTokens',
+  ProxyWithdrawMarketTokens = 'proxyWithdrawMarketTokens',
 }
 
 export enum EthereumLogEventType {

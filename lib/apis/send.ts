@@ -1,7 +1,7 @@
 'use strict';
 
 import { AccountUtils, EthereumLogEventType, Market, StakingStatus, TxType, Utils } from '../utils';
-import { AvnApiConfig, NonceType, Royalty } from '../interfaces/index';
+import { AvnApiConfig, NonceType, Royalty, CreateMarketBaseParams, Strategy } from '../interfaces/index';
 import ProxyUtils from './proxy';
 import BN from 'bn.js';
 import { Awt } from '../awt';
@@ -258,11 +258,140 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterHander, NonceType.None);
   }
 
-  async submitCheckpoint(handler: string, checkpoint: string, chainId:number): Promise<string> {
+  async submitCheckpoint(handler: string, checkpoint: string, chainId: number): Promise<string> {
     Utils.validateAccount(handler);
     Utils.validateCheckpointFormat(checkpoint);
     const methodArgs = { handler, checkpoint, chainId };
     return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, NonceType.Anchor);
+  }
+
+  async createMarketAndDeployPool(
+    baseAssetEthAddress: string,
+    oracle: string,
+    period: CreateMarketBaseParams["period"],
+    deadlines: CreateMarketBaseParams["deadlines"],
+    metadata: string,
+    amount: string,
+    spotPrices: CreateMarketBaseParams["spotPrices"]): Promise<string> {
+    Utils.validateAccount(oracle)
+
+    const market_constants = await this.queryApi.getPredictionMarketConstants();
+
+    if (deadlines.grace_period > market_constants.maxGracePeriod) {
+      throw new Error(`Grace period exceeds max grace period of ${market_constants.maxGracePeriod}`);
+    }
+
+    if (deadlines.oracle_duration > market_constants.maxOracleDuration) {
+      throw new Error(`Oracle duration exceeds max period of ${market_constants.maxOracleDuration}`);
+    }
+
+    if (deadlines.oracle_duration < market_constants.minOracleDuration) {
+      throw new Error(`Oracle duration exceeds min period of ${market_constants.minOracleDuration}`);
+    }
+
+    if (deadlines.dispute_duration > 0) {
+      throw new Error(`Dispute duration must be 0 when Authorised is used as dispute mechanism`);
+    }
+
+    const baseAsset = await this.queryApi.getAssetIdFromEthToken(baseAssetEthAddress);
+
+    if (!baseAsset) {
+      throw new Error(`Invalid base asset eth address: ${baseAssetEthAddress}. Asset not found`);
+    }
+
+    const creatorFee: CreateMarketBaseParams["creatorFee"] = 0;
+    const marketType: CreateMarketBaseParams["marketType"] = {
+        Categorical: 2,
+    };
+
+    const disputeMechanism: CreateMarketBaseParams["disputeMechanism"] = undefined; // Trusted market
+    const swapFee: CreateMarketBaseParams["swapFee"] = "30000000"; //0.3% (remember its 10 decimal places not 18)
+
+    const methodArgs = {
+      baseAsset,
+      baseAssetEthAddress,
+      creatorFee,
+      oracle,
+      period,
+      deadlines,
+      metadata,
+      marketType,
+      disputeMechanism,
+      amount,
+      spotPrices,
+      swapFee,
+    }
+    return await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, NonceType.PredictionMarkets);
+  }
+
+  async reportMarketOutcome(marketId: string, assetIndex: number): Promise<string> {
+    // The name of the property (marketId) is used to get the correct nonce so do not change it.
+    // This is hacky and fragile. Come up with a better way to handle this.
+    const outcome = {
+      Categorical: assetIndex
+    };
+
+    const methodArgs = { marketId, outcome };
+    return await this.proxyRequest(methodArgs, TxType.ProxyReportMarketOutcome, NonceType.PredictionMarkets);
+  }
+
+  async redeemMarketShares(marketId: string): Promise<string>{
+    // The name of the property (marketId) is used to get the correct nonce so do not change it.
+    // This is hacky and fragile. Come up with a better way to handle this.
+    const methodArgs = {marketId}
+    return await this.proxyRequest(methodArgs, TxType.ProxyRedeemMarketShares, NonceType.PredictionMarkets);
+  }
+
+  async buyMarketOutcomeTokens(marketId: string, assetIndex: number, amountIn: string, maxPrice: string): Promise<string> {
+    const assetCount = 2;
+    const orders = [];
+    const strategy = Strategy.ImmediateOrCancel;
+
+    if (assetIndex < 0 || assetIndex > 1) {
+      throw new Error(`Invalid asset index: ${assetIndex}`);
+    }
+
+    const asset = {
+      CategoricalOutcome: [marketId, assetIndex]
+    }
+
+    const methodArgs = {
+      marketId, assetCount, asset, amountIn, maxPrice, orders, strategy
+    }
+    return await this.proxyRequest(methodArgs, TxType.ProxyBuyMarketOutcomeTokens, NonceType.HybridRouter);
+  }
+
+  async sellMarketOutcomeTokens(marketId: string, assetIndex: number, amountIn: string, minPrice: string): Promise<string> {
+    const assetCount = 2;
+    const orders = [];
+    const strategy = Strategy.ImmediateOrCancel;
+
+    if (assetIndex < 0 || assetIndex > 1) {
+      throw new Error(`Invalid asset index: ${assetIndex}`);
+    }
+
+    const asset = {
+      CategoricalOutcome: [marketId, assetIndex]
+    }
+
+    const methodArgs = {
+      marketId, assetCount, asset, amountIn, minPrice, orders, strategy
+    }
+    return await this.proxyRequest(methodArgs, TxType.ProxySellMarketOutcomeTokens, NonceType.HybridRouter);
+  }
+
+  async transferMarketToken(assetEthAddress: string, to: string, amount: string): Promise<string> {
+    const methodArgs = {
+      assetEthAddress, to, amount
+    }
+    return await this.proxyRequest(methodArgs, TxType.ProxyTransferMarketTokens, NonceType.PredictionMarkets);
+  }
+
+  async withdrawMarketTokens(assetEthAddress: string, amount: string): Promise<string> {
+    const methodArgs = {
+      assetEthAddress, amount
+    }
+    return await this.proxyRequest(methodArgs, TxType.ProxyWithdrawMarketTokens, NonceType.PredictionMarkets);
   }
 
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceType: NonceType): Promise<string> {
@@ -287,7 +416,8 @@ export class Send {
         paymentNonceData = await this.api.nonceCache.lockNonce(this.signerAddress, NonceType.Payment, requestId);
       }
 
-      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId, methodArgs.chainId);
+      // TODO: Passing context specific methodArgs properties is hacky and fragile. Come up with a better way to handle this.
+      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId, methodArgs.chainId, methodArgs.marketId);
       const params = await this.getProxyParams(
         proxyNonce,
         transactionType,
@@ -381,13 +511,17 @@ export class Send {
     return feePaymentSignature;
   }
 
-  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: number) {
-    if (nonceType !== NonceType.Nft && nonceType !== NonceType.Anchor && !proxyNonceData) return undefined;
+  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: number, marketId?: string) {
+    if (nonceType !== NonceType.Nft && nonceType !== NonceType.Anchor && nonceType !== NonceType.PredictionMarkets && nonceType !== NonceType.HybridRouter && !proxyNonceData) return undefined;
 
     if (nonceType === NonceType.Nft) {
       return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();
-    } else if(nonceType === NonceType.Anchor) {
+    } else if (nonceType === NonceType.Anchor) {
       return new BN(await this.queryApi.getAnchorNonce(chainId)).toNumber();
+    } else if (nonceType === NonceType.PredictionMarkets) {
+      return new BN(await this.queryApi.getPredictionMarketsNonce(marketId, this.signerAddress)).toNumber();
+    } else if (nonceType === NonceType.HybridRouter) {
+      return new BN(await this.queryApi.getHybridRouterNonce(marketId, this.signerAddress)).toNumber();
     } else if (proxyNonceData) {
       return await this.api.nonceCache.incrementNonce(proxyNonceData, this.signerAddress, nonceType, this.queryApi, requestId);
     }
