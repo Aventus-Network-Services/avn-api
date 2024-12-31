@@ -182,15 +182,15 @@ export class Query {
   }
 
   async getAnchorNonce(chainId: number): Promise<string> {
-    const parsedChainId = `${chainId}`
+    const parsedChainId = `${chainId}`;
     return await this.postRequest<string>(this.api, 'getAnchorNonce', { chainId: parsedChainId });
   }
 
-  async getPredictionMarketsNonce(marketId:string, accountAddress:string): Promise<string>{
+  async getPredictionMarketsNonce(marketId: string, accountAddress: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'getPredictionMarketsNonce', { marketId, accountId: accountAddress });
   }
 
-  async getHybridRouterNonce(marketId:string, accountAddress:string): Promise<string>{
+  async getHybridRouterNonce(marketId: string, accountAddress: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'getHybridRouterNonce', { marketId, accountId: accountAddress });
   }
 
@@ -311,7 +311,7 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getLoweringStatus');
   }
 
-  async isHandlerRegistered(handler:string): Promise<string> {
+  async isHandlerRegistered(handler: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'isHandlerRegistered', { handler });
   }
 

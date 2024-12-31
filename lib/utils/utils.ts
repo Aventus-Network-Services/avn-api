@@ -138,17 +138,17 @@ export class Utils {
     if (!isHex(checkpoint)) {
       throw new Error('Checkpoint is not a valid hex string');
     }
-  
+
     if (checkpoint.length !== 66) {
       throw new Error(`Checkpoint length is invalid. Expected 66 characters, got ${checkpoint.length}`);
     }
-  
+
     if (checkpoint === '0x0000000000000000000000000000000000000000000000000000000000000000') {
       throw new Error('Checkpoint is a zero value');
     }
   }
 
-  static validateChainName(name: string){
+  static validateChainName(name: string) {
     if (!name || name.trim() === '') {
       throw new Error('Chain name cannot be empty');
     }
