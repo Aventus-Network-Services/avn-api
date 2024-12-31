@@ -268,12 +268,13 @@ export class Send {
   async createMarketAndDeployPool(
     baseAssetEthAddress: string,
     oracle: string,
-    period: CreateMarketBaseParams["period"],
-    deadlines: CreateMarketBaseParams["deadlines"],
+    period: CreateMarketBaseParams['period'],
+    deadlines: CreateMarketBaseParams['deadlines'],
     metadata: string,
     amount: string,
-    spotPrices: CreateMarketBaseParams["spotPrices"]): Promise<string> {
-    Utils.validateAccount(oracle)
+    spotPrices: CreateMarketBaseParams['spotPrices']
+  ): Promise<string> {
+    Utils.validateAccount(oracle);
 
     const market_constants = await this.queryApi.getPredictionMarketConstants();
 
@@ -299,13 +300,13 @@ export class Send {
       throw new Error(`Invalid base asset eth address: ${baseAssetEthAddress}. Asset not found`);
     }
 
-    const creatorFee: CreateMarketBaseParams["creatorFee"] = 0;
-    const marketType: CreateMarketBaseParams["marketType"] = {
-        Categorical: 2,
+    const creatorFee: CreateMarketBaseParams['creatorFee'] = 0;
+    const marketType: CreateMarketBaseParams['marketType'] = {
+      Categorical: 2
     };
 
-    const disputeMechanism: CreateMarketBaseParams["disputeMechanism"] = undefined; // Trusted market
-    const swapFee: CreateMarketBaseParams["swapFee"] = "30000000"; //0.3% (remember its 10 decimal places not 18)
+    const disputeMechanism: CreateMarketBaseParams['disputeMechanism'] = undefined; // Trusted market
+    const swapFee: CreateMarketBaseParams['swapFee'] = '30000000'; //0.3% (remember its 10 decimal places not 18)
 
     const methodArgs = {
       baseAsset,
@@ -319,8 +320,8 @@ export class Send {
       disputeMechanism,
       amount,
       spotPrices,
-      swapFee,
-    }
+      swapFee
+    };
     return await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, NonceType.PredictionMarkets);
   }
 
@@ -335,10 +336,10 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyReportMarketOutcome, NonceType.PredictionMarkets);
   }
 
-  async redeemMarketShares(marketId: string): Promise<string>{
+  async redeemMarketShares(marketId: string): Promise<string> {
     // The name of the property (marketId) is used to get the correct nonce so do not change it.
     // This is hacky and fragile. Come up with a better way to handle this.
-    const methodArgs = {marketId}
+    const methodArgs = { marketId };
     return await this.proxyRequest(methodArgs, TxType.ProxyRedeemMarketShares, NonceType.PredictionMarkets);
   }
 
@@ -353,11 +354,17 @@ export class Send {
 
     const asset = {
       CategoricalOutcome: [marketId, assetIndex]
-    }
+    };
 
     const methodArgs = {
-      marketId, assetCount, asset, amountIn, maxPrice, orders, strategy
-    }
+      marketId,
+      assetCount,
+      asset,
+      amountIn,
+      maxPrice,
+      orders,
+      strategy
+    };
     return await this.proxyRequest(methodArgs, TxType.ProxyBuyMarketOutcomeTokens, NonceType.HybridRouter);
   }
 
@@ -372,25 +379,34 @@ export class Send {
 
     const asset = {
       CategoricalOutcome: [marketId, assetIndex]
-    }
+    };
 
     const methodArgs = {
-      marketId, assetCount, asset, amountIn, minPrice, orders, strategy
-    }
+      marketId,
+      assetCount,
+      asset,
+      amountIn,
+      minPrice,
+      orders,
+      strategy
+    };
     return await this.proxyRequest(methodArgs, TxType.ProxySellMarketOutcomeTokens, NonceType.HybridRouter);
   }
 
   async transferMarketToken(assetEthAddress: string, to: string, amount: string): Promise<string> {
     const methodArgs = {
-      assetEthAddress, to, amount
-    }
+      assetEthAddress,
+      to,
+      amount
+    };
     return await this.proxyRequest(methodArgs, TxType.ProxyTransferMarketTokens, NonceType.PredictionMarkets);
   }
 
   async withdrawMarketTokens(assetEthAddress: string, amount: string): Promise<string> {
     const methodArgs = {
-      assetEthAddress, amount
-    }
+      assetEthAddress,
+      amount
+    };
     return await this.proxyRequest(methodArgs, TxType.ProxyWithdrawMarketTokens, NonceType.PredictionMarkets);
   }
 
@@ -417,7 +433,14 @@ export class Send {
       }
 
       // TODO: Passing context specific methodArgs properties is hacky and fragile. Come up with a better way to handle this.
-      proxyNonce = await this.getProxyNonce(nonceType, requestId, proxyNonceData, methodArgs.nftId, methodArgs.chainId, methodArgs.marketId);
+      proxyNonce = await this.getProxyNonce(
+        nonceType,
+        requestId,
+        proxyNonceData,
+        methodArgs.nftId,
+        methodArgs.chainId,
+        methodArgs.marketId
+      );
       const params = await this.getProxyParams(
         proxyNonce,
         transactionType,
@@ -511,8 +534,22 @@ export class Send {
     return feePaymentSignature;
   }
 
-  private async getProxyNonce(nonceType: NonceType, requestId: string, proxyNonceData?: NonceData, nftId?: string, chainId?: number, marketId?: string) {
-    if (nonceType !== NonceType.Nft && nonceType !== NonceType.Anchor && nonceType !== NonceType.PredictionMarkets && nonceType !== NonceType.HybridRouter && !proxyNonceData) return undefined;
+  private async getProxyNonce(
+    nonceType: NonceType,
+    requestId: string,
+    proxyNonceData?: NonceData,
+    nftId?: string,
+    chainId?: number,
+    marketId?: string
+  ) {
+    if (
+      nonceType !== NonceType.Nft &&
+      nonceType !== NonceType.Anchor &&
+      nonceType !== NonceType.PredictionMarkets &&
+      nonceType !== NonceType.HybridRouter &&
+      !proxyNonceData
+    )
+      return undefined;
 
     if (nonceType === NonceType.Nft) {
       return new BN(await this.queryApi.getNftNonce(nftId)).toNumber();

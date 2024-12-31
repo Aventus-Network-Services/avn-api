@@ -45,7 +45,7 @@ export enum TxType {
   ProxyTransferMarketTokens = 'proxyTransferMarketTokens',
   ProxyBuyMarketOutcomeTokens = 'proxyBuyMarketOutcomeTokens',
   ProxySellMarketOutcomeTokens = 'proxySellMarketOutcomeTokens',
-  ProxyWithdrawMarketTokens = 'proxyWithdrawMarketTokens',
+  ProxyWithdrawMarketTokens = 'proxyWithdrawMarketTokens'
 }
 
 export enum EthereumLogEventType {
