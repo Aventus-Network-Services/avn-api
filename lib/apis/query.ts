@@ -2,7 +2,7 @@
 
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
-import { AvnApiConfig, NonceType, PredictionMarketConstants, Royalty } from '../interfaces';
+import { AvnApiConfig, NonceType, PredictionMarketAsset, PredictionMarketConstants, Royalty } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
 
@@ -338,6 +338,14 @@ export class Query {
 
   async getMarketPoolInfo(marketId: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'getPredictionMarketPoolInfo', { marketId });
+  }
+
+  async getMarketCounter(): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getPredictionMarketCounter');
+  }
+
+  async getMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset): Promise<string>{
+    return await this.postRequest<string>(this.api, 'getPredictionMarketTokenBalance', {accountId, predictionMarketAsset})
   }
 
   async getLiftStatus(txHash: string): Promise<string> {
