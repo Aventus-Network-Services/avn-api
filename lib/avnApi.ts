@@ -19,6 +19,8 @@ interface Apis {
   proxyNonce: (signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>;
 }
 
+export type { Apis };
+
 export class AvnApi {
   // Hide this field because it contains sensitive data
   #suri = undefined;
