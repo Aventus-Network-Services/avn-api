@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import Axios, { AxiosInstance, AxiosStatic } from 'axios';
-import { cryptoWaitReady } from '@polkadot/util-crypto';
+import { cryptoWaitReady, isEthereumAddress } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
 import { NonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
 import { Awt, AwtUtils } from './awt';
@@ -19,6 +19,8 @@ interface Apis {
   proxyNonce: (signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>;
 }
 
+export type { Apis };
+
 export class AvnApi {
   // Hide this field because it contains sensitive data
   #suri = undefined;
@@ -36,6 +38,7 @@ export class AvnApi {
   public myAddress: string;
   public myPublicKey: string;
   public paymentCurrencyToken: string;
+  private signerEthereumAddress: Map<string, string> = new Map();
 
   constructor(gateway?: string, options?: AvnApiOptions) {
     // Set default values
@@ -74,7 +77,14 @@ export class AvnApi {
         // Set apis
         this.apis = async () => await this.setStandardFunctions(avnApi, this.signer.address);
       } else {
-        this.apis = async (signerAddress: string) => await this.setStandardFunctions(avnApi, signerAddress);
+        this.apis = async (signerAddress: string) => {
+          if (isEthereumAddress(signerAddress)) {
+            const derivedSigner = AccountUtils.derivedSignerAddress(signerAddress);
+            this.signerEthereumAddress.set(derivedSigner, signerAddress);
+            signerAddress = derivedSigner;
+          }
+          return await this.setStandardFunctions(avnApi, signerAddress);
+        };
       }
     }
   }
@@ -115,7 +125,7 @@ export class AvnApi {
       },
       sign: async (data: string, signerAddress: string) => {
         if (this.options.signingMode === SigningMode.RemoteSigner) {
-          return await this.options.signer.sign(data, signerAddress);
+          return await this.options.signer.sign(data, this.signerEthereumAddress.get(signerAddress) || signerAddress);
         } else if (this.options.signingMode === SigningMode.SuriBased) {
           return this.signer.sign(data, this.signer.address);
         }
