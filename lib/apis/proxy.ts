@@ -145,10 +145,19 @@ export default class ProxyUtils {
     feeData.relayer = AccountUtils.convertToPublicKeyIfNeeded(feeData.relayer);
     const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
+    let signatureType = {};
+
+    if (feeData.proxySignature.length === 132) {
+      // This is an ECDSA signature
+      signatureType = { Ecdsa: feeData.proxySignature };
+    } else {
+      signatureType = { Sr25519: feeData.proxySignature }
+    }
+
     const proxyProofData = [
       { AccountId: user },
       { AccountId: feeData.relayer },
-      { MultiSignature: { Sr25519: feeData.proxySignature } }
+      { MultiSignature: signatureType }
     ];
 
     const orderedData = [
