@@ -344,7 +344,7 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getPredictionMarketCounter');
   }
 
-  async getMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset): Promise<string>{
+  async getPredictionMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset): Promise<string>{
     return await this.postRequest<string>(this.api, 'getPredictionMarketTokenBalance', {accountId, predictionMarketAsset})
   }
 
