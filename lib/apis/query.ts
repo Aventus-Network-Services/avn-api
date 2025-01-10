@@ -340,7 +340,7 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getPredictionMarketPoolInfo', { marketId });
   }
 
-  async getMarketCounter(): Promise<string> {
+  async getPredictionMarketCounter(): Promise<string> {
     return await this.postRequest<string>(this.api, 'getPredictionMarketCounter');
   }
 
