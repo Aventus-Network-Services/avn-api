@@ -270,7 +270,7 @@ export class Send {
     oracle: string,
     period: CreateMarketBaseParams['period'],
     deadlines: CreateMarketBaseParams['deadlines'],
-    metadata: string,
+    metadata: CreateMarketBaseParams['metaData'],
     amount: string,
     spotPrices: CreateMarketBaseParams['spotPrices']
   ): Promise<string> {
