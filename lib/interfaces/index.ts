@@ -116,9 +116,7 @@ export type PredictionMarketConstants = {
   maxSwapFee: number;
 };
 
-export type PredictionMarketAsset =
-  | { CategoricalOutcome: [string, string] }
-  | { ForeignAsset: string };
+export type PredictionMarketAsset = { CategoricalOutcome: [string, string] } | { ForeignAsset: string };
 
 export enum Strategy {
   /// The trade is rolled back if it cannot be executed fully.

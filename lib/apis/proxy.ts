@@ -151,14 +151,10 @@ export default class ProxyUtils {
       // This is an ECDSA signature
       signatureType = { Ecdsa: feeData.proxySignature };
     } else {
-      signatureType = { Sr25519: feeData.proxySignature }
+      signatureType = { Sr25519: feeData.proxySignature };
     }
 
-    const proxyProofData = [
-      { AccountId: user },
-      { AccountId: feeData.relayer },
-      { MultiSignature: signatureType }
-    ];
+    const proxyProofData = [{ AccountId: user }, { AccountId: feeData.relayer }, { MultiSignature: signatureType }];
 
     const orderedData = [
       { Text: 'authorization for proxy payment' },
