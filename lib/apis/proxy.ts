@@ -448,7 +448,7 @@ async function signProxyRegisterChainHandler({ relayer, name, signerAddress, api
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxySubmitCheckpointWithIdentity({ relayer, signerAddress, checkpoint, chainId, nonce, api }) {
+async function signProxySubmitCheckpointWithIdentity({ relayer, signerAddress, checkpoint, chainId, nonce, checkpointOriginId, api }) {
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
   const handler = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
@@ -458,7 +458,8 @@ async function signProxySubmitCheckpointWithIdentity({ relayer, signerAddress, c
     { AccountId: handler },
     { H256: checkpoint },
     { u32: chainId },
-    { u64: nonce }
+    { u64: nonce },
+    { u64: checkpointOriginId }
   ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
