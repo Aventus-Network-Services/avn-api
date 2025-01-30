@@ -1,8 +1,9 @@
 'use strict';
 
 import { Utils } from './utils';
-import { blake2AsHex, mnemonicGenerate, mnemonicToMiniSecret } from '@polkadot/util-crypto';
+import { mnemonicGenerate, mnemonicToMiniSecret } from '@polkadot/util-crypto';
 import { hexToU8a, u8aToHex, isHex } from '@polkadot/util';
+import { keccak256 } from '@ethersproject/keccak256';
 import { AvnAccount } from '../interfaces';
 import { keyring } from './index';
 
@@ -62,7 +63,7 @@ export class AccountUtils {
   }
 
   static derivedSignerAddress(ethereumAddress: string): string {
-    return this.convertToAddress(blake2AsHex(hexToU8a(ethereumAddress)));
+    return this.convertToAddress(keccak256(hexToU8a(ethereumAddress)));
   }
 
   static isAccountPK(accountString: string) {
