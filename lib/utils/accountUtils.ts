@@ -1,7 +1,7 @@
 'use strict';
 
 import { Utils } from './utils';
-import { mnemonicGenerate, mnemonicToMiniSecret, keccakAsHex } from '@polkadot/util-crypto';
+import { keccakAsHex, mnemonicGenerate, mnemonicToMiniSecret } from '@polkadot/util-crypto';
 import { hexToU8a, u8aToHex, isHex } from '@polkadot/util';
 import { AvnAccount } from '../interfaces';
 import { keyring } from './index';
