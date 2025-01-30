@@ -7,7 +7,6 @@
   "author": "Aventus Network Services",
   "license": "ISC",
   "dependencies": {
-    "@ethersproject/keccak256": "^5.7.0",
     "@polkadot/keyring": "10.4.2",
     "@polkadot/types": "9.14.2",
     "axios": "^0.27.2",
