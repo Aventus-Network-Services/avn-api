@@ -351,4 +351,8 @@ export class Query {
   async getLiftStatus(txHash: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'getEthereumEventStatus', { txHash });
   }
+
+  async getCheckpointByOriginId(chainId: string, originId:string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getCheckpointByOriginId', {chainId, originId})
+  }
 }
