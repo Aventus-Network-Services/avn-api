@@ -62,6 +62,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
       nonceData.lastUpdated = Date.now();
     }
 
+    this.nonceMap[signerAddress][nonceId] = nonceData;
     return nonceData;
   }
 
@@ -77,6 +78,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
     nonceData.locked = false;
     nonceData.lockId = undefined;
+    this.nonceMap[signerAddress][nonceId] = nonceData;
   }
 
   async setNonce(lockId: string, signerAddress: string, nonceId: string, nonce: number): Promise<void> {
@@ -87,6 +89,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
 
     nonceData.nonce = nonce;
     nonceData.lastUpdated = Date.now();
+    this.nonceMap[signerAddress][nonceId] = nonceData;
   }
 
   private getLockId(signerAddress: string, nonceId: string, nonce: number): string {

@@ -461,7 +461,6 @@ export class Send {
           proxyNonceData,
           this.signerAddress,
           Utils.getNonceId(nonceInfo),
-          this.queryApi,
           requestId,
           NonceUtils.createNonceFetcher(nonceInfo, this.queryApi)
         );
@@ -576,7 +575,6 @@ export class Send {
         proxyNonceData,
         this.signerAddress,
         Utils.getNonceId(nonceInfo),
-        this.queryApi,
         requestId,
         fnRefreshNonce
       );
@@ -607,7 +605,6 @@ export class Send {
           paymentNonceData,
           this.signerAddress,
           this.paymentNonceId,
-          this.queryApi,
           requestId,
           NonceUtils.createNonceFetcher(
             { nonceType: NonceType.Payment, nonceParams: { user: this.signerAddress } },

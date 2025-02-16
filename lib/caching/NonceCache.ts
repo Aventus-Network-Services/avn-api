@@ -57,7 +57,6 @@ export class NonceCache {
     nonceData: NonceData,
     signerAddress: string,
     nonceId: string,
-    queryApi: Query,
     requestId: string,
     fnRefreshNonce: () => Promise<string>
   ): Promise<number> {
@@ -67,7 +66,7 @@ export class NonceCache {
 
       if (nonceIsExpired) {
         log.debug(new Date(), ` ${requestId} - Nonce expired. Nonce data: ${JSON.stringify(nonceData)}.`);
-        return await this.refreshNonceFromChain(nonceData.lockId, signerAddress, nonceId, nonceData, queryApi, requestId, fnRefreshNonce);
+        return await this.refreshNonceFromChain(nonceData.lockId, signerAddress, nonceId, nonceData, requestId, fnRefreshNonce);
       }
 
       return (
@@ -124,7 +123,6 @@ export class NonceCache {
     signerAddress: string,
     nonceId: string,
     nonceData: NonceData,
-    queryApi: Query,
     requestId: string,
     fnRefreshNonce: () => Promise<string>
   ): Promise<number> {
