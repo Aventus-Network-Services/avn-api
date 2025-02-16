@@ -2,6 +2,7 @@
 
 import { NonceInfo, NonceType } from '../interfaces';
 import { Query } from '../apis';
+import { createHash } from 'crypto';
 
 export class NonceUtils {
   /**
@@ -54,5 +55,17 @@ export class NonceUtils {
         throw new Error(`Invalid nonce type: ${nonceType}`);
       }
     }
+  }
+
+  static createLockKeyFromNonceInfo(nonceInfo: NonceInfo): string {
+    const sortedParams: any = {};
+    for (const key of Object.keys(nonceInfo.nonceParams).sort()) {
+      sortedParams[key] = nonceInfo.nonceParams[key];
+    }
+    return `${nonceInfo.nonceType}-${createHash('sha256').update(JSON.stringify(sortedParams)).digest('hex')}`;
+  }
+
+  static getNonceId(nonceInfo: NonceInfo): string {
+    return this.createLockKeyFromNonceInfo(nonceInfo);
   }
 }

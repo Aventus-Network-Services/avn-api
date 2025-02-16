@@ -7,7 +7,6 @@ import BN from 'bn.js';
 import { NonceInfo, Royalty, Signer } from '../interfaces';
 import { Query } from '../apis/query';
 import { keyring } from './index';
-import { createHash } from 'crypto';
 
 export class Utils {
   static validateAccount(account: string) {
@@ -158,17 +157,5 @@ export class Utils {
     if (name.length > CHAIN_NAME_LIMIT) {
       throw new Error(`Chain name exceeds the limit of ${CHAIN_NAME_LIMIT} bytes`);
     }
-  }
-
-  static createLockKeyFromNonceInfo(nonceInfo: NonceInfo): string {
-    const sortedParams: any = {};
-    for (const key of Object.keys(nonceInfo.nonceParams).sort()) {
-      sortedParams[key] = nonceInfo.nonceParams[key];
-    }
-    return `${nonceInfo.nonceType}-${createHash('sha256').update(JSON.stringify(sortedParams)).digest('hex')}`;
-  }
-
-  static getNonceId(nonceInfo: NonceInfo): string {
-    return this.createLockKeyFromNonceInfo(nonceInfo);
   }
 }

@@ -51,7 +51,7 @@ export class Send {
     this.signerAddress = signerAddress;
     this.nonceGuard = nonceGuard;
     this.feesMap = {};
-    this.paymentNonceId = Utils.getNonceId({ nonceType: NonceType.Payment, nonceParams: { user: this.signerAddress } });
+    this.paymentNonceId = NonceUtils.getNonceId({ nonceType: NonceType.Payment, nonceParams: { user: this.signerAddress } });
   }
 
   async transferAvt(recipient: string, amount: string): Promise<string> {
@@ -442,10 +442,10 @@ export class Send {
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceInfo: NonceInfo): Promise<string> {
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
     const requestId = this.api.uuid();
-    const nonceId = Utils.getNonceId(nonceInfo);
+    const nonceId = NonceUtils.getNonceId(nonceInfo);
 
     // Lock while we are sending the transaction to ensure we maintain a correct order
-    const lockKey = `send-${this.signerAddress}-${Utils.createLockKeyFromNonceInfo(nonceInfo)}`;
+    const lockKey = `send-${this.signerAddress}-${NonceUtils.createLockKeyFromNonceInfo(nonceInfo)}`;
     await this.nonceGuard.lock(lockKey);
 
     log.info(``);
@@ -460,7 +460,7 @@ export class Send {
         proxyNonce = await this.api.nonceCache.incrementNonce(
           proxyNonceData,
           this.signerAddress,
-          Utils.getNonceId(nonceInfo),
+          NonceUtils.getNonceId(nonceInfo),
           requestId,
           NonceUtils.createNonceFetcher(nonceInfo, this.queryApi)
         );
@@ -574,7 +574,7 @@ export class Send {
       return await this.api.nonceCache.incrementNonce(
         proxyNonceData,
         this.signerAddress,
-        Utils.getNonceId(nonceInfo),
+        NonceUtils.getNonceId(nonceInfo),
         requestId,
         fnRefreshNonce
       );
