@@ -16,7 +16,7 @@ interface Apis {
   query: Query;
   send: Send;
   poll: Poll;
-  proxyNonce: (signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>;
+  proxyNonce: (signerAddress: string, nonceId: string) => Promise<NonceData | undefined>;
 }
 
 export type { Apis };
@@ -153,8 +153,7 @@ export class AvnApi {
       query: query,
       send: new Send(avnApi, query, awt, nonceGuard, signerAddress),
       poll: new Poll(avnApi, awt),
-      proxyNonce: async (signerAddress: string, nonceType: NonceType) =>
-        await avnApi.nonceCache.getNonceData(signerAddress, nonceType)
+      proxyNonce: async (signerAddress: string, nonceId: string) => await avnApi.nonceCache.getNonceData(signerAddress, nonceId)
     };
   }
 

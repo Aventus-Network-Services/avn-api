@@ -4,6 +4,8 @@ import { Query } from '../apis/query';
 import { LogLevelNames } from 'loglevel';
 import { AxiosStatic } from 'axios';
 
+// NOTE: Nonce types should not be per pallet, instead they should be based
+// on the nonce storage item and parameters. Ex: Prediction has 2 nonces: (User based and Market based)
 export enum NonceType {
   Token = 'token',
   Payment = 'payment',
@@ -12,9 +14,16 @@ export enum NonceType {
   Nft = 'nft',
   Batch = 'batch',
   Anchor = 'anchor',
-  PredictionMarkets = 'predictionMarkets',
+  Prediction_Market = 'predictionMarket',
+  Prediction_User = 'predictionUser',
   HybridRouter = 'hybridRouter',
+  NodeManager = 'nodeManager',
   None = 'none'
+}
+
+export interface NonceInfo {
+  nonceType: NonceType;
+  nonceParams: {};
 }
 
 export enum SetupMode {
