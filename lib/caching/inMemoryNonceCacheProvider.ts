@@ -43,6 +43,7 @@ export class InMemoryNonceCacheProvider implements INonceCacheProvider {
       const lockId = this.getLockId(signerAddress, nonceId, nonceData.nonce);
       nonceData.locked = true;
       nonceData.lockId = lockId;
+      this.nonceMap[signerAddress][nonceId] = nonceData;
       return { lockAquired: true, data: nonceData };
     } finally {
       this.nonceGuard.unlock(lockKey);
