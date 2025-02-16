@@ -177,8 +177,10 @@ export class Query {
 
   async getUserNonce(accountAddress: string, nonceType: NonceType): Promise<string> {
     Utils.validateAccount(accountAddress);
-
-    return await this.postRequest<string>(this.api, 'getUserNonce', { accountId: accountAddress, nonceType });
+    console.log("Getting user nonce for account: " + accountAddress + " and nonce type: " + nonceType);
+    const result = await this.postRequest<string>(this.api, 'getUserNonce', { accountId: accountAddress, nonceType });
+    console.log("User nonce result: " + result);
+    return result;
   }
 
   async getAnchorNonce(chainId: number): Promise<string> {
