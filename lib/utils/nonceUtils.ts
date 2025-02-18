@@ -42,7 +42,6 @@ export class NonceUtils {
       case NonceType.Staking:
       case NonceType.Batch:
       case NonceType.Confirmation:
-      case NonceType.NodeManager:
       case NonceType.Prediction_User: {
         if (!nonceParams['user']) throw new Error(`user is required for NonceType ${nonceType}`);
         return () => queryApi.getUserNonce(nonceParams['user'], nonceType);

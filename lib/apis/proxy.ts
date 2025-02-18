@@ -126,7 +126,8 @@ const signing = {
   proxyReportMarketOutcome: async proxyArgs => await signProxyReport(proxyArgs),
   proxyRedeemMarketShares: async proxyArgs => await signProxyRedeemShares(proxyArgs),
   proxyTransferMarketTokens: async proxyArgs => await signProxyTransferAsset(proxyArgs),
-  proxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs)
+  proxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
+  proxyRegisterNode: async proxyArgs => await signProxyRegisterNode(proxyArgs)
 };
 
 export default class ProxyUtils {
@@ -622,6 +623,24 @@ async function signProxyWithdrawMarketToken({ relayer, nonce, signerAddress, ass
     { AccountId: owner },
     { BalanceOf: amount }
   ];
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyRegisterNode({relayer, signerAddress, nodeId, nodeOwner, nodeSigningKey, blockNumber, api} ) {
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const nodeIdPk = AccountUtils.convertToPublicKeyIfNeeded(nodeId);
+  const nodeOwnerPk = AccountUtils.convertToPublicKeyIfNeeded(nodeOwner);
+
+  const orderedData = [
+    { Text: 'register_node' },
+    { AccountId: dataRelayer },
+    { AccountId: nodeIdPk },
+    { AccountId: nodeOwnerPk },
+    { AccountId: nodeSigningKey },
+    { blockNumber: blockNumber },
+  ];
+
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }

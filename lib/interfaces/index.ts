@@ -17,7 +17,6 @@ export enum NonceType {
   Prediction_Market = 'prediction_Market',
   Prediction_User = 'prediction_User',
   HybridRouter = 'hybridRouter',
-  NodeManager = 'nodeManager',
   None = 'none'
 }
 

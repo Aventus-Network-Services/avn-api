@@ -430,12 +430,14 @@ export class Send {
     Utils.validateAccount(nodeOwner);
     Utils.validateAccount(nodeSigningKey);
 
+    const blockNumber = await this.queryApi.getCurrentBlock();
     const methodArgs = {
       nodeId,
       nodeOwner,
-      nodeSigningKey
+      nodeSigningKey,
+      blockNumber
     };
-    const nonceInfo = { nonceType: NonceType.NodeManager, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {}};
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterNode, nonceInfo);
   }
 
