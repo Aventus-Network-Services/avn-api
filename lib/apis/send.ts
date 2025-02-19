@@ -430,6 +430,7 @@ export class Send {
     Utils.validateAccount(nodeOwner);
     Utils.validateAccount(nodeSigningKey);
 
+    nodeSigningKey = AccountUtils.convertToPublicKeyIfNeeded(nodeSigningKey);
     const blockNumber = await this.queryApi.getCurrentBlock();
     const methodArgs = {
       nodeId,
