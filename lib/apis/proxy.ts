@@ -638,7 +638,7 @@ async function signProxyRegisterNode({relayer, signerAddress, nodeId, nodeOwner,
     { AccountId: nodeIdPk },
     { AccountId: nodeOwnerPk },
     { AccountId: nodeSigningKey },
-    { blockNumber: blockNumber },
+    { BlockNumber: blockNumber },
   ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
