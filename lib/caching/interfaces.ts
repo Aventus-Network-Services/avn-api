@@ -21,13 +21,13 @@ export interface INonceCacheProvider {
   // Setup a new cache object for the user. This will only be called once per user during the initialisation of the 'apis()'
   initUserNonceCache(signerAddress: string): Promise<void>;
   // Lock the nonce and return the nonce info
-  getNonceAndLock(signerAddress: string, nonceType: string): Promise<CachedNonceInfo>;
+  getNonceAndLock(signerAddress: string, nonceId: string): Promise<CachedNonceInfo>;
   // Read the current nonce data.
-  getNonceData(signerAddress: string, nonceType: string): Promise<NonceData>;
+  getNonceData(signerAddress: string, nonceId: string): Promise<NonceData>;
   // Increment nonce by 1. Should only succeed if lockId matches the active lock.
-  incrementNonce(lockId: string, signerAddress: string, nonceType: string, updateLastUpdate: boolean): Promise<NonceData>;
+  incrementNonce(lockId: string, signerAddress: string, nonceId: string, updateLastUpdate: boolean): Promise<NonceData>;
   // Unlock nonce. Should only succeed if lockId matches the active lock.
-  unlockNonce(lockId: string, signerAddress: string, nonceType: string): Promise<void>;
+  unlockNonce(lockId: string, signerAddress: string, nonceId: string): Promise<void>;
   // Reset nonce to a different value. Should only succeed if lockId matches the active lock.
-  setNonce(lockId: string, signerAddress: string, nonceType: string, nonce: number): Promise<void>;
+  setNonce(lockId: string, signerAddress: string, nonceId: string, nonce: number): Promise<void>;
 }

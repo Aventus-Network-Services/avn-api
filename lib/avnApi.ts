@@ -4,7 +4,7 @@ import { cryptoWaitReady, isEthereumAddress } from '@polkadot/util-crypto';
 import { Query, Send, Poll } from './apis';
 import { NonceCache, InMemoryNonceCacheProvider, NonceData } from './caching';
 import { Awt, AwtUtils } from './awt';
-import { AccountUtils, Utils } from './utils';
+import { AccountUtils, NonceUtils, Utils } from './utils';
 import { version } from '../package.json';
 import { AvnApiConfig, AvnApiOptions, SigningMode, SetupMode, Signer, NonceType } from './interfaces';
 import { NonceCacheType, InMemoryLock } from './caching';
@@ -16,7 +16,7 @@ interface Apis {
   query: Query;
   send: Send;
   poll: Poll;
-  proxyNonce: (signerAddress: string, nonceType: NonceType) => Promise<NonceData | undefined>;
+  proxyNonce: (signerAddress: string, nonceId: string) => Promise<NonceData | undefined>;
 }
 
 export type { Apis };
@@ -31,6 +31,7 @@ export class AvnApi {
   public gateway: string;
   public relayer: string;
   public accountUtils: AccountUtils;
+  public nonceUtils: NonceUtils;
   public awtUtils: AwtUtils;
   public proxyUtils: ProxyUtils;
   public apis: (signerAddress: string) => Promise<Apis>;
@@ -50,6 +51,7 @@ export class AvnApi {
     this.version = version;
     this.gateway = gateway;
     this.accountUtils = AccountUtils;
+    this.nonceUtils = NonceUtils;
 
     if (this.options.signingMode === SigningMode.SuriBased) {
       this.#suri = options.suri || process?.env?.AVN_SURI;
@@ -153,8 +155,7 @@ export class AvnApi {
       query: query,
       send: new Send(avnApi, query, awt, nonceGuard, signerAddress),
       poll: new Poll(avnApi, awt),
-      proxyNonce: async (signerAddress: string, nonceType: NonceType) =>
-        await avnApi.nonceCache.getNonceData(signerAddress, nonceType)
+      proxyNonce: async (signerAddress: string, nonceId: string) => await avnApi.nonceCache.getNonceData(signerAddress, nonceId)
     };
   }
 

@@ -4,7 +4,7 @@ import { hexToU8a, isHex, u8aToHex, isNumber } from '@polkadot/util';
 import { decodeAddress, encodeAddress } from '@polkadot/util-crypto';
 import { validate as uuidValidate } from 'uuid';
 import BN from 'bn.js';
-import { Royalty, Signer } from '../interfaces';
+import { NonceInfo, Royalty, Signer } from '../interfaces';
 import { Query } from '../apis/query';
 import { keyring } from './index';
 

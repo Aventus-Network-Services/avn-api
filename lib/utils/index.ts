@@ -3,6 +3,7 @@ import { Keyring } from '@polkadot/keyring';
 
 export * from './accountUtils';
 export * from './utils';
+export * from './nonceUtils';
 
 export const registry = new TypeRegistry();
 export const keyring = new Keyring({ type: 'sr25519', ss58Format: 42 });
@@ -38,14 +39,17 @@ export enum TxType {
   ProxyRegisterHander = 'proxyRegisterHandler',
   ProxySubmitCheckpoint = 'proxySubmitCheckpoint',
 
-  // Prediction market
+  // Prediction_Market market
   ProxyCreateMarketAndDeployPool = 'proxyCreateMarketAndDeployPool',
   ProxyReportMarketOutcome = 'proxyReportMarketOutcome',
   ProxyRedeemMarketShares = 'proxyRedeemMarketShares',
   ProxyTransferMarketTokens = 'proxyTransferMarketTokens',
   ProxyBuyMarketOutcomeTokens = 'proxyBuyMarketOutcomeTokens',
   ProxySellMarketOutcomeTokens = 'proxySellMarketOutcomeTokens',
-  ProxyWithdrawMarketTokens = 'proxyWithdrawMarketTokens'
+  ProxyWithdrawMarketTokens = 'proxyWithdrawMarketTokens',
+
+  // Node manager
+  ProxyRegisterNode = 'proxyRegisterNode'
 }
 
 export enum EthereumLogEventType {
