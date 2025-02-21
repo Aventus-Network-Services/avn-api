@@ -9,7 +9,7 @@ const TX_PROCESSING_TIME_MS = 120000;
 const NONCE_LOCK_POLL_INTERVAL_MS = 500;
 const MAX_NONCE_LOCK_TIME_MS = TX_PROCESSING_TIME_MS + NONCE_LOCK_POLL_INTERVAL_MS;
 const EXPIRY_UPDATE_ENUM = {
-  DoNotUpade: false,
+  DoNotUpdate: false,
   UpdateExpiry: true
 };
 
@@ -139,7 +139,7 @@ export class NonceCache {
         ` ${requestId} - Nonce expired but on-chain nonce ${nonceFromChain} is the same as last nonce used ${nonceData.nonce}.`
       );
       const incrementedNonce = (
-        await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceId, EXPIRY_UPDATE_ENUM.DoNotUpade)
+        await this.cacheProvider.incrementNonce(lockId, signerAddress, nonceId, EXPIRY_UPDATE_ENUM.DoNotUpdate)
       ).nonce;
 
       await Utils.sleep(TX_PROCESSING_TIME_MS);
