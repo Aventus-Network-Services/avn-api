@@ -175,10 +175,10 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getTokenBalance', { accountId: accountAddress, token });
   }
 
-  async getNonce(accountAddress: string, nonceType: NonceType): Promise<string> {
+  async getUserNonce(accountAddress: string, nonceType: NonceType): Promise<string> {
     Utils.validateAccount(accountAddress);
-
-    return await this.postRequest<string>(this.api, 'getNonce', { accountId: accountAddress, nonceType });
+    const result = await this.postRequest<string>(this.api, 'getUserNonce', { accountId: accountAddress, nonceType });
+    return result;
   }
 
   async getAnchorNonce(chainId: number): Promise<string> {
@@ -352,7 +352,7 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getEthereumEventStatus', { txHash });
   }
 
-  async getCheckpointByOriginId(chainId: string, originId:string): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getCheckpointByOriginId', {chainId, originId})
+  async getCheckpointByOriginId(chainId: string, originId: string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getCheckpointByOriginId', { chainId, originId });
   }
 }
