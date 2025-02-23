@@ -180,3 +180,19 @@ export type CreateMarketBaseParams = {
     Sha3_384: string;
   };
 };
+
+export interface NodeManagerConfig {
+  rewardAccount: string,
+  signedTxLifetime: string,
+  nodeRegistrar: string,
+  heartbeatPeriod: string,
+  rewardAmount: string,
+  rewardPeriod: string,
+  rewardEnabled: boolean,
+}
+
+export interface NodeManagerInfo {
+  oldestUnpaidRewardPeriodIndex: number,
+  lastCompletedRewardPeriodIndex: number,
+  totalRegisteredNodes: number,
+}
