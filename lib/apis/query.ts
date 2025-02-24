@@ -2,7 +2,7 @@
 
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
-import { AvnApiConfig, NonceType, PredictionMarketAsset, PredictionMarketConstants, Royalty } from '../interfaces';
+import { AvnApiConfig, NodeManagerConfig, NodeManagerInfo, NonceType, PredictionMarketAsset, PredictionMarketConstants, Royalty } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
 
@@ -354,5 +354,13 @@ export class Query {
 
   async getCheckpointByOriginId(chainId: string, originId: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'getCheckpointByOriginId', { chainId, originId });
+  }
+
+  async getNodeManagerConfig(): Promise<NodeManagerConfig> {
+    return await this.postRequest<NodeManagerConfig>(this.api, 'getNodeManagerConfig');
+  }
+
+  async getNodeManagerInfo(): Promise<NodeManagerInfo> {
+    return await this.postRequest<NodeManagerInfo>(this.api, 'getNodeManagerInfo');
   }
 }
