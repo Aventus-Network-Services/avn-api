@@ -183,11 +183,11 @@ export type CreateMarketBaseParams = {
 
 export interface NodeManagerConfig {
   rewardAccount: string,
-  signedTxLifetime: string,
+  nodeRegistrationTransactionLifetime: string,
   nodeRegistrar: string,
-  heartbeatPeriod: string,
+  heartbeatPeriodInBlocks: string,
   rewardAmount: string,
-  rewardPeriod: string,
+  rewardPeriodInBlocks: string,
   rewardEnabled: boolean,
 }
 
