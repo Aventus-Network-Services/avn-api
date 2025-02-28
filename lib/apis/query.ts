@@ -361,31 +361,31 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getCheckpointByOriginId', { chainId, originId });
   }
 
-  async getAccountRewardsLast24Hours(accountId: string): Promise<bigint> {
-    return this.nodeStatistics.getAccountRewardsLast24Hours(accountId);
+  async getAccountRewardsLast24Hours(gqlEndpoint: string, accountId: string): Promise<bigint> {
+    return this.nodeStatistics.getAccountRewardsLast24Hours(gqlEndpoint, accountId);
   }
 
-  async getAccountRewardsInTimeRange(accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
-    return this.nodeStatistics.getAccountRewardsInTimeRange(accountId, startTime, endTime);
+  async getAccountRewardsInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
+    return this.nodeStatistics.getAccountRewardsInTimeRange(gqlEndpoint, accountId, startTime, endTime);
   }
 
-  async getAccountLifetimeRewards(accountId: string): Promise<bigint> {
-    return this.nodeStatistics.getAccountLifetimeRewards(accountId);
+  async getAccountLifetimeRewards(gqlEndpoint: string, accountId: string): Promise<bigint> {
+    return this.nodeStatistics.getAccountLifetimeRewards(gqlEndpoint, accountId);
   }
 
-  async getNodeTotalRewards(nodeId: string): Promise<bigint> {
-    return this.nodeStatistics.getNodeTotalRewards(nodeId);
+  async getNodeTotalRewards(gqlEndpoint: string, nodeId: string): Promise<bigint> {
+    return this.nodeStatistics.getNodeTotalRewards(gqlEndpoint, nodeId);
   }
 
-  async getAccountNodesCount(accountId: string): Promise<number> {
-    return this.nodeStatistics.getAccountNodesCount(accountId);
+  async getAccountNodesCount(gqlEndpoint: string, accountId: string): Promise<number> {
+    return this.nodeStatistics.getAccountNodesCount(gqlEndpoint, accountId);
   }
 
-  async getRewardCountInTimeRange(accountId: string, startTime: Date, endTime: Date): Promise<number> {
-    return this.nodeStatistics.getRewardCountInTimeRange(accountId, startTime, endTime);
+  async getRewardCountInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<number> {
+    return this.nodeStatistics.getRewardCountInTimeRange(gqlEndpoint, accountId, startTime, endTime);
   }
 
-  async getAverageRewardInTimeRange(accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
-    return this.nodeStatistics.getAverageRewardInTimeRange(accountId, startTime, endTime);
+  async getAverageRewardInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
+    return this.nodeStatistics.getAverageRewardInTimeRange(gqlEndpoint, accountId, startTime, endTime);
   }
 }

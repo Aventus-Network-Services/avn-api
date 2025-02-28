@@ -59,7 +59,7 @@ export class Send {
     amount = Utils.validateAndConvertAmountToString(amount);
     const token = await this.queryApi.getAvtContractAddress();
     const methodArgs = { recipient, token, amount };
-    const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyAvtTransfer, nonceInfo);
   }
 
@@ -68,7 +68,7 @@ export class Send {
     Utils.validateEthereumAddress(token);
     amount = Utils.validateAndConvertAmountToString(amount);
     const methodArgs = { recipient, token, amount };
-    const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyTokenTransfer, nonceInfo);
   }
 
@@ -76,7 +76,7 @@ export class Send {
     Utils.validateEthereumTransactionHash(ethereumTransactionHash);
     const eventType = EthereumLogEventType.Lifted;
     const methodArgs = { ethereumTransactionHash, eventType };
-    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyConfirmTokenLift, nonceInfo);
   }
 
@@ -84,7 +84,7 @@ export class Send {
     Utils.validateEthereumTransactionHash(ethereumTransactionHash);
     const eventType = EthereumLogEventType.NftMint;
     const methodArgs = { ethereumTransactionHash, eventType };
-    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyMintEthereumBatchNft, nonceInfo);
   }
 
@@ -92,7 +92,7 @@ export class Send {
     Utils.validateEthereumTransactionHash(ethereumTransactionHash);
     const eventType = EthereumLogEventType.NftTransferTo;
     const methodArgs = { ethereumTransactionHash, eventType };
-    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyTransferEthereumNft, nonceInfo);
   }
 
@@ -100,7 +100,7 @@ export class Send {
     Utils.validateEthereumTransactionHash(ethereumTransactionHash);
     const eventType = EthereumLogEventType.NftCancelListing;
     const methodArgs = { ethereumTransactionHash, eventType };
-    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyCancelEthereumNftSale, nonceInfo);
   }
 
@@ -108,7 +108,7 @@ export class Send {
     Utils.validateEthereumTransactionHash(ethereumTransactionHash);
     const eventType = EthereumLogEventType.NftEndBatchListing;
     const methodArgs = { ethereumTransactionHash, eventType };
-    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyEndEthereumBatchSale, nonceInfo);
   }
 
@@ -117,7 +117,7 @@ export class Send {
     Utils.validateEthereumAddress(token);
     amount = Utils.validateAndConvertAmountToString(amount);
     const methodArgs = { t1Recipient, token, amount };
-    const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyTokenLower, nonceInfo);
   }
 
@@ -125,7 +125,7 @@ export class Send {
     Utils.validateRoyalties(royalties);
     Utils.validateEthereumAddress(t1Authority);
     const methodArgs = { totalSupply, royalties, t1Authority };
-    const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyCreateNftBatch, nonceInfo);
   }
 
@@ -151,7 +151,7 @@ export class Send {
     nftId = Utils.formatNftId(nftId);
     const market = Market.Fiat;
     const methodArgs = { nftId, market };
-    const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId }};
+    const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
     return await this.proxyRequest(methodArgs, TxType.ProxyListNftOpenForSale, nonceInfo);
   }
 
@@ -159,7 +159,7 @@ export class Send {
     nftId = Utils.formatNftId(nftId);
     const market = Market.Ethereum;
     const methodArgs = { nftId, market };
-    const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId }};
+    const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
     return await this.proxyRequest(methodArgs, TxType.ProxyListEthereumNftForSale, nonceInfo);
   }
 
@@ -167,7 +167,7 @@ export class Send {
     batchId = Utils.formatNftId(batchId);
     const market = Market.Fiat;
     const methodArgs = { batchId, market };
-    const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyListNftBatchForSale, nonceInfo);
   }
 
@@ -175,7 +175,7 @@ export class Send {
     batchId = Utils.formatNftId(batchId);
     const market = Market.Ethereum;
     const methodArgs = { batchId, market };
-    const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyListEthereumNftBatchForSale, nonceInfo);
   }
 
@@ -184,28 +184,28 @@ export class Send {
     nftId = Utils.formatNftId(nftId);
     recipient = AccountUtils.convertToPublicKeyIfNeeded(recipient);
     const methodArgs = { nftId, recipient };
-    const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId }};
+    const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
     return await this.proxyRequest(methodArgs, TxType.ProxyTransferFiatNft, nonceInfo);
   }
 
   async endNftBatchSale(batchId: string): Promise<string> {
     batchId = Utils.formatNftId(batchId);
     const methodArgs = { batchId };
-    const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyEndNftBatchSale, nonceInfo);
   }
 
   async cancelFiatNftListing(nftId: string): Promise<string> {
     nftId = Utils.formatNftId(nftId);
     const methodArgs = { nftId };
-    const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId }};
+    const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
     return await this.proxyRequest(methodArgs, TxType.ProxyCancelListFiatNft, nonceInfo);
   }
 
   async stake(amount: string): Promise<string> {
     amount = Utils.validateAndConvertAmountToString(amount);
     const stakingStatus = await this.queryApi.getStakingStatus(this.signerAddress);
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
 
     if (stakingStatus === StakingStatus.isStaking) {
       const methodArgs = { amount };
@@ -223,7 +223,7 @@ export class Send {
     const minimumFirstTimeStakingValue = await Utils.getMinimumStakingValue(this.queryApi);
     const accountInfo = await this.queryApi.getAccountInfo(this.signerAddress);
     const newStakedBalance = new BN(accountInfo?.stakedBalance).sub(new BN(amount));
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
     if (newStakedBalance?.lt(minimumFirstTimeStakingValue)) {
       const methodArgs = {};
       return await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, nonceInfo);
@@ -236,7 +236,7 @@ export class Send {
   async withdrawUnlocked(): Promise<string> {
     const accountInfo = await this.queryApi.getAccountInfo(this.signerAddress);
     const methodArgs = {};
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
     if (new BN(accountInfo?.stakedBalance).eq(new BN(accountInfo?.unlockedBalance))) {
       return await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, nonceInfo);
     } else {
@@ -246,13 +246,13 @@ export class Send {
 
   async scheduleLeaveNominators(): Promise<string> {
     const methodArgs = {};
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, nonceInfo);
   }
 
   async executeLeaveNominators(): Promise<string> {
     const methodArgs = {};
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, nonceInfo);
   }
 
@@ -268,7 +268,7 @@ export class Send {
     Utils.validateAccount(handler);
     Utils.validateCheckpointFormat(checkpoint);
     const methodArgs = { handler, checkpoint, chainId, checkpointOriginId };
-    const nonceInfo = { nonceType: NonceType.Anchor, nonceParams: { chainId }};
+    const nonceInfo = { nonceType: NonceType.Anchor, nonceParams: { chainId } };
     return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, nonceInfo);
   }
 
@@ -330,7 +330,7 @@ export class Send {
       swapFee
     };
 
-    const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, nonceInfo);
   }
 
@@ -342,7 +342,7 @@ export class Send {
     };
 
     const methodArgs = { marketId, outcome };
-    const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: {  marketId, user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: { marketId, user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyReportMarketOutcome, nonceInfo);
   }
 
@@ -350,7 +350,7 @@ export class Send {
     // The name of the property (marketId) is used to get the correct nonce so do not change it.
     // This is hacky and fragile. Come up with a better way to handle this.
     const methodArgs = { marketId };
-    const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: {  marketId, user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: { marketId, user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyRedeemMarketShares, nonceInfo);
   }
 
@@ -376,7 +376,7 @@ export class Send {
       orders,
       strategy
     };
-    const nonceInfo = { nonceType: NonceType.HybridRouter, nonceParams: {  marketId, user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.HybridRouter, nonceParams: { marketId, user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyBuyMarketOutcomeTokens, nonceInfo);
   }
 
@@ -402,7 +402,7 @@ export class Send {
       orders,
       strategy
     };
-    const nonceInfo = { nonceType: NonceType.HybridRouter, nonceParams: {  marketId, user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.HybridRouter, nonceParams: { marketId, user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxySellMarketOutcomeTokens, nonceInfo);
   }
 
@@ -412,7 +412,7 @@ export class Send {
       to,
       amount
     };
-    const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyTransferMarketTokens, nonceInfo);
   }
 
@@ -421,7 +421,7 @@ export class Send {
       assetEthAddress,
       amount
     };
-    const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress }};
+    const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
     return await this.proxyRequest(methodArgs, TxType.ProxyWithdrawMarketTokens, nonceInfo);
   }
 
@@ -438,7 +438,7 @@ export class Send {
       nodeSigningKey,
       blockNumber
     };
-    const nonceInfo = { nonceType: NonceType.None, nonceParams: {}};
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterNode, nonceInfo);
   }
 
