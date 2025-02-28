@@ -2,7 +2,7 @@
 
 import { NonceInfo, NonceType } from '../interfaces';
 import { Query } from '../apis';
-import { createHash } from 'crypto';
+import CryptoJS from "crypto-js";
 
 export class NonceUtils {
   /**
@@ -61,7 +61,7 @@ export class NonceUtils {
     for (const key of Object.keys(nonceInfo.nonceParams).sort()) {
       sortedParams[key] = nonceInfo.nonceParams[key];
     }
-    return `${nonceInfo.nonceType}-${createHash('sha256').update(JSON.stringify(sortedParams)).digest('hex')}`;
+    return `${nonceInfo.nonceType}-${CryptoJS.SHA256(JSON.stringify(sortedParams)).toString(CryptoJS.enc.Hex)}`;
   }
 
   static getNonceId(nonceInfo: NonceInfo): string {
