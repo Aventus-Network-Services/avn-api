@@ -2,7 +2,7 @@
 
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
-import { AvnApiConfig, NonceType, PredictionMarketAsset, PredictionMarketConstants, Royalty } from '../interfaces';
+import { AvnApiConfig, NodeManagerConfig, NodeManagerInfo, NonceType, PredictionMarketAsset, PredictionMarketConstants, Royalty } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
 import { NodeStatistics } from './nodeStatisticsQuery';
@@ -387,5 +387,13 @@ export class Query {
 
   async getAverageRewardInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
     return this.nodeStatistics.getAverageRewardInTimeRange(gqlEndpoint, accountId, startTime, endTime);
+  }
+
+  async getNodeManagerConfig(): Promise<NodeManagerConfig> {
+    return await this.postRequest<NodeManagerConfig>(this.api, 'getNodeManagerConfig');
+  }
+
+  async getNodeManagerInfo(): Promise<NodeManagerInfo> {
+    return await this.postRequest<NodeManagerInfo>(this.api, 'getNodeManagerInfo');
   }
 }
