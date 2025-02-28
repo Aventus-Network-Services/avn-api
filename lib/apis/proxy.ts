@@ -449,7 +449,15 @@ async function signProxyRegisterChainHandler({ relayer, name, signerAddress, api
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxySubmitCheckpointWithIdentity({ relayer, signerAddress, checkpoint, chainId, nonce, checkpointOriginId, api }) {
+async function signProxySubmitCheckpointWithIdentity({
+  relayer,
+  signerAddress,
+  checkpoint,
+  chainId,
+  nonce,
+  checkpointOriginId,
+  api
+}) {
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
   const handler = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
 
@@ -627,7 +635,7 @@ async function signProxyWithdrawMarketToken({ relayer, nonce, signerAddress, ass
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxyRegisterNode({relayer, signerAddress, nodeId, nodeOwner, nodeSigningKey, blockNumber, api} ) {
+async function signProxyRegisterNode({ relayer, signerAddress, nodeId, nodeOwner, nodeSigningKey, blockNumber, api }) {
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
   const nodeIdPk = AccountUtils.convertToPublicKeyIfNeeded(nodeId);
   const nodeOwnerPk = AccountUtils.convertToPublicKeyIfNeeded(nodeOwner);
@@ -638,7 +646,7 @@ async function signProxyRegisterNode({relayer, signerAddress, nodeId, nodeOwner,
     { AccountId: nodeIdPk },
     { AccountId: nodeOwnerPk },
     { AccountId: nodeSigningKey },
-    { BlockNumber: blockNumber },
+    { BlockNumber: blockNumber }
   ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);

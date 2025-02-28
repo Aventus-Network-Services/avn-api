@@ -5,6 +5,7 @@ import { Awt } from '../awt';
 import { AvnApiConfig, NodeManagerConfig, NodeManagerInfo, NonceType, PredictionMarketAsset, PredictionMarketConstants, Royalty } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
+import { NodeStatistics } from './nodeStatisticsQuery';
 
 interface T1Contracts {
   avt: string;
@@ -78,6 +79,8 @@ export class Query {
   private nftsMap: Nfts;
   private assets: Assets;
   private predictionMarketConsts: PredictionMarketConstants;
+  private nodeStatistics: NodeStatistics;
+
   constructor(api: AvnApiConfig, awtManager: Awt) {
     this.awtManager = awtManager;
     this.api = api;
@@ -92,6 +95,8 @@ export class Query {
     this.assets = {};
     // Keep this empty to allow checking when its not set
     this.predictionMarketConsts = {} as PredictionMarketConstants;
+
+    this.nodeStatistics = new NodeStatistics();
   }
 
   async postRequest<R>(api: AvnApiConfig, method: string, params: object = {}, handler = 'query'): Promise<R> {
@@ -354,6 +359,34 @@ export class Query {
 
   async getCheckpointByOriginId(chainId: string, originId: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'getCheckpointByOriginId', { chainId, originId });
+  }
+
+  async getAccountRewardsLast24Hours(gqlEndpoint: string, accountId: string): Promise<bigint> {
+    return this.nodeStatistics.getAccountRewardsLast24Hours(gqlEndpoint, accountId);
+  }
+
+  async getAccountRewardsInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
+    return this.nodeStatistics.getAccountRewardsInTimeRange(gqlEndpoint, accountId, startTime, endTime);
+  }
+
+  async getAccountLifetimeRewards(gqlEndpoint: string, accountId: string): Promise<bigint> {
+    return this.nodeStatistics.getAccountLifetimeRewards(gqlEndpoint, accountId);
+  }
+
+  async getNodeTotalRewards(gqlEndpoint: string, nodeId: string): Promise<bigint> {
+    return this.nodeStatistics.getNodeTotalRewards(gqlEndpoint, nodeId);
+  }
+
+  async getAccountNodesCount(gqlEndpoint: string, accountId: string): Promise<number> {
+    return this.nodeStatistics.getAccountNodesCount(gqlEndpoint, accountId);
+  }
+
+  async getRewardCountInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<number> {
+    return this.nodeStatistics.getRewardCountInTimeRange(gqlEndpoint, accountId, startTime, endTime);
+  }
+
+  async getAverageRewardInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
+    return this.nodeStatistics.getAverageRewardInTimeRange(gqlEndpoint, accountId, startTime, endTime);
   }
 
   async getNodeManagerConfig(): Promise<NodeManagerConfig> {
