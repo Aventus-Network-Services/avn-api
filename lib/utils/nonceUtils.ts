@@ -22,7 +22,7 @@ export class NonceUtils {
         return () => queryApi.getNftNonce(nonceParams['nftId']);
       }
       case NonceType.Anchor: {
-        if (!nonceParams['chainId']) throw new Error('chainId is required for NonceType.Anchor');
+        if (!nonceParams['chainId'] == null) throw new Error('chainId is required for NonceType.Anchor');
         return () => queryApi.getAnchorNonce(nonceParams['chainId']);
       }
       case NonceType.Prediction_Market: {
