@@ -48,8 +48,8 @@ export enum TxType {
   ProxySellMarketOutcomeTokens = 'proxySellMarketOutcomeTokens',
   ProxyWithdrawMarketTokens = 'proxyWithdrawMarketTokens',
 
-  ProxyAddPredictionMarketLiquidity = 'proxyJoin',
-  ProxyExitPredictionMarketLiquidity = 'proxyExitWithFees',
+  ProxyAddPredictionMarketLiquidity = 'proxyAddPredictionMarketLiquidity',
+  ProxyExitPredictionMarketLiquidity = 'proxyExitPredictionMarketLiquidity',
 
 
   // Node manager
