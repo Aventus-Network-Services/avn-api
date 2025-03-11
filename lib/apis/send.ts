@@ -442,6 +442,37 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterNode, nonceInfo);
   }
 
+  async addPredictionMarketLiquidity(marketId: number, poolSharesAmount: string, maxAmountsIn: string) {
+    const blockNumber = await this.queryApi.getCurrentBlock();
+    const methodArgs = {
+      marketId,
+      poolSharesAmount,
+      maxAmountsIn,
+      blockNumber
+    }
+
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
+    return await this.proxyRequest(methodArgs, TxType.ProxyAddPredictionMarketLiquidity, nonceInfo)
+  }
+
+  async exitPredictionMarketLiquidity(
+    marketId: number,
+    currencyToken: string,
+    poolSharesAmountOut: string,
+    minAmountsOut: string,
+  ) {
+    const blockNumber = await this.queryApi.getCurrentBlock();
+    const methodArgs = {
+      marketId, 
+      currencyToken, 
+      poolSharesAmountOut, 
+      minAmountsOut, 
+      blockNumber
+    }
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
+    return await this.proxyRequest(methodArgs, TxType.ProxyExitPredictionMarketLiquidity, nonceInfo)
+  }
+
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceInfo: NonceInfo): Promise<string> {
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
     const requestId = this.api.uuid();
