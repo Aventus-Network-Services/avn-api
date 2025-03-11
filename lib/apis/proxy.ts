@@ -127,7 +127,8 @@ const signing = {
   proxyRedeemMarketShares: async proxyArgs => await signProxyRedeemShares(proxyArgs),
   proxyTransferMarketTokens: async proxyArgs => await signProxyTransferAsset(proxyArgs),
   proxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
-  proxyRegisterNode: async proxyArgs => await signProxyRegisterNode(proxyArgs)
+  proxyRegisterNode: async proxyArgs => await signProxyRegisterNode(proxyArgs),
+  proxyAddPredictionMarketLiquidity: async proxyArgs => await signProxyAddPredictionMarketLiquidity(proxyArgs),
 };
 
 export default class ProxyUtils {
@@ -652,6 +653,24 @@ async function signProxyRegisterNode({ relayer, signerAddress, nodeId, nodeOwner
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
+
+async function signProxyAddPredictionMarketLiquidity({ relayer, marketId, poolSharesAmount, maxAmountsIn, signerAddress, blockNumber, api }) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+  const orderedData = [
+    { Text: 'neo_swap::join_context' },
+    { AccountId: relayer },
+    { u128: marketId },
+    { BalanceOf: poolSharesAmount },
+    { 'Vec<BalanceOf>': maxAmountsIn },
+    { BlockNumber: blockNumber }
+  ];
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+
 
 function encodeOrderedData(data: object[]) {
   const encodedDataToSign = data.map(d => {
