@@ -660,8 +660,8 @@ async function signProxyAddPredictionMarketLiquidity({ relayer, marketId, poolSh
   const orderedData = [
     { Text: 'neo_swap::join_context' },
     { AccountId: relayer },
-    { 'Compact<u128>': marketId },
-    { 'Compact<BalanceOf>': poolSharesAmount },
+    { u128: marketId },
+    { BalanceOf: poolSharesAmount },
     { 'Vec<BalanceOf>': maxAmountsIn },
     { BlockNumber: blockNumber }
   ];
