@@ -674,6 +674,7 @@ async function signProxyAddPredictionMarketLiquidity({ relayer, marketId, poolSh
 async function signProxyExitPredictionMarketLiquidity({relayer, marketId, poolSharesAmountOut, minAmountsOut, signerAddress, blockNumber, api}) {
   relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
   const orderedData = [
+    { Text: 'neo_swap::exit_context' },
     { AccountId: relayer },
     { u128: marketId },
     { BalanceOf: poolSharesAmountOut },
