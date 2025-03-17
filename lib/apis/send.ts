@@ -475,6 +475,7 @@ export class Send {
     minAmountsOut: string,
   ): Promise<string> {
     const blockNumber = await this.queryApi.getCurrentBlock();
+    // function to withdraw the funds as a 
     const methodArgs = {
       marketId,
       currencyToken,
