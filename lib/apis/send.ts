@@ -442,7 +442,7 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterNode, nonceInfo);
   }
 
-  async addPredictionMarketLiquidity(marketId: number, poolSharesAmount: string, maxAmountsIn: string) {
+  async addPredictionMarketLiquidity(marketId: number, poolSharesAmount: string, maxAmountsIn: string): Promise<string> {
     const blockNumber = await this.queryApi.getCurrentBlock();
     const methodArgs = {
       marketId,
