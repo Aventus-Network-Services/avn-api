@@ -130,6 +130,8 @@ const signing = {
   proxyRegisterNode: async proxyArgs => await signProxyRegisterNode(proxyArgs),
   proxyAddPredictionMarketLiquidity: async proxyArgs => await signProxyAddPredictionMarketLiquidity(proxyArgs),
   proxyExitPredictionMarketLiquidity: async proxyArgs => await signProxyExitPredictionMarketLiquidity(proxyArgs)
+  // withdraw funds 
+  // withdraw and exit
 };
 
 export default class ProxyUtils {
@@ -686,7 +688,9 @@ async function signProxyExitPredictionMarketLiquidity({relayer, marketId, poolSh
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
+// signedProxyWithdrawPredictionMarketLiquidityFees
 
+// signProxyExitPredictionMarketLiquidityWithFees
 
 function encodeOrderedData(data: object[]) {
   const encodedDataToSign = data.map(d => {
