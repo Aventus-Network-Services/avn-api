@@ -442,6 +442,19 @@ export class Send {
     return await this.proxyRequest(methodArgs, TxType.ProxyRegisterNode, nonceInfo);
   }
 
+  async addPredictionMarketLiquidity(marketId: number, poolSharesAmount: string, maxAmountsIn: string): Promise<string> {
+    const blockNumber = await this.queryApi.getCurrentBlock();
+    const methodArgs = {
+      marketId,
+      poolSharesAmount,
+      maxAmountsIn,
+      blockNumber
+    }
+
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
+    return await this.proxyRequest(methodArgs, TxType.ProxyAddPredictionMarketLiquidity, nonceInfo)
+  }
+
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceInfo: NonceInfo): Promise<string> {
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
     const requestId = this.api.uuid();
