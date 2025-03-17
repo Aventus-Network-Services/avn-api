@@ -483,11 +483,11 @@ export class Send {
       blockNumber
     }
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    const existMarketParams = (await this.proxyRequest(methodArgs, TxType.ProxyExitPredictionMarketLiquidity, nonceInfo, true)) as ProxyParams;
+    const exitMarketParams = (await this.proxyRequest(methodArgs, TxType.ProxyExitPredictionMarketLiquidity, nonceInfo, true)) as ProxyParams;
     const withdrawFeeParams = (await this.proxyRequest({marketId, blockNumber}, TxType.ProxyExitPredictionMarketLiquidity, nonceInfo, true)) as ProxyParams;
-    const response = await this.postRequest("BatchTransaction", {existMarketParams, withdrawFeeParams});
+    const response = await this.postRequest("BatchTransaction", {exitMarketParams, withdrawFeeParams});
     const requestId = this.api.uuid();
-    log.info(new Date(), ` Batch requestId: ${existMarketParams.requestId} -> ${requestId}, ${withdrawFeeParams.requestId} -> ${requestId}`);
+    log.info(new Date(), ` Batch requestId: ${exitMarketParams.requestId} -> ${requestId}, ${withdrawFeeParams.requestId} -> ${requestId}`);
     log.info(new Date(), ` ${requestId} - Response: ${response}`);
       return response;
   }
