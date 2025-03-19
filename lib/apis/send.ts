@@ -617,27 +617,6 @@ export class Send {
     return feePaymentSignature;
   }
 
-  private async getProxyNonce(
-    nonceInfo: NonceInfo,
-    requestId: string,
-    proxyNonceData?: NonceData
-  ): Promise<number | undefined> {
-    if (proxyNonceData) {
-      // Create a callback to refresh the nonce, if required
-      let fnRefreshNonce = NonceUtils.createNonceFetcher(nonceInfo, this.queryApi);
-
-      return await this.api.nonceCache.incrementNonce(
-        proxyNonceData,
-        this.signerAddress,
-        NonceUtils.getNonceId(nonceInfo),
-        requestId,
-        fnRefreshNonce
-      );
-    } else {
-      return undefined;
-    }
-  }
-
   private async getProxyParams(
     proxyNonce: number,
     txType: TxType,
