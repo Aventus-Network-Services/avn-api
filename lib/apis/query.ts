@@ -362,30 +362,37 @@ export class Query {
   }
 
   async getAccountRewardsLast24Hours(gqlEndpoint: string, accountId: string): Promise<bigint> {
+    accountId = AccountUtils.convertToPublicKeyIfNeeded(accountId);
     return this.nodeStatistics.getAccountRewardsLast24Hours(gqlEndpoint, accountId);
   }
 
   async getAccountRewardsInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
+    accountId = AccountUtils.convertToPublicKeyIfNeeded(accountId);
     return this.nodeStatistics.getAccountRewardsInTimeRange(gqlEndpoint, accountId, startTime, endTime);
   }
 
   async getAccountLifetimeRewards(gqlEndpoint: string, accountId: string): Promise<bigint> {
+    accountId = AccountUtils.convertToPublicKeyIfNeeded(accountId);
     return this.nodeStatistics.getAccountLifetimeRewards(gqlEndpoint, accountId);
   }
 
   async getNodeTotalRewards(gqlEndpoint: string, nodeId: string): Promise<bigint> {
+    nodeId = AccountUtils.convertToPublicKeyIfNeeded(nodeId);
     return this.nodeStatistics.getNodeTotalRewards(gqlEndpoint, nodeId);
   }
 
   async getAccountNodesCount(gqlEndpoint: string, accountId: string): Promise<number> {
+    accountId = AccountUtils.convertToPublicKeyIfNeeded(accountId);
     return this.nodeStatistics.getAccountNodesCount(gqlEndpoint, accountId);
   }
 
   async getRewardCountInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<number> {
+    accountId = AccountUtils.convertToPublicKeyIfNeeded(accountId);
     return this.nodeStatistics.getRewardCountInTimeRange(gqlEndpoint, accountId, startTime, endTime);
   }
 
   async getAverageRewardInTimeRange(gqlEndpoint: string, accountId: string, startTime: Date, endTime: Date): Promise<bigint> {
+    accountId = AccountUtils.convertToPublicKeyIfNeeded(accountId);
     return this.nodeStatistics.getAverageRewardInTimeRange(gqlEndpoint, accountId, startTime, endTime);
   }
 
