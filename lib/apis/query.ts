@@ -397,9 +397,9 @@ export class Query {
     return await this.postRequest<NodeManagerInfo>(this.api, 'getNodeManagerInfo');
   }
 
-  async isNodective(nodeId: string): Promise<boolean> {
-    return await this.postRequest<boolean>(this.api, 'getTotalActiveNodes');
-  }
+  // async isNodective(nodeId: string): Promise<boolean> {
+  //   return await this.postRequest<boolean>(this.api, 'getTotalActiveNodes');
+  // }
 
 
   // async getTotalActiveNodes(): Promise<number> {
