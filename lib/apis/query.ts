@@ -397,8 +397,21 @@ export class Query {
     return await this.postRequest<NodeManagerInfo>(this.api, 'getNodeManagerInfo');
   }
 
-  // Get total nodes registeted + // Get current reward period
-  // Get total active nodes count (nodeUptime)
+  async isNodective(nodeId: string): Promise<boolean> {
+    return await this.postRequest<boolean>(this.api, 'getTotalActiveNodes');
+  }
+
+
+  // async getTotalActiveNodes(): Promise<number> {
+  //   return await this.postRequest<number>(this.api, 'getTotalActiveNodes');
+  // }
+
+  // async getTotalRegisteredNodes(): Promise<boolean> {
+  //   return await this.postRequest<boolean>(this.api, 'getTotalRegisteredNodes');
+  // }
+  // Get current reward period
+  // Reward amount
+
   // IsNodeUp (nodeId)
 
 }
