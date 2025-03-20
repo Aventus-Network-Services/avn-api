@@ -130,7 +130,10 @@ const signing = {
   proxyRegisterNode: async proxyArgs => await signProxyRegisterNode(proxyArgs),
   proxyAddPredictionMarketLiquidity: async proxyArgs => await signProxyAddPredictionMarketLiquidity(proxyArgs),
   proxyExitPredictionMarketLiquidity: async proxyArgs => await signProxyExitPredictionMarketLiquidity(proxyArgs),
-  proxyWithdrawPredictionMarketLiquidityFees: async proxyArgs => await signedProxyWithdrawPredictionMarketLiquidityFees(proxyArgs),
+  proxyWithdrawPredictionMarketLiquidityFees: async proxyArgs =>
+    await signedProxyWithdrawPredictionMarketLiquidityFees(proxyArgs),
+  proxyBuyCompletePredictionMarketOutcomeTokens: async proxyArgs =>
+    await signedProxyBuyCompletePredictionMarketOutcomeTokens(proxyArgs)
 };
 
 export default class ProxyUtils {
@@ -656,7 +659,15 @@ async function signProxyRegisterNode({ relayer, signerAddress, nodeId, nodeOwner
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxyAddPredictionMarketLiquidity({ relayer, marketId, poolSharesAmount, maxAmountsIn, signerAddress, blockNumber, api }) {
+async function signProxyAddPredictionMarketLiquidity({
+  relayer,
+  marketId,
+  poolSharesAmount,
+  maxAmountsIn,
+  signerAddress,
+  blockNumber,
+  api
+}) {
   relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
 
   const orderedData = [
@@ -672,7 +683,15 @@ async function signProxyAddPredictionMarketLiquidity({ relayer, marketId, poolSh
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxyExitPredictionMarketLiquidity({relayer, marketId, poolSharesAmountOut, minAmountsOut, signerAddress, blockNumber, api}) {
+async function signProxyExitPredictionMarketLiquidity({
+  relayer,
+  marketId,
+  poolSharesAmountOut,
+  minAmountsOut,
+  signerAddress,
+  blockNumber,
+  api
+}) {
   relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
   const orderedData = [
     { Text: 'neo_swap::exit_context' },
@@ -681,20 +700,34 @@ async function signProxyExitPredictionMarketLiquidity({relayer, marketId, poolSh
     { BalanceOf: poolSharesAmountOut },
     { 'Vec<BalanceOf>': minAmountsOut },
     { BlockNumber: blockNumber }
-  ]
+  ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signedProxyWithdrawPredictionMarketLiquidityFees({relayer, marketId, signerAddress, blockNumber, api}) {
+async function signedProxyWithdrawPredictionMarketLiquidityFees({ relayer, marketId, signerAddress, blockNumber, api }) {
   relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
   const orderedData = [
     { Text: 'neo_swap::withdraw_fees_context' },
     { AccountId: relayer },
     { u128: marketId },
     { BlockNumber: blockNumber }
-  ]
+  ];
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signedProxyBuyCompletePredictionMarketOutcomeTokens({ relayer, nonce, marketId, signerAddress, amount, api }) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const orderedData = [
+    { Text: 'buy_complete_set_context' },
+    { AccountId: relayer },
+    { u64: nonce },
+    { u128: marketId },
+    { BalanceOf: amount }
+  ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);

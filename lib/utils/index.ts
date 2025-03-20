@@ -47,6 +47,7 @@ export enum TxType {
   ProxyBuyMarketOutcomeTokens = 'proxyBuyMarketOutcomeTokens',
   ProxySellMarketOutcomeTokens = 'proxySellMarketOutcomeTokens',
   ProxyWithdrawMarketTokens = 'proxyWithdrawMarketTokens',
+  ProxyBuyCompletePredictionMarketOutcomeTokens = 'proxyBuyCompletePredictionMarketOutcomeTokens',
 
   ProxyAddPredictionMarketLiquidity = 'proxyAddPredictionMarketLiquidity',
   ProxyExitPredictionMarketLiquidity = 'proxyExitPredictionMarketLiquidity',

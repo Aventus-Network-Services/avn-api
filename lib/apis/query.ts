@@ -2,7 +2,17 @@
 
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
-import { AvnApiConfig, NodeManagerConfig, NodeManagerInfo, NonceType, PredictionMarketAsset, PredictionMarketConstants, PredictionMarketInfo, PredictionMarketPoolInfo, Royalty } from '../interfaces';
+import {
+  AvnApiConfig,
+  NodeManagerConfig,
+  NodeManagerInfo,
+  NonceType,
+  PredictionMarketAsset,
+  PredictionMarketConstants,
+  PredictionMarketInfo,
+  PredictionMarketPoolInfo,
+  Royalty
+} from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
 import { NodeStatistics } from './nodeStatisticsQuery';
@@ -407,5 +417,4 @@ export class Query {
   async getNodeStatus(nodeId: string, rewardPeriod: number): Promise<string> {
     return await this.postRequest<string>(this.api, 'getNodeStatus', { nodeId, rewardPeriod });
   }
-
 }

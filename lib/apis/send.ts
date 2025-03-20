@@ -449,10 +449,10 @@ export class Send {
       poolSharesAmount,
       maxAmountsIn,
       blockNumber
-    }
+    };
 
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    return (await this.proxyRequest(methodArgs, TxType.ProxyAddPredictionMarketLiquidity, nonceInfo)) as string
+    return (await this.proxyRequest(methodArgs, TxType.ProxyAddPredictionMarketLiquidity, nonceInfo)) as string;
   }
 
   async withdrawPredictionMarketFees(marketId: number): Promise<string> {
@@ -460,17 +460,17 @@ export class Send {
     const methodArgs = {
       marketId,
       blockNumber
-    }
+    };
 
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    return (await this.proxyRequest(methodArgs, TxType.ProxyWithdrawPredictionMarketLiquidityFees, nonceInfo)) as string
+    return (await this.proxyRequest(methodArgs, TxType.ProxyWithdrawPredictionMarketLiquidityFees, nonceInfo)) as string;
   }
 
   async exitPredictionMarketLiquidity(
     marketId: number,
     currencyToken: string,
     poolSharesAmountOut: string,
-    minAmountsOut: string,
+    minAmountsOut: string
   ): Promise<string> {
     const blockNumber = await this.queryApi.getCurrentBlock();
     const methodArgs = {
@@ -479,18 +479,45 @@ export class Send {
       poolSharesAmountOut,
       minAmountsOut,
       blockNumber
-    }
+    };
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    const withdrawFeeParams = (await this.proxyRequest({marketId, blockNumber}, TxType.ProxyWithdrawPredictionMarketLiquidityFees, nonceInfo, true)) as ProxyParams;
-    const exitMarketParams = (await this.proxyRequest(methodArgs, TxType.ProxyExitPredictionMarketLiquidity, nonceInfo, true)) as ProxyParams;
-    const response = await this.postRequest(TxType.ProxyExitPredictionMarketLiquidity, [withdrawFeeParams,exitMarketParams]);
+    const withdrawFeeParams = (await this.proxyRequest(
+      { marketId, blockNumber },
+      TxType.ProxyWithdrawPredictionMarketLiquidityFees,
+      nonceInfo,
+      true
+    )) as ProxyParams;
+    const exitMarketParams = (await this.proxyRequest(
+      methodArgs,
+      TxType.ProxyExitPredictionMarketLiquidity,
+      nonceInfo,
+      true
+    )) as ProxyParams;
+    const response = await this.postRequest(TxType.ProxyExitPredictionMarketLiquidity, [withdrawFeeParams, exitMarketParams]);
     const requestId = this.api.uuid();
-    log.info(new Date(), ` Batch requestId: ${exitMarketParams.requestId} -> ${requestId}, ${withdrawFeeParams.requestId} -> ${requestId}`);
+    log.info(
+      new Date(),
+      ` Batch requestId: ${exitMarketParams.requestId} -> ${requestId}, ${withdrawFeeParams.requestId} -> ${requestId}`
+    );
     log.info(new Date(), ` ${requestId} - Response: ${response}`);
-      return response;
+    return response;
   }
 
-  async proxyRequest(methodArgs: any, transactionType: TxType, nonceInfo: NonceInfo, signOnly: boolean = false): Promise<string | ProxyParams> {
+  async buyCompletePredictionMarketOutcomeTokens(marketId: string, amount: string): Promise<string> {
+    const methodArgs = {
+      marketId,
+      amount
+    };
+    const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: { marketId, user: this.signerAddress } };
+    return (await this.proxyRequest(methodArgs, TxType.ProxyBuyCompletePredictionMarketOutcomeTokens, nonceInfo)) as string;
+  }
+
+  async proxyRequest(
+    methodArgs: any,
+    transactionType: TxType,
+    nonceInfo: NonceInfo,
+    signOnly: boolean = false
+  ): Promise<string | ProxyParams> {
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
     const requestId = this.api.uuid();
     const nonceId = NonceUtils.getNonceId(nonceInfo);

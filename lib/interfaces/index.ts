@@ -124,9 +124,7 @@ export type PredictionMarketConstants = {
   maxSwapFee: number;
 };
 
-export type PredictionMarketAsset =
-  | { CategoricalOutcome: [string, string] }
-  | { ForeignAsset: string };
+export type PredictionMarketAsset = { CategoricalOutcome: [string, string] } | { ForeignAsset: string };
 
 export enum Strategy {
   /// The trade is rolled back if it cannot be executed fully.
@@ -137,38 +135,36 @@ export enum Strategy {
 }
 
 export enum MarketCreation {
-  Permissionless = "Permissionless",
-  Advised = "Advised",
+  Permissionless = 'Permissionless',
+  Advised = 'Advised'
 }
 
 export enum ScoringRule {
-  AmmCdaHybrid = "AmmCdaHybrid",
-  Parimutuel = "Parimutuel",
+  AmmCdaHybrid = 'AmmCdaHybrid',
+  Parimutuel = 'Parimutuel'
 }
 
 export enum MarketStatus {
-  Proposed = "Proposed",
-  Active = "Active",
-  Closed = "Closed",
-  Reported = "Reported",
-  Disputed = "Disputed",
-  Resolved = "Resolved",
+  Proposed = 'Proposed',
+  Active = 'Active',
+  Closed = 'Closed',
+  Reported = 'Reported',
+  Disputed = 'Disputed',
+  Resolved = 'Resolved'
 }
 
 export enum MarketDisputeMechanism {
-  Authorized = "Authorized",
-  Court = "Court",
+  Authorized = 'Authorized',
+  Court = 'Court'
 }
 
 export interface Report {
-  at: number,
-  by: string,
-  outcome: OutcomeReport,
+  at: number;
+  by: string;
+  outcome: OutcomeReport;
 }
 
-export type OutcomeReport =
-  | {Categorical: number;}
-  | {Scalar: string;}
+export type OutcomeReport = { Categorical: number } | { Scalar: string };
 
 export type CreateMarketBaseParams = {
   // The base asset of the market.
@@ -217,98 +213,96 @@ export type CreateMarketBaseParams = {
   };
 };
 
-export type MarketPeriod =
-  | {Block: [number, number]}
-  | {Timestamp: [number, number]};
+export type MarketPeriod = { Block: [number, number] } | { Timestamp: [number, number] };
 
 export interface MarketBonds {
-  creation?: Bond,
-  oracle?: Bond,
-  outsider?: Bond,
-  dispute?: Bond,
-  close_request?: Bond,
-  close_dispute?: Bond,
+  creation?: Bond;
+  oracle?: Bond;
+  outsider?: Bond;
+  dispute?: Bond;
+  close_request?: Bond;
+  close_dispute?: Bond;
 }
 
 export interface Bond {
-  who: string,
-  value: string,
-  is_settled: boolean,
+  who: string;
+  value: string;
+  is_settled: boolean;
 }
 
 export interface EarlyClose {
-  old: MarketPeriod,
-  new: MarketPeriod,
-  state: EarlyCloseState,
+  old: MarketPeriod;
+  new: MarketPeriod;
+  state: EarlyCloseState;
 }
 
 export enum EarlyCloseState {
-  ScheduledAsMarketCreator = "ScheduledAsMarketCreator",
-  ScheduledAsOther = "ScheduledAsOther",
-  Disputed = "Disputed",
-  Rejected = "Rejected",
+  ScheduledAsMarketCreator = 'ScheduledAsMarketCreator',
+  ScheduledAsOther = 'ScheduledAsOther',
+  Disputed = 'Disputed',
+  Rejected = 'Rejected'
 }
 
 export interface Deadlines {
-  grace_period: number,
-  oracle_duration: number,
-  dispute_duration: number,
+  grace_period: number;
+  oracle_duration: number;
+  dispute_duration: number;
 }
 
 export interface PredictionMarketInfo {
-  marketId: number,
-  baseAsset: PredictionMarketAsset,
-  creator: string,
-  creation: MarketCreation,
-  creatorFee?: string,
-  oracle: string,
-  metaData: string,
+  marketId: number;
+  baseAsset: PredictionMarketAsset;
+  creator: string;
+  creation: MarketCreation;
+  creatorFee?: string;
+  oracle: string;
+  metaData: string;
   marketType: {
     Categorical: number;
-  },
-  period: MarketPeriod,
-  deadlines: Deadlines,
-  scoringRule: ScoringRule,
-  status: MarketStatus,
-  report?: Report,
-  resolvedOutcome?: OutcomeReport,
-  disputeMechanism?: MarketDisputeMechanism
-  bonds: MarketBonds,
-  earlyClose?: EarlyClose,
+  };
+  period: MarketPeriod;
+  deadlines: Deadlines;
+  scoringRule: ScoringRule;
+  status: MarketStatus;
+  report?: Report;
+  resolvedOutcome?: OutcomeReport;
+  disputeMechanism?: MarketDisputeMechanism;
+  bonds: MarketBonds;
+  earlyClose?: EarlyClose;
 }
 
 export interface LiquidityNode {
-  account?: string,
-  stake: string,
-  fees: string,
-  descendant_stake: string,
-  lazy_fees: string,
+  account?: string;
+  stake: string;
+  fees: string;
+  descendant_stake: string;
+  lazy_fees: string;
 }
 export interface PredictionMarketPoolInfo {
-  accountId: string
+  accountId: string;
   reserves: Map<PredictionMarketAsset, string>;
-  collateral: PredictionMarketAsset
-  liquidityParameter: string
+  collateral: PredictionMarketAsset;
+  liquidityParameter: string;
   liquiditySharesManager: {
-    nodes: LiquidityNode[],
-    accountToIndex: Record<string, number>,
-    abandonedNodes?: number[]
-  },
-  swapFee: string
+    nodes: LiquidityNode[];
+    accountToIndex: Record<string, number>;
+    abandonedNodes?: number[];
+  };
+  swapFee: string;
 }
 
 export interface NodeManagerConfig {
-  rewardAccount: string,
-  nodeRegistrationTransactionLifetime: string,
-  nodeRegistrar: string,
-  heartbeatPeriodInBlocks: string,
-  rewardAmount: string,
-  rewardPeriodInBlocks: string,
-  rewardEnabled: boolean,
+  rewardAccount: string;
+  nodeRegistrationTransactionLifetime: string;
+  nodeRegistrar: string;
+  heartbeatPeriodInBlocks: string;
+  rewardAmount: string;
+  rewardPeriodInBlocks: string;
+  rewardEnabled: boolean;
 }
 
 export interface NodeManagerInfo {
-  oldestUnpaidRewardPeriodIndex: number,
-  lastCompletedRewardPeriodIndex: number,
-  totalRegisteredNodes: number,
+  oldestUnpaidRewardPeriodIndex: number;
+  lastCompletedRewardPeriodIndex: number;
+  totalRegisteredNodes: number;
 }
