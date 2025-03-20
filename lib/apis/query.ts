@@ -404,8 +404,8 @@ export class Query {
     return await this.postRequest<NodeManagerInfo>(this.api, 'getNodeManagerInfo');
   }
 
-  async getNodeStatus(nodeId: string): Promise<boolean> {
-    return await this.postRequest<boolean>(this.api, 'getNodeStatus', { nodeId });
+  async getNodeStatus(nodeId: string, rewardPeriod: number): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getNodeStatus', { nodeId, rewardPeriod });
   }
 
 }
