@@ -2,7 +2,7 @@
 
 import { NonceInfo, NonceType } from '../interfaces';
 import { Query } from '../apis';
-import CryptoJS from "crypto-js";
+import CryptoJS from 'crypto-js';
 
 export class NonceUtils {
   /**
