@@ -490,6 +490,15 @@ export class Send {
       return response;
   }
 
+  async buyCompletePredictionMarketOutcomeTokens(marketId: string, amount: string): Promise<string> {
+    const methodArgs = {
+      marketId,
+      amount
+    };
+    const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: { marketId, user: this.signerAddress } };
+    return (await this.proxyRequest(methodArgs, TxType.ProxyBuyCompletePredictionMarketOutcomeTokens, nonceInfo)) as string;
+  }
+
   async proxyRequest(methodArgs: any, transactionType: TxType, nonceInfo: NonceInfo, signOnly: boolean = false): Promise<string | ProxyParams> {
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
     const requestId = this.api.uuid();

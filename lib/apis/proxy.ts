@@ -131,6 +131,7 @@ const signing = {
   proxyAddPredictionMarketLiquidity: async proxyArgs => await signProxyAddPredictionMarketLiquidity(proxyArgs),
   proxyExitPredictionMarketLiquidity: async proxyArgs => await signProxyExitPredictionMarketLiquidity(proxyArgs),
   proxyWithdrawPredictionMarketLiquidityFees: async proxyArgs => await signedProxyWithdrawPredictionMarketLiquidityFees(proxyArgs),
+  proxyBuyCompletePredictionMarketOutcomeTokens: async proxyArgs => await signedProxyBuyCompletePredictionMarketOutcomeTokens(proxyArgs),
 };
 
 export default class ProxyUtils {
@@ -694,6 +695,20 @@ async function signedProxyWithdrawPredictionMarketLiquidityFees({relayer, market
     { AccountId: relayer },
     { u128: marketId },
     { BlockNumber: blockNumber }
+  ]
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signedProxyBuyCompletePredictionMarketOutcomeTokens({relayer, nonce, marketId, signerAddress, amount, api}) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const orderedData = [
+    { Text: 'buy_complete_set_context' },
+    { AccountId: relayer },
+    { u128: marketId },
+    { BalanceOf: amount },
+    { u64: nonce }
   ]
 
   const encodedDataToSign = encodeOrderedData(orderedData);
