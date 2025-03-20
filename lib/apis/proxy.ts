@@ -706,9 +706,9 @@ async function signedProxyBuyCompletePredictionMarketOutcomeTokens({relayer, non
   const orderedData = [
     { Text: 'buy_complete_set_context' },
     { AccountId: relayer },
+    { u64: nonce },
     { u128: marketId },
     { BalanceOf: amount },
-    { u64: nonce }
   ]
 
   const encodedDataToSign = encodeOrderedData(orderedData);
