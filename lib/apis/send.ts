@@ -60,7 +60,7 @@ export class Send {
     const token = await this.queryApi.getAvtContractAddress();
     const methodArgs = { recipient, token, amount };
     const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyAvtTransfer, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyAvtTransfer, nonceInfo)) as string;
   }
 
   async transferToken(recipient: string, token: string, amount: string): Promise<string> {
@@ -69,7 +69,7 @@ export class Send {
     amount = Utils.validateAndConvertAmountToString(amount);
     const methodArgs = { recipient, token, amount };
     const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyTokenTransfer, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyTokenTransfer, nonceInfo)) as string;
   }
 
   async confirmTokenLift(ethereumTransactionHash: string): Promise<string> {
@@ -77,7 +77,7 @@ export class Send {
     const eventType = EthereumLogEventType.Lifted;
     const methodArgs = { ethereumTransactionHash, eventType };
     const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyConfirmTokenLift, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyConfirmTokenLift, nonceInfo)) as string;
   }
 
   async mintEthereumBatchNft(ethereumTransactionHash: string): Promise<string> {
@@ -85,7 +85,7 @@ export class Send {
     const eventType = EthereumLogEventType.NftMint;
     const methodArgs = { ethereumTransactionHash, eventType };
     const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyMintEthereumBatchNft, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyMintEthereumBatchNft, nonceInfo)) as string;
   }
 
   async transferEthereumNft(ethereumTransactionHash: string): Promise<string> {
@@ -93,7 +93,7 @@ export class Send {
     const eventType = EthereumLogEventType.NftTransferTo;
     const methodArgs = { ethereumTransactionHash, eventType };
     const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyTransferEthereumNft, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyTransferEthereumNft, nonceInfo)) as string;
   }
 
   async cancelEthereumNftSale(ethereumTransactionHash: string): Promise<string> {
@@ -101,7 +101,7 @@ export class Send {
     const eventType = EthereumLogEventType.NftCancelListing;
     const methodArgs = { ethereumTransactionHash, eventType };
     const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyCancelEthereumNftSale, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyCancelEthereumNftSale, nonceInfo)) as string;
   }
 
   async endEthereumBatchSale(ethereumTransactionHash: string): Promise<string> {
@@ -109,7 +109,7 @@ export class Send {
     const eventType = EthereumLogEventType.NftEndBatchListing;
     const methodArgs = { ethereumTransactionHash, eventType };
     const nonceInfo = { nonceType: NonceType.Confirmation, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyEndEthereumBatchSale, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyEndEthereumBatchSale, nonceInfo)) as string;
   }
 
   async lowerToken(t1Recipient: string, token: string, amount: string): Promise<string> {
@@ -118,7 +118,7 @@ export class Send {
     amount = Utils.validateAndConvertAmountToString(amount);
     const methodArgs = { t1Recipient, token, amount };
     const nonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyTokenLower, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyTokenLower, nonceInfo)) as string;
   }
 
   async createNftBatch(totalSupply: number, royalties: Royalty[], t1Authority: string): Promise<string> {
@@ -126,7 +126,7 @@ export class Send {
     Utils.validateEthereumAddress(t1Authority);
     const methodArgs = { totalSupply, royalties, t1Authority };
     const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyCreateNftBatch, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyCreateNftBatch, nonceInfo)) as string;
   }
 
   async mintSingleNft(externalRef: string, royalties: Royalty[], t1Authority: string): Promise<string> {
@@ -135,7 +135,7 @@ export class Send {
     Utils.validateEthereumAddress(t1Authority);
     const methodArgs = { externalRef, royalties, t1Authority };
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    return await this.proxyRequest(methodArgs, TxType.ProxyMintSingleNft, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyMintSingleNft, nonceInfo)) as string;
   }
 
   async mintBatchNft(batchId: string, index: number, owner: string, externalRef: string): Promise<string> {
@@ -144,7 +144,7 @@ export class Send {
     Utils.validateStringIsPopulated(externalRef);
     const methodArgs = { batchId, index, owner, externalRef };
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    return await this.proxyRequest(methodArgs, TxType.ProxyMintBatchNft, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyMintBatchNft, nonceInfo)) as string;
   }
 
   async listFiatNftForSale(nftId: string): Promise<string> {
@@ -152,7 +152,7 @@ export class Send {
     const market = Market.Fiat;
     const methodArgs = { nftId, market };
     const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyListNftOpenForSale, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyListNftOpenForSale, nonceInfo)) as string;
   }
 
   async listEthereumNftForSale(nftId: string): Promise<string> {
@@ -160,7 +160,7 @@ export class Send {
     const market = Market.Ethereum;
     const methodArgs = { nftId, market };
     const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyListEthereumNftForSale, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyListEthereumNftForSale, nonceInfo)) as string;
   }
 
   async listFiatNftBatchForSale(batchId: string): Promise<string> {
@@ -168,7 +168,7 @@ export class Send {
     const market = Market.Fiat;
     const methodArgs = { batchId, market };
     const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyListNftBatchForSale, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyListNftBatchForSale, nonceInfo)) as string;
   }
 
   async listEthereumNftBatchForSale(batchId: string): Promise<string> {
@@ -176,7 +176,7 @@ export class Send {
     const market = Market.Ethereum;
     const methodArgs = { batchId, market };
     const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyListEthereumNftBatchForSale, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyListEthereumNftBatchForSale, nonceInfo)) as string;
   }
 
   async transferFiatNft(recipient: string, nftId: string): Promise<string> {
@@ -185,21 +185,21 @@ export class Send {
     recipient = AccountUtils.convertToPublicKeyIfNeeded(recipient);
     const methodArgs = { nftId, recipient };
     const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyTransferFiatNft, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyTransferFiatNft, nonceInfo)) as string;
   }
 
   async endNftBatchSale(batchId: string): Promise<string> {
     batchId = Utils.formatNftId(batchId);
     const methodArgs = { batchId };
     const nonceInfo = { nonceType: NonceType.Batch, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyEndNftBatchSale, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyEndNftBatchSale, nonceInfo)) as string;
   }
 
   async cancelFiatNftListing(nftId: string): Promise<string> {
     nftId = Utils.formatNftId(nftId);
     const methodArgs = { nftId };
     const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyCancelListFiatNft, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyCancelListFiatNft, nonceInfo)) as string;
   }
 
   async stake(amount: string): Promise<string> {
@@ -209,12 +209,12 @@ export class Send {
 
     if (stakingStatus === StakingStatus.isStaking) {
       const methodArgs = { amount };
-      return await this.proxyRequest(methodArgs, TxType.ProxyIncreaseStake, nonceInfo);
+      return (await this.proxyRequest(methodArgs, TxType.ProxyIncreaseStake, nonceInfo)) as string;
     } else {
       const targets = await this.queryApi.getValidatorsToNominate();
       Utils.validateStakingTargets(targets);
       const methodArgs = { amount, targets };
-      return await this.proxyRequest(methodArgs, TxType.proxyStakeAvt, nonceInfo);
+      return (await this.proxyRequest(methodArgs, TxType.proxyStakeAvt, nonceInfo)) as string;
     }
   }
 
@@ -226,10 +226,10 @@ export class Send {
     const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
     if (newStakedBalance?.lt(minimumFirstTimeStakingValue)) {
       const methodArgs = {};
-      return await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, nonceInfo);
+      return (await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, nonceInfo)) as string;
     } else {
       const methodArgs = { amount };
-      return await this.proxyRequest(methodArgs, TxType.ProxyUnstake, nonceInfo);
+      return (await this.proxyRequest(methodArgs, TxType.ProxyUnstake, nonceInfo)) as string;
     }
   }
 
@@ -238,22 +238,22 @@ export class Send {
     const methodArgs = {};
     const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
     if (new BN(accountInfo?.stakedBalance).eq(new BN(accountInfo?.unlockedBalance))) {
-      return await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, nonceInfo);
+      return (await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, nonceInfo)) as string;
     } else {
-      return await this.proxyRequest(methodArgs, TxType.ProxyWithdrawUnlocked, nonceInfo);
+      return (await this.proxyRequest(methodArgs, TxType.ProxyWithdrawUnlocked, nonceInfo)) as string;
     }
   }
 
   async scheduleLeaveNominators(): Promise<string> {
     const methodArgs = {};
     const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, nonceInfo)) as string;
   }
 
   async executeLeaveNominators(): Promise<string> {
     const methodArgs = {};
     const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, nonceInfo)) as string;
   }
 
   async registerHandler(handler: string, name: string): Promise<string> {
@@ -261,7 +261,7 @@ export class Send {
     Utils.validateChainName(name);
     const methodArgs = { handler, name };
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    return await this.proxyRequest(methodArgs, TxType.ProxyRegisterHander, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyRegisterHander, nonceInfo)) as string;
   }
 
   async submitCheckpoint(handler: string, checkpoint: string, chainId: number, checkpointOriginId: number): Promise<string> {
@@ -269,7 +269,7 @@ export class Send {
     Utils.validateCheckpointFormat(checkpoint);
     const methodArgs = { handler, checkpoint, chainId, checkpointOriginId };
     const nonceInfo = { nonceType: NonceType.Anchor, nonceParams: { chainId } };
-    return await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxySubmitCheckpoint, nonceInfo)) as string;
   }
 
   async createMarketAndDeployPool(
@@ -331,7 +331,7 @@ export class Send {
     };
 
     const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyCreateMarketAndDeployPool, nonceInfo)) as string;
   }
 
   async reportMarketOutcome(marketId: string, assetIndex: number): Promise<string> {
@@ -343,7 +343,7 @@ export class Send {
 
     const methodArgs = { marketId, outcome };
     const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: { marketId, user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyReportMarketOutcome, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyReportMarketOutcome, nonceInfo)) as string;
   }
 
   async redeemMarketShares(marketId: string): Promise<string> {
@@ -351,7 +351,7 @@ export class Send {
     // This is hacky and fragile. Come up with a better way to handle this.
     const methodArgs = { marketId };
     const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: { marketId, user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyRedeemMarketShares, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyRedeemMarketShares, nonceInfo)) as string;
   }
 
   async buyMarketOutcomeTokens(marketId: string, assetIndex: number, amountIn: string, maxPrice: string): Promise<string> {
@@ -377,7 +377,7 @@ export class Send {
       strategy
     };
     const nonceInfo = { nonceType: NonceType.HybridRouter, nonceParams: { marketId, user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyBuyMarketOutcomeTokens, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyBuyMarketOutcomeTokens, nonceInfo)) as string;
   }
 
   async sellMarketOutcomeTokens(marketId: string, assetIndex: number, amountIn: string, minPrice: string): Promise<string> {
@@ -403,7 +403,7 @@ export class Send {
       strategy
     };
     const nonceInfo = { nonceType: NonceType.HybridRouter, nonceParams: { marketId, user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxySellMarketOutcomeTokens, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxySellMarketOutcomeTokens, nonceInfo)) as string;
   }
 
   async transferMarketToken(assetEthAddress: string, to: string, amount: string): Promise<string> {
@@ -413,7 +413,7 @@ export class Send {
       amount
     };
     const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyTransferMarketTokens, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyTransferMarketTokens, nonceInfo)) as string;
   }
 
   async withdrawMarketTokens(assetEthAddress: string, amount: string): Promise<string> {
@@ -422,7 +422,7 @@ export class Send {
       amount
     };
     const nonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
-    return await this.proxyRequest(methodArgs, TxType.ProxyWithdrawMarketTokens, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyWithdrawMarketTokens, nonceInfo)) as string;
   }
 
   async registerNode(nodeId: string, nodeOwner: string, nodeSigningKey: string): Promise<string> {
@@ -439,7 +439,7 @@ export class Send {
       blockNumber
     };
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    return await this.proxyRequest(methodArgs, TxType.ProxyRegisterNode, nonceInfo);
+    return (await this.proxyRequest(methodArgs, TxType.ProxyRegisterNode, nonceInfo)) as string;
   }
 
   async addPredictionMarketLiquidity(marketId: number, poolSharesAmount: string, maxAmountsIn: string): Promise<string> {
@@ -452,10 +452,45 @@ export class Send {
     }
 
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
-    return await this.proxyRequest(methodArgs, TxType.ProxyAddPredictionMarketLiquidity, nonceInfo)
+    return (await this.proxyRequest(methodArgs, TxType.ProxyAddPredictionMarketLiquidity, nonceInfo)) as string
   }
 
-  async proxyRequest(methodArgs: any, transactionType: TxType, nonceInfo: NonceInfo): Promise<string> {
+  async withdrawPredictionMarketFees(marketId: number): Promise<string> {
+    const blockNumber = await this.queryApi.getCurrentBlock();
+    const methodArgs = {
+      marketId,
+      blockNumber
+    }
+
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
+    return (await this.proxyRequest(methodArgs, TxType.ProxyWithdrawPredictionMarketLiquidityFees, nonceInfo)) as string
+  }
+
+  async exitPredictionMarketLiquidity(
+    marketId: number,
+    currencyToken: string,
+    poolSharesAmountOut: string,
+    minAmountsOut: string,
+  ): Promise<string> {
+    const blockNumber = await this.queryApi.getCurrentBlock();
+    const methodArgs = {
+      marketId,
+      currencyToken,
+      poolSharesAmountOut,
+      minAmountsOut,
+      blockNumber
+    }
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
+    const withdrawFeeParams = (await this.proxyRequest({marketId, blockNumber}, TxType.ProxyWithdrawPredictionMarketLiquidityFees, nonceInfo, true)) as ProxyParams;
+    const exitMarketParams = (await this.proxyRequest(methodArgs, TxType.ProxyExitPredictionMarketLiquidity, nonceInfo, true)) as ProxyParams;
+    const response = await this.postRequest(TxType.ProxyExitPredictionMarketLiquidity, [withdrawFeeParams,exitMarketParams]);
+    const requestId = this.api.uuid();
+    log.info(new Date(), ` Batch requestId: ${exitMarketParams.requestId} -> ${requestId}, ${withdrawFeeParams.requestId} -> ${requestId}`);
+    log.info(new Date(), ` ${requestId} - Response: ${response}`);
+      return response;
+  }
+
+  async proxyRequest(methodArgs: any, transactionType: TxType, nonceInfo: NonceInfo, signOnly: boolean = false): Promise<string | ProxyParams> {
     let proxyNonceData: NonceData, paymentNonceData: NonceData, proxyNonce: number, paymentNonce: number | undefined;
     const requestId = this.api.uuid();
     const nonceId = NonceUtils.getNonceId(nonceInfo);
@@ -495,6 +530,10 @@ export class Send {
         currencyToken
       );
       paymentNonce = params?.paymentNonce;
+
+      if (signOnly === true) {
+        return params;
+      }
 
       const response = await this.postRequest(transactionType, params);
 
@@ -576,27 +615,6 @@ export class Send {
       currencyToken
     );
     return feePaymentSignature;
-  }
-
-  private async getProxyNonce(
-    nonceInfo: NonceInfo,
-    requestId: string,
-    proxyNonceData?: NonceData
-  ): Promise<number | undefined> {
-    if (proxyNonceData) {
-      // Create a callback to refresh the nonce, if required
-      let fnRefreshNonce = NonceUtils.createNonceFetcher(nonceInfo, this.queryApi);
-
-      return await this.api.nonceCache.incrementNonce(
-        proxyNonceData,
-        this.signerAddress,
-        NonceUtils.getNonceId(nonceInfo),
-        requestId,
-        fnRefreshNonce
-      );
-    } else {
-      return undefined;
-    }
   }
 
   private async getProxyParams(

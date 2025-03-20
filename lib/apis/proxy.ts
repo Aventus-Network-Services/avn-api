@@ -129,6 +129,8 @@ const signing = {
   proxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
   proxyRegisterNode: async proxyArgs => await signProxyRegisterNode(proxyArgs),
   proxyAddPredictionMarketLiquidity: async proxyArgs => await signProxyAddPredictionMarketLiquidity(proxyArgs),
+  proxyExitPredictionMarketLiquidity: async proxyArgs => await signProxyExitPredictionMarketLiquidity(proxyArgs),
+  proxyWithdrawPredictionMarketLiquidityFees: async proxyArgs => await signedProxyWithdrawPredictionMarketLiquidityFees(proxyArgs),
 };
 
 export default class ProxyUtils {
@@ -665,6 +667,34 @@ async function signProxyAddPredictionMarketLiquidity({ relayer, marketId, poolSh
     { 'Vec<BalanceOf>': maxAmountsIn },
     { BlockNumber: blockNumber }
   ];
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyExitPredictionMarketLiquidity({relayer, marketId, poolSharesAmountOut, minAmountsOut, signerAddress, blockNumber, api}) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const orderedData = [
+    { Text: 'neo_swap::exit_context' },
+    { AccountId: relayer },
+    { u128: marketId },
+    { BalanceOf: poolSharesAmountOut },
+    { 'Vec<BalanceOf>': minAmountsOut },
+    { BlockNumber: blockNumber }
+  ]
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signedProxyWithdrawPredictionMarketLiquidityFees({relayer, marketId, signerAddress, blockNumber, api}) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const orderedData = [
+    { Text: 'neo_swap::withdraw_fees_context' },
+    { AccountId: relayer },
+    { u128: marketId },
+    { BlockNumber: blockNumber }
+  ]
 
   const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);

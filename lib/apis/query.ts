@@ -2,7 +2,7 @@
 
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
-import { AvnApiConfig, NodeManagerConfig, NodeManagerInfo, NonceType, PredictionMarketAsset, PredictionMarketConstants, Royalty } from '../interfaces';
+import { AvnApiConfig, NodeManagerConfig, NodeManagerInfo, NonceType, PredictionMarketAsset, PredictionMarketConstants, PredictionMarketInfo, PredictionMarketPoolInfo, Royalty } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
 import { NodeStatistics } from './nodeStatisticsQuery';
@@ -337,12 +337,12 @@ export class Query {
     return this.predictionMarketConsts;
   }
 
-  async getMarketInfo(marketId: string): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getPredictionMarketInfo', { marketId });
+  async getMarketInfo(marketId: string): Promise<PredictionMarketInfo> {
+    return await this.postRequest<PredictionMarketInfo>(this.api, 'getPredictionMarketInfo', { marketId });
   }
 
-  async getMarketPoolInfo(marketId: string): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getPredictionMarketPoolInfo', { marketId });
+  async getMarketPoolInfo(marketId: string): Promise<PredictionMarketPoolInfo> {
+    return await this.postRequest<PredictionMarketPoolInfo>(this.api, 'getPredictionMarketPoolInfo', { marketId });
   }
 
   async getPredictionMarketCounter(): Promise<string> {
@@ -403,4 +403,9 @@ export class Query {
   async getNodeManagerInfo(): Promise<NodeManagerInfo> {
     return await this.postRequest<NodeManagerInfo>(this.api, 'getNodeManagerInfo');
   }
+
+  async getNodeStatus(nodeId: string, rewardPeriod: number): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getNodeStatus', { nodeId, rewardPeriod });
+  }
+
 }
