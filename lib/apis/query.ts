@@ -81,6 +81,12 @@ interface AvnBatchInfo {
   marketplaceId: string;
 }
 
+interface BalanceData {
+  free: string;
+  reserved: string;
+  frozen: string;
+}
+
 export class Query {
   private api: AvnApiConfig;
   private awtManager: Awt;
@@ -359,8 +365,8 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getPredictionMarketCounter');
   }
 
-  async getPredictionMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getPredictionMarketTokenBalance', { accountId, predictionMarketAsset });
+  async getPredictionMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset): Promise<BalanceData> {
+    return await this.postRequest<BalanceData>(this.api, 'getPredictionMarketTokenBalance', { accountId, predictionMarketAsset });
   }
 
   async getLiftStatus(txHash: string): Promise<string> {
