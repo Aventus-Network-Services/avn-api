@@ -371,8 +371,11 @@ export class Query {
     return JSON.parse(result);
   }
 
-  async getPredictionMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset | string): Promise<BalanceData> {
-    if ( typeof(predictionMarketAsset) != 'string' && "Tru" in predictionMarketAsset) {
+  async getPredictionMarketTokenBalance(
+    accountId: string,
+    predictionMarketAsset: PredictionMarketAsset | string
+  ): Promise<BalanceData> {
+    if (typeof predictionMarketAsset != 'string' && 'Tru' in predictionMarketAsset) {
       return await this.getNativeTokenBalanceInfo(accountId);
     }
 
@@ -381,7 +384,10 @@ export class Query {
     }
 
     Utils.validateAccount(accountId);
-    const result = await this.postRequest<string>(this.api, 'getPredictionMarketTokenBalanceInfo', { accountId, predictionMarketAsset });
+    const result = await this.postRequest<string>(this.api, 'getPredictionMarketTokenBalanceInfo', {
+      accountId,
+      predictionMarketAsset
+    });
     return JSON.parse(result);
   }
 

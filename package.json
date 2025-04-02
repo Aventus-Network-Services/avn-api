@@ -1,6 +1,6 @@
 {
   "name": "avn-api",
-  "version": "5.3.1",
+  "version": "5.4.0",
   "description": "API wrapper around JSON-RPC calls to the AvN",
   "main": "build/lib/index.js",
   "types": "build/lib/index.d.ts",
