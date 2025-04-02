@@ -365,8 +365,18 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getPredictionMarketCounter');
   }
 
+  async getNativeTokenBalanceInfo(accountAddress: string): Promise<BalanceData> {
+    Utils.validateAccount(accountAddress);
+    return await this.postRequest<BalanceData>(this.api, 'getNativeTokenBalanceInfo', { accountId: accountAddress });
+  }
+
   async getPredictionMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset): Promise<BalanceData> {
-    return await this.postRequest<BalanceData>(this.api, 'getPredictionMarketTokenBalance', { accountId, predictionMarketAsset });
+    if ("Tru" in predictionMarketAsset) {
+      return await this.getNativeTokenBalanceInfo(accountId);
+    } else {
+      Utils.validateAccount(accountId);
+      return await this.postRequest<BalanceData>(this.api, 'getPredictionMarketTokenBalanceInfo', { accountId, predictionMarketAsset });
+    }
   }
 
   async getLiftStatus(txHash: string): Promise<string> {
