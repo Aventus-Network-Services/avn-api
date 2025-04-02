@@ -81,6 +81,12 @@ interface AvnBatchInfo {
   marketplaceId: string;
 }
 
+interface BalanceData {
+  free: string;
+  reserved: string;
+  frozen: string;
+}
+
 export class Query {
   private api: AvnApiConfig;
   private awtManager: Awt;
@@ -359,8 +365,35 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getPredictionMarketCounter');
   }
 
-  async getPredictionMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getPredictionMarketTokenBalance', { accountId, predictionMarketAsset });
+  async getNativeTokenBalanceInfo(accountId: string): Promise<BalanceData> {
+    Utils.validateAccount(accountId);
+    const result = await this.postRequest<string>(this.api, 'getNativeTokenBalanceInfo', { accountId });
+    return JSON.parse(result);
+  }
+
+  async getPredictionMarketTokenBalance(
+    accountId: string,
+    predictionMarketAsset: PredictionMarketAsset | string
+  ): Promise<BalanceData> {
+    if (typeof predictionMarketAsset != 'string' && 'Tru' in predictionMarketAsset) {
+      return await this.getNativeTokenBalanceInfo(accountId);
+    }
+
+    if (typeof predictionMarketAsset === 'string') {
+      predictionMarketAsset = await this.getPredictionMarketAssetByTokenAddress(predictionMarketAsset);
+    }
+
+    Utils.validateAccount(accountId);
+    const result = await this.postRequest<string>(this.api, 'getPredictionMarketTokenBalanceInfo', {
+      accountId,
+      predictionMarketAsset
+    });
+    return JSON.parse(result);
+  }
+
+  async getPredictionMarketAssetByTokenAddress(token: string): Promise<any> {
+    Utils.validateEthereumAddress(token);
+    return await this.postRequest<any>(this.api, 'getPredictionMarketAssetByTokenAddress', { token });
   }
 
   async getLiftStatus(txHash: string): Promise<string> {
