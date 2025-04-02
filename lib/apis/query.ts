@@ -381,6 +381,11 @@ export class Query {
     }
   }
 
+  async getPredictionMarketAssetByTokenAddress(token: string): Promise<any> {
+    Utils.validateEthereumAddress(token);
+    return await this.postRequest<any>(this.api, 'getPredictionMarketAssetByTokenAddress', { token });
+  }
+
   async getLiftStatus(txHash: string): Promise<string> {
     return await this.postRequest<string>(this.api, 'getEthereumEventStatus', { txHash });
   }
