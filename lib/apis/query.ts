@@ -138,6 +138,8 @@ export class Query {
       throw new Error('Invalid server response');
     }
 
+    console.log("Server response data: ", response.data);
+    console.log("Server response: ", response);
     return response.data;
   }
 
