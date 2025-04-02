@@ -126,9 +126,6 @@ export class Query {
       throw new Error('Invalid server response');
     }
 
-    console.log("Server response data result: ", response.data.result);
-    console.log("Server response data: ", response.data);
-    console.log("Server response: ", response);
     return response.data.result;
   }
 
@@ -141,8 +138,6 @@ export class Query {
       throw new Error('Invalid server response');
     }
 
-    console.log("Server response data: ", response.data);
-    console.log("Server response: ", response);
     return response.data;
   }
 
@@ -372,7 +367,8 @@ export class Query {
 
   async getNativeTokenBalanceInfo(accountAddress: string): Promise<BalanceData> {
     Utils.validateAccount(accountAddress);
-    return await this.postRequest<BalanceData>(this.api, 'getNativeTokenBalanceInfo', { accountId: accountAddress });
+    let result = await this.postRequest<string>(this.api, 'getNativeTokenBalanceInfo', { accountId: accountAddress });
+    return JSON.parse(result);
   }
 
   async getPredictionMarketTokenBalance(accountId: string, predictionMarketAsset: PredictionMarketAsset): Promise<BalanceData> {
