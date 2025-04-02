@@ -367,7 +367,7 @@ export class Query {
 
   async getNativeTokenBalanceInfo(accountAddress: string): Promise<BalanceData> {
     Utils.validateAccount(accountAddress);
-    let result = await this.postRequest<string>(this.api, 'getNativeTokenBalanceInfo', { accountId: accountAddress });
+    const result = await this.postRequest<string>(this.api, 'getNativeTokenBalanceInfo', { accountId: accountAddress });
     return JSON.parse(result);
   }
 
@@ -376,7 +376,8 @@ export class Query {
       return await this.getNativeTokenBalanceInfo(accountId);
     } else {
       Utils.validateAccount(accountId);
-      return await this.postRequest<BalanceData>(this.api, 'getPredictionMarketTokenBalanceInfo', { accountId, predictionMarketAsset });
+      const result = await this.postRequest<string>(this.api, 'getPredictionMarketTokenBalanceInfo', { accountId, predictionMarketAsset });
+      return JSON.parse(result);
     }
   }
 
