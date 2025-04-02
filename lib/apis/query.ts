@@ -365,9 +365,9 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getPredictionMarketCounter');
   }
 
-  async getNativeTokenBalanceInfo(accountAddress: string): Promise<BalanceData> {
-    Utils.validateAccount(accountAddress);
-    const result = await this.postRequest<string>(this.api, 'getNativeTokenBalanceInfo', { accountId: accountAddress });
+  async getNativeTokenBalanceInfo(accountId: string): Promise<BalanceData> {
+    Utils.validateAccount(accountId);
+    const result = await this.postRequest<string>(this.api, 'getNativeTokenBalanceInfo', { accountId });
     return JSON.parse(result);
   }
 
