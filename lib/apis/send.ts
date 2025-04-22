@@ -509,13 +509,13 @@ export class Send {
     Utils.validateEthereumAddress(assetEthAddress);
     amount = Utils.validateAndConvertAmountToString(amount);
 
-    const withdrawFromMethodArgs = {
+    const withdrawMethodArgs = {
       assetEthAddress,
       amount
     };
     const withdrawNonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
     const withdrawProxyParams = (await this.proxyRequest(
-      withdrawFromMethodArgs,
+      withdrawMethodArgs,
       TxType.ProxyWithdrawMarketTokens,
       withdrawNonceInfo,
       true
