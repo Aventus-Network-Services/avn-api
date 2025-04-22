@@ -521,7 +521,7 @@ export class Send {
       true
     )) as ProxyParams;
 
-    const lowerMethodArgs = { t1Recipient, assetEthAddress, amount };
+    const lowerMethodArgs = { t1Recipient, token: assetEthAddress, amount };
     const lowerNonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
     const lowerProxyParams = (await this.proxyRequest(
       lowerMethodArgs,
