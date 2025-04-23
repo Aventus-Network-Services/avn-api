@@ -505,7 +505,6 @@ export class Send {
   }
 
   async lowerFromPredictionMarket(t1Recipient: string, assetEthAddress: string, tier1DecimalAdjustedAmount: string,): Promise<string> {
-    log.error(`t1Recipient: ${t1Recipient}, assetEthAddress: ${assetEthAddress}, tier1DecimalAdjustedAmount: ${tier1DecimalAdjustedAmount}`);
     Utils.validateEthereumAddress(t1Recipient);
     Utils.validateEthereumAddress(assetEthAddress);
     tier1DecimalAdjustedAmount = Utils.validateAndConvertAmountToString(tier1DecimalAdjustedAmount);
@@ -528,7 +527,7 @@ export class Send {
     // amount must be adjusted to 10 decimal places
     const withdrawMethodArgs = {
       assetEthAddress,
-      amount: pmAmountToLower
+      amount: pmAmountToLower.toString()
     };
     const withdrawNonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
     const withdrawProxyParams = (await this.proxyRequest(
