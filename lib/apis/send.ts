@@ -505,6 +505,7 @@ export class Send {
   }
 
   async lowerFromPredictionMarket(t1Recipient: string, assetEthAddress: string, tier1DecimalAdjustedAmount: string,): Promise<string> {
+    console.log(`t1Recipient: ${t1Recipient}, assetEthAddress: ${assetEthAddress}, tier1DecimalAdjustedAmount: ${tier1DecimalAdjustedAmount}`);
     Utils.validateEthereumAddress(t1Recipient);
     Utils.validateEthereumAddress(assetEthAddress);
     tier1DecimalAdjustedAmount = Utils.validateAndConvertAmountToString(tier1DecimalAdjustedAmount);
