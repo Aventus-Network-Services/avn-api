@@ -34,6 +34,7 @@ interface ProxyParams {
   paymentNonce?: number;
   payer?: string;
   currencyToken: string;
+  txType: TxType;
 }
 export class Send {
   private api: AvnApiConfig;
@@ -503,6 +504,59 @@ export class Send {
     return response;
   }
 
+  async lowerFromPredictionMarket(t1Recipient: string, assetEthAddress: string, tier1DecimalAdjustedAmount: string,): Promise<string> {
+    Utils.validateEthereumAddress(t1Recipient);
+    Utils.validateEthereumAddress(assetEthAddress);
+    tier1DecimalAdjustedAmount = Utils.validateAndConvertAmountToString(tier1DecimalAdjustedAmount);
+
+    // Convert the amount into the correct decimal before requesting to lower.
+    // While in PM, the amount is always 10 decimals but when lowering it is adjusted to the real token decimals on T1.
+    const tokenMetadata = await this.queryApi.getAssetMetadata(assetEthAddress);
+    if (!tokenMetadata) {
+      throw new Error(`Invalid asset eth address: ${assetEthAddress}. Asset not found`);
+    }
+    let pmAmountToLower: BN = new BN(tier1DecimalAdjustedAmount);
+    if (tokenMetadata.decimals > 10) {
+       // we need to scale down amount to 10 decimals
+       pmAmountToLower = pmAmountToLower.div(new BN(10).pow(new BN(tokenMetadata.decimals - 10)));
+    } else if (tokenMetadata.decimals < 10) {
+      // we need to scale up amount to 10 decimals
+      pmAmountToLower = pmAmountToLower.mul(new BN(10).pow(new BN(10 - tokenMetadata.decimals)));
+    }
+
+    // amount must be adjusted to 10 decimal places
+    const withdrawMethodArgs = {
+      assetEthAddress,
+      amount: pmAmountToLower.toString()
+    };
+    const withdrawNonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
+    const withdrawProxyParams = (await this.proxyRequest(
+      withdrawMethodArgs,
+      TxType.ProxyWithdrawMarketTokens,
+      withdrawNonceInfo,
+      true
+    )) as ProxyParams;
+
+    // Amount must have the correct decimals for the token on T1
+    const lowerMethodArgs = { t1Recipient, token: assetEthAddress, amount: tier1DecimalAdjustedAmount };
+    const lowerNonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
+    const lowerProxyParams = (await this.proxyRequest(
+      lowerMethodArgs,
+      TxType.ProxyTokenLower,
+      lowerNonceInfo,
+      true
+    )) as ProxyParams;
+
+    const response = await this.postRequest(TxType.ProxyLowerFromPredictionMarket, [withdrawProxyParams, lowerProxyParams]);
+    const requestId = this.api.uuid();
+    log.info(
+      new Date(),
+      ` Batch requestId: ${withdrawProxyParams.requestId} -> ${requestId}, ${lowerProxyParams.requestId} -> ${requestId}`
+    );
+    log.info(new Date(), ` ${requestId} - Response: ${response}`);
+    return response;
+  }
+
   async buyCompletePredictionMarketOutcomeTokens(marketId: string, amount: string): Promise<string> {
     const methodArgs = {
       marketId,
@@ -593,7 +647,7 @@ export class Send {
 
     let response: AxiosResponse<any>;
     try {
-      response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
+      response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method, params: params });
     } catch (err) {
       if (err.response?.status >= 500) {
         log.warn(
@@ -602,7 +656,7 @@ export class Send {
           err
         );
         await Utils.sleep(RETRY_SEND_INTERVAL_MS);
-        response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method: method, params: params });
+        response = await axios.post(endpoint, { jsonrpc: '2.0', id: requestId, method, params: params });
       }
     }
 
@@ -656,7 +710,7 @@ export class Send {
     const relayer = await this.api.relayer(this.queryApi);
     const proxyArgs = Object.assign({ relayer, nonce: proxyNonce }, methodArgs);
     const proxySignature = await ProxyUtils.generateProxySignature(this.api, this.signerAddress, txType, proxyArgs);
-    let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature, currencyToken };
+    let params = { ...proxyArgs, requestId, user: this.signerAddress, proxySignature, currencyToken, txType };
 
     // Only populate paymentInfo if this is a self pay transaction
     if (this.api.hasSplitFeeToken() === false) {
