@@ -509,7 +509,7 @@ export class Send {
     Utils.validateEthereumAddress(assetEthAddress);
     tier1DecimalAdjustedAmount = Utils.validateAndConvertAmountToString(tier1DecimalAdjustedAmount);
 
-    console.log(`tier1DecimalAdjustedAmount: ${tier1DecimalAdjustedAmount}`);
+    log.error(`tier1DecimalAdjustedAmount: ${tier1DecimalAdjustedAmount}`);
     // Convert the amount into the correct decimal before requesting to lower.
     // While in PM, the amount is always 10 decimals but when lowering it is adjusted to the real token decimals on T1.
     const tokenMetadata = await this.queryApi.getAssetMetadata(assetEthAddress);
@@ -520,11 +520,11 @@ export class Send {
     if (tokenMetadata.decimals > 10) {
        // we need to scale down amount to 10 decimals
        pmAmountToLower = pmAmountToLower.div(new BN(10).pow(new BN(tokenMetadata.decimals - 10)));
-       console.log(`PM scaled down AdjustedAmount: ${pmAmountToLower}`);
+       log.error(`PM scaled down AdjustedAmount: ${pmAmountToLower}`);
     } else if (tokenMetadata.decimals < 10) {
       // we need to scale up amount to 10 decimals
       pmAmountToLower = pmAmountToLower.mul(new BN(10).pow(new BN(10 - tokenMetadata.decimals)));
-      console.log(`PM scaled up AdjustedAmount: ${pmAmountToLower}`);
+      log.error(`PM scaled up AdjustedAmount: ${pmAmountToLower}`);
     }
 
     // amount must be adjusted to 10 decimal places
