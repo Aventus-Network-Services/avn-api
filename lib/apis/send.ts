@@ -504,7 +504,7 @@ export class Send {
     return response;
   }
 
-  async lowerFromPredictionMarket(assetEthAddress: string, tier1DecimalAdjustedAmount: string, t1Recipient: string): Promise<string> {
+  async lowerFromPredictionMarket(t1Recipient: string, assetEthAddress: string, tier1DecimalAdjustedAmount: string,): Promise<string> {
     Utils.validateEthereumAddress(t1Recipient);
     Utils.validateEthereumAddress(assetEthAddress);
     tier1DecimalAdjustedAmount = Utils.validateAndConvertAmountToString(tier1DecimalAdjustedAmount);
