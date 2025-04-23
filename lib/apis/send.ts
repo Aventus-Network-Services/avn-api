@@ -521,7 +521,22 @@ export class Send {
       true
     )) as ProxyParams;
 
-    const lowerMethodArgs = { t1Recipient, token: assetEthAddress, amount };
+    // Convert the amount into the correct decimal before requesting to lower.
+    // While in PM, the amount is always 10 decimals but when lowering it is adjusted to the real token decimals on T1.
+    const tokenMetadata = await this.queryApi.getAssetMetadata(assetEthAddress);
+    if (!tokenMetadata) {
+      throw new Error(`Invalid asset eth address: ${assetEthAddress}. Asset not found`);
+    }
+    let amountToLower: BN = new BN(amount);
+    if (tokenMetadata.decimals > 10) {
+      // we need to scale up amount to the required decimals
+      amountToLower = amountToLower.mul(new BN(10).pow(new BN(tokenMetadata.decimals - 10)));
+    } else if (tokenMetadata.decimals < 10) {
+      // we need to scale down amount to the required decimals
+      amountToLower = amountToLower.div(new BN(10).pow(new BN(10 - tokenMetadata.decimals)));
+    }
+
+    const lowerMethodArgs = { t1Recipient, token: assetEthAddress, amount: amountToLower.toString() };
     const lowerNonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
     const lowerProxyParams = (await this.proxyRequest(
       lowerMethodArgs,

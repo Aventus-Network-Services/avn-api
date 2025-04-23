@@ -28,7 +28,14 @@ interface Nfts {
 }
 
 interface Assets {
-  [key: string]: string;
+  [key: string]: AssetMetaData;
+}
+
+interface AssetMetaData {
+  assetId?: string;
+  decimals?: number;
+  symbol?: string;
+  allowAsBaseAsset?: boolean;
 }
 
 type RelayerFees = {
@@ -337,8 +344,35 @@ export class Query {
   }
 
   async getAssetIdFromEthToken(ethTokenAddress: string): Promise<string> {
-    if (!this.assets[ethTokenAddress]) {
-      this.assets[ethTokenAddress] = await this.postRequest<string>(this.api, 'getAssetIdFromEthToken', { ethTokenAddress });
+    Utils.validateEthereumAddress(ethTokenAddress);
+
+    if (!this.assets[ethTokenAddress] || !this.assets[ethTokenAddress].assetId) {
+      this.assets[ethTokenAddress] = {
+        assetId: await this.postRequest<string>(this.api, 'getAssetIdFromEthToken', { ethTokenAddress })
+      };
+    }
+
+    return this.assets[ethTokenAddress].assetId;
+  }
+
+  async getAssetMetadata(ethTokenAddress: string): Promise<AssetMetaData> {
+    Utils.validateEthereumAddress(ethTokenAddress);
+
+    const predictionMarketAsset = await this.getAssetIdFromEthToken(ethTokenAddress);
+
+    if (!this.assets[ethTokenAddress] || !this.assets[ethTokenAddress].decimals) {
+      const metaData: AssetMetaData = await this.postRequest<AssetMetaData>(this.api, 'getAssetMetadata', {
+        predictionMarketAsset
+      });
+
+      if (!this.assets[ethTokenAddress]) {
+        this.assets[ethTokenAddress] = metaData;
+      } else {
+        this.assets[ethTokenAddress] = {
+          ...this.assets[ethTokenAddress],
+          ...metaData
+        };
+      }
     }
 
     return this.assets[ethTokenAddress];
@@ -380,7 +414,7 @@ export class Query {
     }
 
     if (typeof predictionMarketAsset === 'string') {
-      predictionMarketAsset = await this.getPredictionMarketAssetByTokenAddress(predictionMarketAsset);
+      predictionMarketAsset = await this.getAssetIdFromEthToken(predictionMarketAsset);
     }
 
     Utils.validateAccount(accountId);
@@ -389,11 +423,6 @@ export class Query {
       predictionMarketAsset
     });
     return JSON.parse(result);
-  }
-
-  async getPredictionMarketAssetByTokenAddress(token: string): Promise<any> {
-    Utils.validateEthereumAddress(token);
-    return await this.postRequest<any>(this.api, 'getPredictionMarketAssetByTokenAddress', { token });
   }
 
   async getLiftStatus(txHash: string): Promise<string> {
