@@ -504,14 +504,30 @@ export class Send {
     return response;
   }
 
-  async lowerFromPredictionMarket(assetEthAddress: string, amount: string, t1Recipient: string): Promise<string> {
+  async lowerFromPredictionMarket(assetEthAddress: string, tier1DecimalAdjustedAmount: string, t1Recipient: string): Promise<string> {
     Utils.validateEthereumAddress(t1Recipient);
     Utils.validateEthereumAddress(assetEthAddress);
-    amount = Utils.validateAndConvertAmountToString(amount);
+    tier1DecimalAdjustedAmount = Utils.validateAndConvertAmountToString(tier1DecimalAdjustedAmount);
 
+    // Convert the amount into the correct decimal before requesting to lower.
+    // While in PM, the amount is always 10 decimals but when lowering it is adjusted to the real token decimals on T1.
+    const tokenMetadata = await this.queryApi.getAssetMetadata(assetEthAddress);
+    if (!tokenMetadata) {
+      throw new Error(`Invalid asset eth address: ${assetEthAddress}. Asset not found`);
+    }
+    let pmAmountToLower: BN = new BN(tier1DecimalAdjustedAmount);
+    if (tokenMetadata.decimals > 10) {
+       // we need to scale down amount to 10 decimals
+       pmAmountToLower = pmAmountToLower.div(new BN(10).pow(new BN(tokenMetadata.decimals - 10)));
+    } else if (tokenMetadata.decimals < 10) {
+     // we need to scale up amount to 10 decimals
+     pmAmountToLower = pmAmountToLower.mul(new BN(10).pow(new BN(10 - tokenMetadata.decimals)));
+    }
+
+    // amount must be adjusted to 10 decimal places
     const withdrawMethodArgs = {
       assetEthAddress,
-      amount
+      amount: pmAmountToLower
     };
     const withdrawNonceInfo = { nonceType: NonceType.Prediction_User, nonceParams: { user: this.signerAddress } };
     const withdrawProxyParams = (await this.proxyRequest(
@@ -521,22 +537,8 @@ export class Send {
       true
     )) as ProxyParams;
 
-    // Convert the amount into the correct decimal before requesting to lower.
-    // While in PM, the amount is always 10 decimals but when lowering it is adjusted to the real token decimals on T1.
-    const tokenMetadata = await this.queryApi.getAssetMetadata(assetEthAddress);
-    if (!tokenMetadata) {
-      throw new Error(`Invalid asset eth address: ${assetEthAddress}. Asset not found`);
-    }
-    let amountToLower: BN = new BN(amount);
-    if (tokenMetadata.decimals > 10) {
-      // we need to scale up amount to the required decimals
-      amountToLower = amountToLower.mul(new BN(10).pow(new BN(tokenMetadata.decimals - 10)));
-    } else if (tokenMetadata.decimals < 10) {
-      // we need to scale down amount to the required decimals
-      amountToLower = amountToLower.div(new BN(10).pow(new BN(10 - tokenMetadata.decimals)));
-    }
-
-    const lowerMethodArgs = { t1Recipient, token: assetEthAddress, amount: amountToLower.toString() };
+    // Amount must have the correct decimals for the token on T1
+    const lowerMethodArgs = { t1Recipient, token: assetEthAddress, amount: tier1DecimalAdjustedAmount };
     const lowerNonceInfo = { nonceType: NonceType.Token, nonceParams: { user: this.signerAddress } };
     const lowerProxyParams = (await this.proxyRequest(
       lowerMethodArgs,
