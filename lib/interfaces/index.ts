@@ -275,8 +275,8 @@ export interface LiquidityNode {
   account?: string;
   stake: string;
   fees: string;
-  descendant_stake: string;
-  lazy_fees: string;
+  descendantStake: string;
+  lazyFees: string;
 }
 export interface PredictionMarketPoolInfo {
   accountId: string;
