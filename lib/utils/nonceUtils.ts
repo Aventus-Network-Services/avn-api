@@ -16,6 +16,7 @@ export class NonceUtils {
 
     const { nonceType, nonceParams } = nonceInfo;
 
+    console.log(`\n *** NonceUtils.createNonceFetcher ${nonceType}, ${nonceParams} ***\n`);
     switch (nonceType) {
       case NonceType.Nft: {
         if (!nonceParams['nftId']) throw new Error('nftId is required for NonceType.Nft');
@@ -26,6 +27,7 @@ export class NonceUtils {
         return () => queryApi.getAnchorNonce(nonceParams['chainId']);
       }
       case NonceType.Prediction_Market: {
+        console.log(`nonceParams['marketId']: ${nonceParams['marketId']}. Expected: ${!nonceParams['marketId'] == null}`);
         if (!nonceParams['marketId'] == null || !nonceParams['user']) {
           throw new Error('marketId and user are required for NonceType.Prediction_Market');
         }

@@ -127,7 +127,9 @@ export class NonceCache {
     fnRefreshNonce: () => Promise<string>
   ): Promise<number> {
     let nonceFromChain: number;
+    console.log(`\n*** refreshNonceFromChain ${nonceData}`);
     nonceFromChain = new BN(await fnRefreshNonce()).toNumber();
+    console.log(`nonceFromChain: ${nonceFromChain} ***\n`);
 
     if (nonceData.nonce > 0 && nonceData.nonce === nonceFromChain) {
       // The chain should always be nonce + 1 so do not reset yet, instead:
