@@ -44,7 +44,7 @@ export class NonceCache {
     if (cachedNonceInfo.lockAquired === false) {
       log.debug(
         new Date(),
-        ` ${requestId} - Unable to aquire lock, waiting. signerAddress: ${signerAddress}, nonceId: ${nonceId}`
+        ` ${requestId} - Unable to acquire lock, waiting. signerAddress: ${signerAddress}, nonceId: ${nonceId}`
       );
       cachedNonceInfo = await this.waitForLockAndGetNonceInfo(signerAddress, nonceId, requestId);
     }
@@ -175,7 +175,7 @@ export class NonceCache {
     }
 
     throw new Error(
-      `[waitForLockAndGetNonceInfo]: ${requestId} - Unable to aquire nonce lock for ${signerAddress} (${nonceId})`
+      `[waitForLockAndGetNonceInfo]: ${requestId} - Unable to acquire nonce lock for ${signerAddress} (${nonceId})`
     );
   }
 
