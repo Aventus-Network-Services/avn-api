@@ -15,7 +15,7 @@ This SDK can be used in 2 modes as defined in the `SetupMode` enum:
  - Multi user mode: In this mode, multiple users can use the same instance of the SDK to interact with the Avn gateway.
  - Offline mode: In this mode, the sdk will not expose any api's to interact with the avn parachain. It will only expose the account utility methods.
 
- To set one of these mode, pass in the following options when creating an instance of the SDK
+ To set one of these modes, pass in the following options when creating an instance of the SDK
  ```
  import { AvnApi, SetupMode } from 'avn-api';
 
@@ -29,7 +29,7 @@ There are 2 options to choose from when configuring the signing behaviour of the
  - Suri based signer (default): In this mode, the user must set their `SURI` either via an environment variable or as part of the options (see `Accounts` below). This SURI will be used to sign messages such as AWT tokens or transactions. **This is only applicable in single user mode**.
  - Remote signer: In this mode, the caller will set a function that will be called by the SDK when it requires a signature. The SDK will not have access to the signer's SURI. This option can be selected for *single user* and *multi user* modes.
 
- To set one of these mode, pass in the following options when creating an instance of the sdk
+ To set one of these modes, pass in the following options when creating an instance of the sdk
  ```
  import { AvnApi, SigningMode } from 'avn-api';
 
@@ -197,7 +197,7 @@ async function main() {
   // Return a signer object that can sign messages:
   const MY_SIGNER = avnSdk.signer;
 
-  // `userAddress` is ommited because the sdk can calculate it based on the SURI
+  // `userAddress` is omitted because the sdk can calculate it based on the SURI
   const api = await avnSdk.apis()
 
   // MULTI USER SETUP WITH REMOTE SIGNING
