@@ -16,7 +16,7 @@ export class NonceUtils {
 
     const { nonceType, nonceParams } = nonceInfo;
 
-    console.log(`\n *** NonceUtils.createNonceFetcher ${nonceType}, ${nonceParams} ***\n`);
+    console.log(`\n *** NonceUtils.createNonceFetcher ${nonceType}, ${JSON.stringify(nonceParams)} ***\n`);
     switch (nonceType) {
       case NonceType.Nft: {
         if (!nonceParams['nftId']) throw new Error('nftId is required for NonceType.Nft');

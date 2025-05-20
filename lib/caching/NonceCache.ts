@@ -127,7 +127,7 @@ export class NonceCache {
     fnRefreshNonce: () => Promise<string>
   ): Promise<number> {
     let nonceFromChain: number;
-    console.log(`\n*** refreshNonceFromChain ${nonceData}`);
+    console.log(`\n*** refreshNonceFromChain ${JSON.stringify(nonceData)}`);
     nonceFromChain = new BN(await fnRefreshNonce()).toNumber();
     console.log(`nonceFromChain: ${nonceFromChain} ***\n`);
 
