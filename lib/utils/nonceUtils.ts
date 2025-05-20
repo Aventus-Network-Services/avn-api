@@ -22,17 +22,19 @@ export class NonceUtils {
         return () => queryApi.getNftNonce(nonceParams['nftId']);
       }
       case NonceType.Anchor: {
-        if (!nonceParams['chainId'] == null) throw new Error('chainId is required for NonceType.Anchor');
+        if (nonceParams['chainId'] == null) {
+          throw new Error('chainId is required for NonceType.Anchor');
+        }
         return () => queryApi.getAnchorNonce(nonceParams['chainId']);
       }
       case NonceType.Prediction_Market: {
-        if (!nonceParams['marketId'] == null || !nonceParams['user']) {
+        if (nonceParams['marketId'] == null || !nonceParams['user']) {
           throw new Error('marketId and user are required for NonceType.Prediction_Market');
         }
         return () => queryApi.getPredictionMarketsNonce(nonceParams['marketId'], nonceParams['user']);
       }
       case NonceType.HybridRouter: {
-        if (!nonceParams['marketId'] == null || !nonceParams['user']) {
+        if (nonceParams['marketId'] == null || !nonceParams['user']) {
           throw new Error('marketId and user are required for NonceType.HybridRouter');
         }
         return () => queryApi.getHybridRouterNonce(nonceParams['marketId'], nonceParams['user']);
