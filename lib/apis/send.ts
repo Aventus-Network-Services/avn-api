@@ -443,6 +443,21 @@ export class Send {
     return (await this.proxyRequest(methodArgs, TxType.ProxyRegisterNode, nonceInfo)) as string;
   }
 
+  async deregisterNodes(nodeOwner: string, nodesToDeregister: string[]): Promise<string> {
+    Utils.validateAccount(nodeOwner);
+    Utils.validateIsArray(nodesToDeregister);
+
+    nodeOwner = AccountUtils.convertToPublicKeyIfNeeded(nodeOwner);
+    const blockNumber = await this.queryApi.getCurrentBlock();
+    const methodArgs = {
+      nodeOwner,
+      nodesToDeregister,
+      blockNumber
+    };
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
+    return (await this.proxyRequest(methodArgs, TxType.ProxyDeregisterNodes, nonceInfo)) as string;
+  }
+
   async addPredictionMarketLiquidity(marketId: number, poolSharesAmount: string, maxAmountsIn: string[]): Promise<string> {
     const blockNumber = await this.queryApi.getCurrentBlock();
     const methodArgs = {
@@ -504,7 +519,11 @@ export class Send {
     return response;
   }
 
-  async lowerFromPredictionMarket(t1Recipient: string, assetEthAddress: string, tier1DecimalAdjustedAmount: string,): Promise<string> {
+  async lowerFromPredictionMarket(
+    t1Recipient: string,
+    assetEthAddress: string,
+    tier1DecimalAdjustedAmount: string
+  ): Promise<string> {
     Utils.validateEthereumAddress(t1Recipient);
     Utils.validateEthereumAddress(assetEthAddress);
     tier1DecimalAdjustedAmount = Utils.validateAndConvertAmountToString(tier1DecimalAdjustedAmount);
@@ -517,8 +536,8 @@ export class Send {
     }
     let pmAmountToLower: BN = new BN(tier1DecimalAdjustedAmount);
     if (tokenMetadata.decimals > 10) {
-       // we need to scale down amount to 10 decimals
-       pmAmountToLower = pmAmountToLower.div(new BN(10).pow(new BN(tokenMetadata.decimals - 10)));
+      // we need to scale down amount to 10 decimals
+      pmAmountToLower = pmAmountToLower.div(new BN(10).pow(new BN(tokenMetadata.decimals - 10)));
     } else if (tokenMetadata.decimals < 10) {
       // we need to scale up amount to 10 decimals
       pmAmountToLower = pmAmountToLower.mul(new BN(10).pow(new BN(10 - tokenMetadata.decimals)));

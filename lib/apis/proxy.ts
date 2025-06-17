@@ -128,6 +128,7 @@ const signing = {
   proxyTransferMarketTokens: async proxyArgs => await signProxyTransferAsset(proxyArgs),
   proxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
   proxyRegisterNode: async proxyArgs => await signProxyRegisterNode(proxyArgs),
+  proxyDeregisterNode: async proxyArgs => await signProxyDeregisterNode(proxyArgs),
   proxyAddPredictionMarketLiquidity: async proxyArgs => await signProxyAddPredictionMarketLiquidity(proxyArgs),
   proxyExitPredictionMarketLiquidity: async proxyArgs => await signProxyExitPredictionMarketLiquidity(proxyArgs),
   proxyWithdrawPredictionMarketLiquidityFees: async proxyArgs =>
@@ -652,6 +653,24 @@ async function signProxyRegisterNode({ relayer, signerAddress, nodeId, nodeOwner
     { AccountId: nodeIdPk },
     { AccountId: nodeOwnerPk },
     { AccountId: nodeSigningKey },
+    { BlockNumber: blockNumber }
+  ];
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyDeregisterNode({ relayer, signerAddress, nodesToDeregister, nodeOwner, blockNumber, api }) {
+  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const nodeOwnerPk = AccountUtils.convertToPublicKeyIfNeeded(nodeOwner);
+  nodesToDeregister = nodesToDeregister.map(node => AccountUtils.convertToPublicKeyIfNeeded(node));
+
+  const orderedData = [
+    { Text: 'deregister_node' },
+    { AccountId: dataRelayer },
+    { AccountId: nodeOwnerPk },
+    { 'Vec<AccountId>': nodesToDeregister },
+    { u32: nodesToDeregister.length },
     { BlockNumber: blockNumber }
   ];
 
