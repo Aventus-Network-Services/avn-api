@@ -684,6 +684,7 @@ async function signProxyDeregisterNodes({ relayer, signerAddress, nodesToDeregis
   ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
+  console.log(`signProxyDeregisterNodes encodedDataToSign: ${Utils.convertToHexIfNeeded(encodedDataToSign)}`);
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
