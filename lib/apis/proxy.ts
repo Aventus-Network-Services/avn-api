@@ -128,7 +128,7 @@ const signing = {
   proxyTransferMarketTokens: async proxyArgs => await signProxyTransferAsset(proxyArgs),
   proxyWithdrawMarketTokens: async proxyArgs => await signProxyWithdrawMarketToken(proxyArgs),
   proxyRegisterNode: async proxyArgs => await signProxyRegisterNode(proxyArgs),
-  proxyDeregisterNode: async proxyArgs => await signProxyDeregisterNode(proxyArgs),
+  proxyDeregisterNodes: async proxyArgs => await signProxyDeregisterNodes(proxyArgs),
   proxyAddPredictionMarketLiquidity: async proxyArgs => await signProxyAddPredictionMarketLiquidity(proxyArgs),
   proxyExitPredictionMarketLiquidity: async proxyArgs => await signProxyExitPredictionMarketLiquidity(proxyArgs),
   proxyWithdrawPredictionMarketLiquidityFees: async proxyArgs =>
@@ -660,7 +660,7 @@ async function signProxyRegisterNode({ relayer, signerAddress, nodeId, nodeOwner
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
-async function signProxyDeregisterNode({ relayer, signerAddress, nodesToDeregister, nodeOwner, blockNumber, api }) {
+async function signProxyDeregisterNodes({ relayer, signerAddress, nodesToDeregister, nodeOwner, blockNumber, api }) {
   const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
   const nodeOwnerPk = AccountUtils.convertToPublicKeyIfNeeded(nodeOwner);
   nodesToDeregister = nodesToDeregister.map(node => AccountUtils.convertToPublicKeyIfNeeded(node));
