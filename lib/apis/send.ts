@@ -448,7 +448,7 @@ export class Send {
     Utils.validateIsArray(nodesToDeregister);
 
     nodeOwner = AccountUtils.convertToPublicKeyIfNeeded(nodeOwner);
-    const blockNumber = 1;//await this.queryApi.getCurrentBlock();
+    const blockNumber = await this.queryApi.getCurrentBlock();
     const methodArgs = {
       nodeOwner,
       nodesToDeregister,
