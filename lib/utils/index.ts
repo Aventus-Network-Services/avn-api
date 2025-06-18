@@ -55,7 +55,8 @@ export enum TxType {
   ProxyLowerFromPredictionMarket = 'proxyLowerFromPredictionMarket',
 
   // Node manager
-  ProxyRegisterNode = 'proxyRegisterNode'
+  ProxyRegisterNode = 'proxyRegisterNode',
+  ProxyDeregisterNodes = 'proxyDeregisterNodes'
 }
 
 export enum EthereumLogEventType {
