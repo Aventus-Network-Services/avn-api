@@ -665,6 +665,15 @@ async function signProxyDeregisterNodes({ relayer, signerAddress, nodesToDeregis
   const nodeOwnerPk = AccountUtils.convertToPublicKeyIfNeeded(nodeOwner);
   nodesToDeregister = nodesToDeregister.map(node => AccountUtils.convertToPublicKeyIfNeeded(node));
 
+  console.log(
+    `signProxyDeregisterNodes:
+    relayer: ${dataRelayer},
+    nodeOwnerPk: ${nodeOwnerPk},
+    nodesToDeregister: ${nodesToDeregister},
+    num_nodes: ${nodesToDeregister.length }
+    blockNumber: ${blockNumber}`
+  )
+
   const orderedData = [
     { Text: 'deregister_node' },
     { AccountId: dataRelayer },
