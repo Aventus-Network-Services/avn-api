@@ -667,6 +667,7 @@ async function signProxyDeregisterNodes({ relayer, signerAddress, nodesToDeregis
 
   console.log(
     `signProxyDeregisterNodes:
+    signerAddress: ${signerAddress},
     relayer: ${dataRelayer},
     nodeOwnerPk: ${nodeOwnerPk},
     nodesToDeregister: ${nodesToDeregister},
