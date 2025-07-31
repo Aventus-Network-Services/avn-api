@@ -1,6 +1,6 @@
 'use strict';
 
-import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
+import { AccountUtils, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
 import {
   AvnApiConfig,
@@ -41,22 +41,6 @@ interface AssetMetaData {
 type RelayerFees = {
   [key in TxType]: string;
 };
-
-interface AccountInfo {
-  totalBalance: string;
-  freeBalance: string;
-  stakedBalance: string;
-  unlockedBalance: string;
-  unstakedBalance: string;
-}
-
-interface StakingStats {
-  totalStaked: string;
-  minUserBond: string;
-  maxNominatorsRewardedPerValidator: string;
-  totalStakers: string;
-  averageStaked: string;
-}
 
 interface LowerData {
   token: string;
@@ -267,41 +251,6 @@ export class Query {
   async getOwnedNfts(accountAddress: string): Promise<string[]> {
     Utils.validateAccount(accountAddress);
     return await this.postRequest<string[]>(this.api, 'getOwnedNfts', { accountId: accountAddress });
-  }
-
-  async getAccountInfo(accountAddress: string): Promise<AccountInfo> {
-    Utils.validateAccount(accountAddress);
-    return await this.postRequest<AccountInfo>(this.api, 'getAccountInfo', { accountId: accountAddress });
-  }
-
-  async getStakingStatus(stakerAddress: string): Promise<StakingStatus> {
-    Utils.validateAccount(stakerAddress);
-    return await this.postRequest<StakingStatus>(this.api, 'getStakingStatus', { accountId: stakerAddress });
-  }
-
-  async getStakerRewardsEarned(accountId: string, fromTimestamp: string = null, toTimestamp: string = null): Promise<string> {
-    Utils.validateAccount(accountId);
-    return await this.postRequest<string>(this.api, 'getStakerRewardsEarned', { accountId, fromTimestamp, toTimestamp });
-  }
-
-  async getValidatorsToNominate(): Promise<string[]> {
-    return await this.postRequest<string[]>(this.api, 'getValidatorsToNominate');
-  }
-
-  async getMinTotalNominatorStake(): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getMinTotalNominatorStake');
-  }
-
-  async getActiveEra(): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getActiveEra');
-  }
-
-  async getStakingDelay(): Promise<number> {
-    return await this.postRequest<number>(this.api, 'getStakingDelay');
-  }
-
-  async getStakingStats(): Promise<StakingStats> {
-    return await this.postRequest<StakingStats>(this.api, 'getStakingStats');
   }
 
   async getRelayerFees(

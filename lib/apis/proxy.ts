@@ -111,13 +111,7 @@ const signing = {
   proxyListEthereumNftBatchForSale: async proxyArgs => await signProxyListNftBatchForSale(proxyArgs),
   proxyTransferFiatNft: async proxyArgs => await signProxyTransferFiatNft(proxyArgs),
   proxyCancelListFiatNft: async proxyArgs => await signProxyCancelListFiatNft(proxyArgs),
-  proxyStakeAvt: async proxyArgs => await signProxyNominate(proxyArgs),
   proxyEndNftBatchSale: async proxyArgs => await signProxyEndNftBatchSale(proxyArgs),
-  proxyIncreaseStake: async proxyArgs => await signProxyIncreaseStake(proxyArgs),
-  proxyUnstake: async proxyArgs => await signProxyUnstake(proxyArgs),
-  proxyWithdrawUnlocked: async proxyArgs => await signProxyWithdrawUnlocked(proxyArgs),
-  proxyScheduleLeaveNominators: async proxyArgs => await signProxyScheduleLeaveNominators(proxyArgs),
-  proxyExecuteLeaveNominators: async proxyArgs => await signProxyExecuteLeaveNominators(proxyArgs),
   proxyRegisterHandler: async proxyArgs => await signProxyRegisterChainHandler(proxyArgs),
   proxySubmitCheckpoint: async proxyArgs => await signProxySubmitCheckpointWithIdentity(proxyArgs),
   proxyCreateMarketAndDeployPool: async proxyArgs => await signProxyCreateMarketAndDeployPool(proxyArgs),
@@ -348,92 +342,6 @@ async function signProxyEndNftBatchSale({ relayer, batchId, nonce, signerAddress
     { Text: 'authorization for end batch sale operation' },
     { AccountId: relayer },
     { U256: batchId },
-    { u64: nonce }
-  ];
-
-  const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
-}
-
-async function signProxyNominate({ relayer, targets, amount, nonce, signerAddress, api }) {
-  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
-
-  const orderedData = [
-    { Text: 'parachain authorization for nominate operation' },
-    { AccountId: relayer },
-    { 'Vec<LookupSource>': targets },
-    { BalanceOf: amount },
-    { u64: nonce }
-  ];
-
-  const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
-}
-
-async function signProxyIncreaseStake({ relayer, amount, nonce, signerAddress, api }) {
-  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
-
-  const orderedData = [
-    { Text: 'parachain authorization for nominator bond extra operation' },
-    { AccountId: relayer },
-    { BalanceOf: amount },
-    { u64: nonce }
-  ];
-
-  const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
-}
-
-async function signProxyUnstake({ relayer, amount, nonce, signerAddress, api }) {
-  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
-
-  const orderedData = [
-    { Text: 'parachain authorization for scheduling nominator unbond operation' },
-    { AccountId: relayer },
-    { BalanceOf: amount },
-    { u64: nonce }
-  ];
-
-  const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
-}
-
-async function signProxyWithdrawUnlocked({ relayer, nonce, signerAddress, api }) {
-  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
-  const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
-
-  const orderedData = [
-    { Text: 'parachain authorization for executing nomination requests operation' },
-    { AccountId: relayer },
-    { AccountId: user },
-    { u64: nonce }
-  ];
-
-  const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
-}
-
-async function signProxyScheduleLeaveNominators({ relayer, nonce, signerAddress, api }) {
-  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
-
-  const orderedData = [
-    { Text: 'parachain authorization for scheduling leaving nominators operation' },
-    { AccountId: dataRelayer },
-    { u64: nonce }
-  ];
-
-  const encodedDataToSign = encodeOrderedData(orderedData);
-  return await signData(api, signerAddress, encodedDataToSign);
-}
-
-async function signProxyExecuteLeaveNominators({ relayer, nonce, signerAddress, api }) {
-  const dataRelayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
-  const user = AccountUtils.convertToPublicKeyIfNeeded(signerAddress);
-
-  const orderedData = [
-    { Text: 'parachain authorization for executing leave nominators operation' },
-    { AccountId: dataRelayer },
-    { AccountId: user },
     { u64: nonce }
   ];
 

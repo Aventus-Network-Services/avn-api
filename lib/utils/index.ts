@@ -30,9 +30,6 @@ export enum TxType {
   ProxyTransferFiatNft = 'proxyTransferFiatNft',
   ProxyCancelListFiatNft = 'proxyCancelListFiatNft',
   ProxyEndNftBatchSale = 'proxyEndNftBatchSale',
-  proxyStakeAvt = 'proxyStakeAvt',
-  ProxyIncreaseStake = 'proxyIncreaseStake',
-  ProxyUnstake = 'proxyUnstake',
   ProxyWithdrawUnlocked = 'proxyWithdrawUnlocked',
   ProxyScheduleLeaveNominators = 'proxyScheduleLeaveNominators',
   ProxyExecuteLeaveNominators = 'proxyExecuteLeaveNominators',
@@ -71,9 +68,4 @@ export enum EthereumLogEventType {
 export enum Market {
   Ethereum = 1,
   Fiat = 2
-}
-
-export enum StakingStatus {
-  isStaking = 'isStaking',
-  isNotStaking = 'isNotStaking'
 }

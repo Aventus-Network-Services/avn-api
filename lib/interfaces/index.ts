@@ -9,7 +9,6 @@ import { AxiosStatic } from 'axios';
 export enum NonceType {
   Token = 'token',
   Payment = 'payment',
-  Staking = 'staking',
   Confirmation = 'confirmation',
   Nft = 'nft',
   Batch = 'batch',

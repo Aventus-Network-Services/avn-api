@@ -1,6 +1,6 @@
 'use strict';
 
-import { AccountUtils, EthereumLogEventType, Market, StakingStatus, TxType, Utils, NonceUtils } from '../utils';
+import { AccountUtils, EthereumLogEventType, Market, TxType, Utils, NonceUtils } from '../utils';
 import { AvnApiConfig, NonceType, Royalty, CreateMarketBaseParams, Strategy, NonceInfo } from '../interfaces/index';
 import ProxyUtils from './proxy';
 import BN from 'bn.js';
@@ -201,44 +201,6 @@ export class Send {
     const methodArgs = { nftId };
     const nonceInfo = { nonceType: NonceType.Nft, nonceParams: { nftId } };
     return (await this.proxyRequest(methodArgs, TxType.ProxyCancelListFiatNft, nonceInfo)) as string;
-  }
-
-  async unstake(unstakeAmount: string): Promise<string> {
-    const amount = Utils.validateAndConvertAmountToString(unstakeAmount);
-    const minimumFirstTimeStakingValue = await Utils.getMinimumStakingValue(this.queryApi);
-    const accountInfo = await this.queryApi.getAccountInfo(this.signerAddress);
-    const newStakedBalance = new BN(accountInfo?.stakedBalance).sub(new BN(amount));
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
-    if (newStakedBalance?.lt(minimumFirstTimeStakingValue)) {
-      const methodArgs = {};
-      return (await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, nonceInfo)) as string;
-    } else {
-      const methodArgs = { amount };
-      return (await this.proxyRequest(methodArgs, TxType.ProxyUnstake, nonceInfo)) as string;
-    }
-  }
-
-  async withdrawUnlocked(): Promise<string> {
-    const accountInfo = await this.queryApi.getAccountInfo(this.signerAddress);
-    const methodArgs = {};
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
-    if (new BN(accountInfo?.stakedBalance).eq(new BN(accountInfo?.unlockedBalance))) {
-      return (await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, nonceInfo)) as string;
-    } else {
-      return (await this.proxyRequest(methodArgs, TxType.ProxyWithdrawUnlocked, nonceInfo)) as string;
-    }
-  }
-
-  async scheduleLeaveNominators(): Promise<string> {
-    const methodArgs = {};
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
-    return (await this.proxyRequest(methodArgs, TxType.ProxyScheduleLeaveNominators, nonceInfo)) as string;
-  }
-
-  async executeLeaveNominators(): Promise<string> {
-    const methodArgs = {};
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
-    return (await this.proxyRequest(methodArgs, TxType.ProxyExecuteLeaveNominators, nonceInfo)) as string;
   }
 
   async registerHandler(handler: string, name: string): Promise<string> {
