@@ -41,7 +41,6 @@ export class NonceUtils {
       }
       case NonceType.Token:
       case NonceType.Payment:
-      case NonceType.Staking:
       case NonceType.Batch:
       case NonceType.Confirmation:
       case NonceType.Prediction_User: {

@@ -93,23 +93,10 @@ export class Utils {
     }
   }
 
-  static validateStakingTargets(targets: string[]) {
-    this.validateIsArray(targets);
-    if (targets.length === 0) {
-      throw new Error(`Staking targets is a mandatory field. You must select at least 1 target to nominate.`);
-    }
-  }
-
   static validateNumber(num: string) {
     if (isNumber(parseInt(num)) === false) {
       throw new Error(`Value is not a valid number: ${num}`);
     }
-  }
-
-  static async getMinimumStakingValue(queryApi: Query) {
-    const minStakingValuePerValidator = new BN(await queryApi.getMinTotalNominatorStake());
-    const validators = await queryApi.getValidatorsToNominate();
-    return new BN(minStakingValuePerValidator.mul(new BN(validators.length)));
   }
 
   static async sleep(ms: number) {
