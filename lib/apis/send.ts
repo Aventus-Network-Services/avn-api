@@ -203,22 +203,6 @@ export class Send {
     return (await this.proxyRequest(methodArgs, TxType.ProxyCancelListFiatNft, nonceInfo)) as string;
   }
 
-  async stake(amount: string): Promise<string> {
-    amount = Utils.validateAndConvertAmountToString(amount);
-    const stakingStatus = await this.queryApi.getStakingStatus(this.signerAddress);
-    const nonceInfo = { nonceType: NonceType.Staking, nonceParams: { user: this.signerAddress } };
-
-    if (stakingStatus === StakingStatus.isStaking) {
-      const methodArgs = { amount };
-      return (await this.proxyRequest(methodArgs, TxType.ProxyIncreaseStake, nonceInfo)) as string;
-    } else {
-      const targets = await this.queryApi.getValidatorsToNominate();
-      Utils.validateStakingTargets(targets);
-      const methodArgs = { amount, targets };
-      return (await this.proxyRequest(methodArgs, TxType.proxyStakeAvt, nonceInfo)) as string;
-    }
-  }
-
   async unstake(unstakeAmount: string): Promise<string> {
     const amount = Utils.validateAndConvertAmountToString(unstakeAmount);
     const minimumFirstTimeStakingValue = await Utils.getMinimumStakingValue(this.queryApi);
