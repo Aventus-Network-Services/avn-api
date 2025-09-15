@@ -32,5 +32,9 @@
     "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{ts,json}\"",
     "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{ts,json}\"",
     "lint": "eslint . --ext .ts"
+  },
+  "overrides": {
+    "strip-ansi": "6.0.1",
+    "error-ex": "1.3.2"
   }
 }
