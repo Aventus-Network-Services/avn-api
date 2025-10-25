@@ -489,16 +489,18 @@ export class Query {
     return await this.postRequest<boolean>(this.api, 'watchtowerHasVoted', { watchtower, proposalId });
   }
 
-  async getWatchtowerProposalId(externalRef: string): Promise<Object> {
-    return await this.postRequest<Object>(this.api, 'getWatchtowerProposalId', { externalRef });
+  async getWatchtowerProposalId(externalRef: string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getWatchtowerProposalId', { externalRef });
   }
-
 
   async getWatchtowerProposal(proposalId: string): Promise<Object> {
     return await this.postRequest<Object>(this.api, 'getWatchtowerProposal', { proposalId });
   }
 
   async getWatchtowerProposalByExternalRef(externalRef: string): Promise<Object> {
-    return await this.postRequest<Object>(this.api, 'getWatchtowerProposalByExternalRef', { externalRef });
+    let proposalId =  await this.getWatchtowerProposalId(externalRef);
+    if (proposalId) {
+      return this.getWatchtowerProposal(proposalId);
+    }
   }
 }
