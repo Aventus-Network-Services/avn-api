@@ -495,5 +495,4 @@ export class Query {
   async getWatchtowerProposalByExternalRef(externalRef: string): Promise<boolean> {
     return await this.postRequest<boolean>(this.api, 'getWatchtowerProposalByExternalRef', { externalRef });
   }
-
 }
