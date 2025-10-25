@@ -306,3 +306,44 @@ export interface NodeManagerInfo {
   lastCompletedRewardPeriodIndex: number;
   totalRegisteredNodes: number;
 }
+export interface ActiveSummaryWatchtowerProposal {
+  proposalId: string;
+  rootId: {
+    range: {
+      fromBlock: number;
+      toBlock: number;
+    };
+    ingressCounter: number;
+  };
+  rootHash: string;
+}
+
+export type Payload =
+| { type: "Inline"; value: string }
+| { type: "Uri"; value: string };
+
+export type ProposalSource =
+| { type: "Internal"; value: ProposalType }
+| { type: "External" };
+
+
+export enum DecisionRule {
+    SimpleMajority,
+}
+
+type ProposalType =
+  | { type: "Summary" }
+  | { type: "Anchor" }
+  | { type: "Governance" }
+  | { type: "Other"; value: number };
+
+export interface WatchtowerProposal {
+    title: string,
+    payload: Payload,
+    threshold: number,
+    source: ProposalSource,
+    decisionRule: DecisionRule,
+    externalRef: string,
+    createdAt: number,
+    voteDuration: number,
+}
