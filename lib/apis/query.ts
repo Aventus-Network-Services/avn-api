@@ -480,19 +480,20 @@ export class Query {
     return await this.postRequest<string>(this.api, 'getNodeStatus', { nodeId, rewardPeriod });
   }
 
-  async getActiveSummaryWatchtowerProposal(): Promise<string> {
-    return await this.postRequest<string>(this.api, 'getActiveSummaryWatchtowerProposal');
+  async getActiveSummaryWatchtowerProposal(): Promise<Object> {
+    return await this.postRequest<Object>(this.api, 'getActiveSummaryWatchtowerProposal');
   }
 
-  async watchtowerHasVoted(watchtower: string, proposalId: string): Promise<boolean> {
+  async watchtowerHasVoted(proposalId: string, watchtower: string): Promise<boolean> {
+    watchtower = AccountUtils.convertToPublicKeyIfNeeded(watchtower);
     return await this.postRequest<boolean>(this.api, 'watchtowerHasVoted', { watchtower, proposalId });
   }
 
-  async getWatchtowerProposal(proposalId: string): Promise<boolean> {
-    return await this.postRequest<boolean>(this.api, 'getWatchtowerProposal', { proposalId });
+  async getWatchtowerProposal(proposalId: string): Promise<Object> {
+    return await this.postRequest<Object>(this.api, 'getWatchtowerProposal', { proposalId });
   }
 
-  async getWatchtowerProposalByExternalRef(externalRef: string): Promise<boolean> {
-    return await this.postRequest<boolean>(this.api, 'getWatchtowerProposalByExternalRef', { externalRef });
+  async getWatchtowerProposalByExternalRef(externalRef: string): Promise<Object> {
+    return await this.postRequest<Object>(this.api, 'getWatchtowerProposalByExternalRef', { externalRef });
   }
 }
