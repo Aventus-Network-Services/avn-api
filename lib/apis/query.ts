@@ -479,4 +479,21 @@ export class Query {
   async getNodeStatus(nodeId: string, rewardPeriod: number): Promise<string> {
     return await this.postRequest<string>(this.api, 'getNodeStatus', { nodeId, rewardPeriod });
   }
+
+  async getActiveSummaryWatchtowerProposal(): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getActiveSummaryWatchtowerProposal');
+  }
+
+  async watchtowerHasVoted(watchtower: string, proposalId: string): Promise<boolean> {
+    return await this.postRequest<boolean>(this.api, 'watchtowerHasVoted', { watchtower, proposalId });
+  }
+
+  async getWatchtowerProposal(proposalId: string): Promise<boolean> {
+    return await this.postRequest<boolean>(this.api, 'getWatchtowerProposal', { proposalId });
+  }
+
+  async getWatchtowerProposalByExternalRef(externalRef: string): Promise<boolean> {
+    return await this.postRequest<boolean>(this.api, 'getWatchtowerProposalByExternalRef', { externalRef });
+  }
+
 }
