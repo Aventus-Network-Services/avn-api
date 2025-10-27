@@ -588,9 +588,13 @@ export class Send {
   async submitProposalToWatchtowers(title: string, payload: Payload, threshold: number, externalRef: string, voteDuration?: number): Promise<string> {
     Utils.validateStringIsPopulated(title);
     Utils.validateStringIsPopulated(externalRef);
-    Utils.validateStringIsPopulated(payload?.value)
+
     if (threshold <= 0 || threshold > 100) {
       throw new Error(`Invalid threshold: ${threshold}. Must be between 1 and 100`);
+    }
+
+    for (const val of Object.values(payload)) {
+      Utils.validateStringIsPopulated(val);
     }
 
     const blockNumber = parseInt(await this.queryApi.getCurrentBlock());
