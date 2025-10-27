@@ -322,13 +322,12 @@ export type Payload =
 | { type: "Inline"; value: string }
 | { type: "Uri"; value: string };
 
-export type ProposalSource =
-| { type: "Internal"; value: ProposalType }
-| { type: "External" };
-
+export enum ProposalSource {
+    External = "External",
+}
 
 export enum DecisionRule {
-    SimpleMajority,
+    SimpleMajority = "SimpleMajority",
 }
 
 type ProposalType =

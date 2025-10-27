@@ -56,7 +56,9 @@ export enum TxType {
 
   // Node manager
   ProxyRegisterNode = 'proxyRegisterNode',
-  ProxyDeregisterNodes = 'proxyDeregisterNodes'
+  ProxyDeregisterNodes = 'proxyDeregisterNodes',
+  // Watchtower
+  ProxyWatchtowerSubmitProposal = 'proxyWatchtowerSubmitProposal',
 }
 
 export enum EthereumLogEventType {

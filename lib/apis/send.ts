@@ -1,7 +1,7 @@
 'use strict';
 
 import { AccountUtils, EthereumLogEventType, Market, StakingStatus, TxType, Utils, NonceUtils } from '../utils';
-import { AvnApiConfig, NonceType, Royalty, CreateMarketBaseParams, Strategy, NonceInfo } from '../interfaces/index';
+import { AvnApiConfig, NonceType, Royalty, CreateMarketBaseParams, Strategy, NonceInfo, Payload, WatchtowerProposal, DecisionRule, ProposalSource } from '../interfaces/index';
 import ProxyUtils from './proxy';
 import BN from 'bn.js';
 import { Awt } from '../awt';
@@ -584,6 +584,37 @@ export class Send {
     const nonceInfo = { nonceType: NonceType.Prediction_Market, nonceParams: { marketId, user: this.signerAddress } };
     return (await this.proxyRequest(methodArgs, TxType.ProxyBuyCompletePredictionMarketOutcomeTokens, nonceInfo)) as string;
   }
+
+  async submitProposalToWatchtowers(title: string, payload: Payload, threshold: number, externalRef: string, voteDuration?: number): Promise<string> {
+    Utils.validateStringIsPopulated(title);
+    Utils.validateStringIsPopulated(externalRef);
+    Utils.validateStringIsPopulated(payload?.value)
+    if (threshold <= 0 || threshold > 100) {
+      throw new Error(`Invalid threshold: ${threshold}. Must be between 1 and 100`);
+    }
+
+    const blockNumber = parseInt(await this.queryApi.getCurrentBlock());
+    const proposal: WatchtowerProposal = {
+      title,
+      payload,
+      threshold,
+      externalRef,
+      voteDuration,
+      source: ProposalSource.External,
+      decisionRule: DecisionRule.SimpleMajority,
+      createdAt: blockNumber
+    };
+
+    const methodArgs = {
+      proposal,
+      blockNumber
+    };
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
+    return (await this.proxyRequest(methodArgs, TxType.ProxyWatchtowerSubmitProposal, nonceInfo)) as string;
+  }
+
+  // async watchtowerVote(proposalId: string, inFavor: boolean): Promise<string> {
+  // }
 
   async proxyRequest(
     methodArgs: any,

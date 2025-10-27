@@ -6,6 +6,7 @@ import { AccountUtils } from '../utils/accountUtils';
 import { u8aConcat, u8aToHex } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
 import log from 'loglevel';
+import { proxy } from '@polkadot/types/interfaces/definitions';
 
 export interface FeePaymentData {
   relayer: string;
@@ -134,7 +135,8 @@ const signing = {
   proxyWithdrawPredictionMarketLiquidityFees: async proxyArgs =>
     await signedProxyWithdrawPredictionMarketLiquidityFees(proxyArgs),
   proxyBuyCompletePredictionMarketOutcomeTokens: async proxyArgs =>
-    await signedProxyBuyCompletePredictionMarketOutcomeTokens(proxyArgs)
+    await signedProxyBuyCompletePredictionMarketOutcomeTokens(proxyArgs),
+  proxyWatchtowerSubmitProposal: async proxyArgs => await signProxySubmitProposalToWatchtowers(proxyArgs)
 };
 
 export default class ProxyUtils {
@@ -746,6 +748,19 @@ async function signedProxyBuyCompletePredictionMarketOutcomeTokens({ relayer, no
     { u64: nonce },
     { u128: marketId },
     { BalanceOf: amount }
+  ];
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxySubmitProposalToWatchtowers({ relayer, proposal, blockNumber, signerAddress, api }) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const orderedData = [
+    { Text: 'wt_submit_external_proposal' },
+    { AccountId: relayer },
+    { Proposal: proposal },
+    { BlockNumber: blockNumber }
   ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
