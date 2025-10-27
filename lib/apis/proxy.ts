@@ -1,7 +1,7 @@
 'use strict';
 
 import { TxType, Utils, registry } from '../utils';
-import { AvnApiConfig, Royalty } from '../interfaces';
+import { AvnApiConfig, ProposalSource, Royalty } from '../interfaces';
 import { AccountUtils } from '../utils/accountUtils';
 import { u8aConcat, u8aToHex } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
@@ -86,6 +86,41 @@ const customTypes = {
       Categorical: 'CategoryIndex',
       Scalar: 'u128'
     }
+  },
+  RawPayload : {
+    _enum: {
+      Inline: 'Vec<u8>',
+      Uri: 'Vec<u8>'
+    }
+  },
+  ProposalType: {
+    _enum: {
+      Summary: null,
+      Anchor: null,
+      Governance: null,
+      Other: 'u8',
+    }
+  },
+  ProposalSource: {
+    _enum: {
+      External: null,
+      Internal: 'ProposalType'
+    }
+  },
+  DecisionRule: {
+    _enum: {
+      SimpleMajority: null,
+    }
+  },
+  ProposalRequest: {
+    title: 'Vec<u8>',
+    payload: 'RawPayload',
+    threshold: 'Perbill',
+    source: 'ProposalSource',
+    decision_rule: 'DecisionRule',
+    external_ref: 'H256',
+    created_at: 'u32',
+    vote_duration: 'Option<u32>',
   }
 };
 
@@ -756,10 +791,28 @@ async function signedProxyBuyCompletePredictionMarketOutcomeTokens({ relayer, no
 
 async function signProxySubmitProposalToWatchtowers({ relayer, proposal, blockNumber, signerAddress, api }) {
   relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+
+   /*
+    const proposalData = [
+      { "Vec<u8>": proposal.title },
+      { AccountId: feeData.relayer },
+      { MultiSignature: signatureType }
+    ];
+
+    title: string,
+    payload: Payload,
+    threshold: number,
+    source: ProposalSource,
+    decisionRule: DecisionRule,
+    externalRef: string,
+    createdAt: number,
+    voteDuration: number,
+
+  */
   const orderedData = [
     { Text: 'wt_submit_external_proposal' },
     { AccountId: relayer },
-    { Proposal: proposal },
+    { ProposalRequest: proposal },
     { BlockNumber: blockNumber }
   ];
 
