@@ -589,8 +589,8 @@ export class Send {
     Utils.validateStringIsPopulated(title);
     Utils.validateStringIsPopulated(externalRef);
 
-    if (threshold <= 0 || threshold > 100) {
-      throw new Error(`Invalid threshold: ${threshold}. Must be between 1 and 100`);
+    if (threshold <= 10000000 || threshold > 1000000000) {
+      throw new Error(`Invalid threshold: ${threshold}. Must be between 1% (10000000) and 100% (1000000000)`);
     }
 
     for (const val of Object.values(payload)) {
