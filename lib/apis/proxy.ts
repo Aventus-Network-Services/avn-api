@@ -817,6 +817,7 @@ async function signProxySubmitProposalToWatchtowers({ relayer, proposal, blockNu
   ];
 
   const encodedDataToSign = encodeOrderedData(orderedData);
+
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
@@ -842,6 +843,7 @@ function encodeRoyalties(royalties: Royalty[]) {
 // handle hex and bytes return types here.
 async function signData(api: AvnApiConfig, signerAddress: string, encodedDataToSign: string | Uint8Array) {
   encodedDataToSign = Utils.convertToHexIfNeeded(encodedDataToSign);
+  log.trace(new Date(), ` Encoded data to sign: ${encodedDataToSign}. Signer: ${signerAddress}`);
   const signature = await api.sign(encodedDataToSign, signerAddress);
   return Utils.convertToHexIfNeeded(signature);
 }
