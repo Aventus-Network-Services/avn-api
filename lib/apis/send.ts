@@ -597,7 +597,7 @@ export class Send {
       Utils.validateStringIsPopulated(val);
     }
 
-    const blockNumber = parseInt(await this.queryApi.getCurrentBlock());
+    const blockNumber = 1; //parseInt(await this.queryApi.getCurrentBlock()); TODO: this is for testing only.
     const proposal: WatchtowerProposal = {
       title,
       payload,
