@@ -6,7 +6,6 @@ import { AccountUtils } from '../utils/accountUtils';
 import { u8aConcat, u8aToHex } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
 import log from 'loglevel';
-import { proxy } from '@polkadot/types/interfaces/definitions';
 
 export interface FeePaymentData {
   relayer: string;
@@ -87,7 +86,7 @@ const customTypes = {
       Scalar: 'u128'
     }
   },
-  RawPayload : {
+  RawPayload: {
     _enum: {
       Inline: 'Vec<u8>',
       Uri: 'Vec<u8>'
@@ -98,7 +97,7 @@ const customTypes = {
       Summary: null,
       Anchor: null,
       Governance: null,
-      Other: 'u8',
+      Other: 'u8'
     }
   },
   ProposalSource: {
@@ -109,7 +108,7 @@ const customTypes = {
   },
   DecisionRule: {
     _enum: {
-      SimpleMajority: null,
+      SimpleMajority: null
     }
   },
   ProposalRequest: {
@@ -120,7 +119,7 @@ const customTypes = {
     decision_rule: 'DecisionRule',
     external_ref: 'H256',
     created_at: 'u32',
-    vote_duration: 'Option<u32>',
+    vote_duration: 'Option<u32>'
   }
 };
 

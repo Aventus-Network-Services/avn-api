@@ -318,31 +318,25 @@ export interface ActiveSummaryWatchtowerProposal {
   rootHash: string;
 }
 
-export type Payload =
-| { type: "Inline"; value: string }
-| { type: "Uri"; value: string };
+export type Payload = { type: 'Inline'; value: string } | { type: 'Uri'; value: string };
 
 export enum ProposalSource {
-    External = "External",
+  External = 'External'
 }
 
 export enum DecisionRule {
-    SimpleMajority = "SimpleMajority",
+  SimpleMajority = 'SimpleMajority'
 }
 
-type ProposalType =
-  | { type: "Summary" }
-  | { type: "Anchor" }
-  | { type: "Governance" }
-  | { type: "Other"; value: number };
+type ProposalType = { type: 'Summary' } | { type: 'Anchor' } | { type: 'Governance' } | { type: 'Other'; value: number };
 
 export interface WatchtowerProposal {
-    title: string,
-    payload: Payload,
-    threshold: number,
-    source: ProposalSource,
-    decision_rule: DecisionRule,
-    external_ref: string,
-    created_at: number,
-    vote_duration: number,
+  title: string;
+  payload: Payload;
+  threshold: number;
+  source: ProposalSource;
+  decision_rule: DecisionRule;
+  external_ref: string;
+  created_at: number;
+  vote_duration: number;
 }

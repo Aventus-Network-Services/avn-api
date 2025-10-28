@@ -500,7 +500,7 @@ export class Query {
   }
 
   async getWatchtowerProposalByExternalRef(externalRef: string): Promise<WatchtowerProposal | null> {
-    let proposalId =  await this.getWatchtowerProposalId(externalRef);
+    let proposalId = await this.getWatchtowerProposalId(externalRef);
     if (proposalId) {
       return this.getWatchtowerProposal(proposalId);
     }
