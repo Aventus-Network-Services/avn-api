@@ -338,5 +338,5 @@ export interface WatchtowerProposal {
   decision_rule: DecisionRule;
   external_ref: string;
   created_at: number;
-  vote_duration: number;
+  vote_duration?: number;
 }
