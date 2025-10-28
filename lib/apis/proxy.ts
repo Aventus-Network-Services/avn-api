@@ -816,6 +816,7 @@ async function signProxySubmitProposalToWatchtowers({ relayer, proposal, blockNu
     { BlockNumber: blockNumber }
   ];
 
+  console.log(`\n\norderedData: ${JSON.stringify(orderedData)}\n\n`);
   const encodedDataToSign = encodeOrderedData(orderedData);
 
   return await signData(api, signerAddress, encodedDataToSign);
