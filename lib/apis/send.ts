@@ -617,8 +617,15 @@ export class Send {
     return (await this.proxyRequest(methodArgs, TxType.ProxyWatchtowerSubmitProposal, nonceInfo)) as string;
   }
 
-  // async watchtowerVote(proposalId: string, inFavor: boolean): Promise<string> {
-  // }
+  async watchtowerVote(proposalId: string, inFavor: boolean): Promise<string> {
+    Utils.validateStringIsPopulated(proposalId);
+    const methodArgs = {
+      proposalId,
+      inFavor
+    };
+    const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
+    return (await this.proxyRequest(methodArgs, TxType.ProxyWatchtowerVote, nonceInfo)) as string;
+  }
 
   async proxyRequest(
     methodArgs: any,

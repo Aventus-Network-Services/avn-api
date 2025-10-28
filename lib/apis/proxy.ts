@@ -171,7 +171,8 @@ const signing = {
     await signedProxyWithdrawPredictionMarketLiquidityFees(proxyArgs),
   proxyBuyCompletePredictionMarketOutcomeTokens: async proxyArgs =>
     await signedProxyBuyCompletePredictionMarketOutcomeTokens(proxyArgs),
-  proxyWatchtowerSubmitProposal: async proxyArgs => await signProxySubmitProposalToWatchtowers(proxyArgs)
+  proxyWatchtowerSubmitProposal: async proxyArgs => await signProxySubmitProposalToWatchtowers(proxyArgs),
+  proxyWatchtowerVote: async proxyArgs => await signProxyWatchtowerVote(proxyArgs)
 };
 
 export default class ProxyUtils {
@@ -798,9 +799,21 @@ async function signProxySubmitProposalToWatchtowers({ relayer, proposal, blockNu
     { BlockNumber: blockNumber }
   ];
 
-  console.log(`\n\norderedData: ${JSON.stringify(orderedData)}\n\n`);
   const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
 
+async function signProxyWatchtowerVote({ relayer, proposalId, inFavor, blockNumber, signerAddress, api }) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const orderedData = [
+    { Text: 'wt_submit_vote' },
+    { AccountId: relayer },
+    { H256: proposalId },
+    { bool: inFavor },
+    { BlockNumber: blockNumber }
+  ];
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
