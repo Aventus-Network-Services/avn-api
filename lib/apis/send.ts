@@ -619,9 +619,12 @@ export class Send {
 
   async watchtowerVote(proposalId: string, inFavor: boolean): Promise<string> {
     Utils.validateStringIsPopulated(proposalId);
+
+    const blockNumber = parseInt(await this.queryApi.getCurrentBlock());
     const methodArgs = {
       proposalId,
-      inFavor
+      inFavor,
+      blockNumber
     };
     const nonceInfo = { nonceType: NonceType.None, nonceParams: {} };
     return (await this.proxyRequest(methodArgs, TxType.ProxyWatchtowerVote, nonceInfo)) as string;
