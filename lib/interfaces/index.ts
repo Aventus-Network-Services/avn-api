@@ -341,8 +341,8 @@ export interface WatchtowerProposal {
     payload: Payload,
     threshold: number,
     source: ProposalSource,
-    decisionRule: DecisionRule,
-    externalRef: string,
-    createdAt: number,
-    voteDuration: number,
+    decision_rule: DecisionRule,
+    external_ref: string,
+    created_at: number,
+    vote_duration: number,
 }

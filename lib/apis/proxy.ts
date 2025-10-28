@@ -791,24 +791,6 @@ async function signedProxyBuyCompletePredictionMarketOutcomeTokens({ relayer, no
 
 async function signProxySubmitProposalToWatchtowers({ relayer, proposal, blockNumber, signerAddress, api }) {
   relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
-
-   /*
-    const proposalData = [
-      { "Vec<u8>": proposal.title },
-      { AccountId: feeData.relayer },
-      { MultiSignature: signatureType }
-    ];
-
-    title: string,
-    payload: Payload,
-    threshold: number,
-    source: ProposalSource,
-    decisionRule: DecisionRule,
-    externalRef: string,
-    createdAt: number,
-    voteDuration: number,
-
-  */
   const orderedData = [
     { Text: 'wt_submit_external_proposal' },
     { AccountId: relayer },

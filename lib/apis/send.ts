@@ -603,10 +603,10 @@ export class Send {
       payload,
       threshold,
       source: ProposalSource.External,
-      decisionRule: DecisionRule.SimpleMajority,
-      externalRef,
-      createdAt: blockNumber,
-      voteDuration,
+      decision_rule: DecisionRule.SimpleMajority,
+      external_ref: externalRef,
+      created_at: blockNumber,
+      vote_duration: voteDuration,
     };
 
     const methodArgs = {
