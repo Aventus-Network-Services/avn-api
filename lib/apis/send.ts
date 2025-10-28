@@ -602,11 +602,11 @@ export class Send {
       title,
       payload,
       threshold,
-      externalRef,
-      voteDuration,
       source: ProposalSource.External,
       decisionRule: DecisionRule.SimpleMajority,
-      createdAt: blockNumber
+      externalRef,
+      createdAt: blockNumber,
+      voteDuration,
     };
 
     const methodArgs = {
