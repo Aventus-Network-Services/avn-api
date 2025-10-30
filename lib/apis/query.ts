@@ -3,6 +3,7 @@
 import { AccountUtils, StakingStatus, TxType, Utils } from '../utils';
 import { Awt } from '../awt';
 import {
+  ActiveSummaryWatchtowerProposal,
   AvnApiConfig,
   NodeManagerConfig,
   NodeManagerInfo,
@@ -11,7 +12,8 @@ import {
   PredictionMarketConstants,
   PredictionMarketInfo,
   PredictionMarketPoolInfo,
-  Royalty
+  Royalty,
+  WatchtowerProposal
 } from '../interfaces';
 import { ethereumEncode } from '@polkadot/util-crypto';
 import { isHex, u8aToHex, hexToU8a } from '@polkadot/util';
@@ -478,5 +480,30 @@ export class Query {
 
   async getNodeStatus(nodeId: string, rewardPeriod: number): Promise<string> {
     return await this.postRequest<string>(this.api, 'getNodeStatus', { nodeId, rewardPeriod });
+  }
+
+  async getActiveSummaryWatchtowerProposal(): Promise<ActiveSummaryWatchtowerProposal | null> {
+    return await this.postRequest<ActiveSummaryWatchtowerProposal | null>(this.api, 'getActiveSummaryWatchtowerProposal');
+  }
+
+  async watchtowerHasVoted(proposalId: string, watchtower: string): Promise<boolean> {
+    watchtower = AccountUtils.convertToPublicKeyIfNeeded(watchtower);
+    return await this.postRequest<boolean>(this.api, 'watchtowerHasVoted', { watchtower, proposalId });
+  }
+
+  async getWatchtowerProposalId(externalRef: string): Promise<string> {
+    return await this.postRequest<string>(this.api, 'getWatchtowerProposalId', { externalRef });
+  }
+
+  async getWatchtowerProposal(proposalId: string): Promise<WatchtowerProposal | null> {
+    return await this.postRequest<WatchtowerProposal | null>(this.api, 'getWatchtowerProposal', { proposalId });
+  }
+
+  async getWatchtowerProposalByExternalRef(externalRef: string): Promise<WatchtowerProposal | null> {
+    let proposalId = await this.getWatchtowerProposalId(externalRef);
+    if (proposalId) {
+      return this.getWatchtowerProposal(proposalId);
+    }
+    return null;
   }
 }

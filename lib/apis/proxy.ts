@@ -1,7 +1,7 @@
 'use strict';
 
 import { TxType, Utils, registry } from '../utils';
-import { AvnApiConfig, Royalty } from '../interfaces';
+import { AvnApiConfig, ProposalSource, Royalty } from '../interfaces';
 import { AccountUtils } from '../utils/accountUtils';
 import { u8aConcat, u8aToHex } from '@polkadot/util';
 import { createTypeUnsafe } from '@polkadot/types';
@@ -85,6 +85,41 @@ const customTypes = {
       Categorical: 'CategoryIndex',
       Scalar: 'u128'
     }
+  },
+  RawPayload: {
+    _enum: {
+      Inline: 'Vec<u8>',
+      Uri: 'Vec<u8>'
+    }
+  },
+  ProposalType: {
+    _enum: {
+      Summary: null,
+      Anchor: null,
+      Governance: null,
+      Other: 'u8'
+    }
+  },
+  ProposalSource: {
+    _enum: {
+      External: null,
+      Internal: 'ProposalType'
+    }
+  },
+  DecisionRule: {
+    _enum: {
+      SimpleMajority: null
+    }
+  },
+  ProposalRequest: {
+    title: 'Vec<u8>',
+    payload: 'RawPayload',
+    threshold: 'Perbill',
+    source: 'ProposalSource',
+    decision_rule: 'DecisionRule',
+    external_ref: 'H256',
+    created_at: 'u32',
+    vote_duration: 'Option<u32>'
   }
 };
 
@@ -134,7 +169,9 @@ const signing = {
   proxyWithdrawPredictionMarketLiquidityFees: async proxyArgs =>
     await signedProxyWithdrawPredictionMarketLiquidityFees(proxyArgs),
   proxyBuyCompletePredictionMarketOutcomeTokens: async proxyArgs =>
-    await signedProxyBuyCompletePredictionMarketOutcomeTokens(proxyArgs)
+    await signedProxyBuyCompletePredictionMarketOutcomeTokens(proxyArgs),
+  proxyWatchtowerSubmitProposal: async proxyArgs => await signProxySubmitProposalToWatchtowers(proxyArgs),
+  proxyWatchtowerVote: async proxyArgs => await signProxyWatchtowerVote(proxyArgs)
 };
 
 export default class ProxyUtils {
@@ -752,6 +789,33 @@ async function signedProxyBuyCompletePredictionMarketOutcomeTokens({ relayer, no
   return await signData(api, signerAddress, encodedDataToSign);
 }
 
+async function signProxySubmitProposalToWatchtowers({ relayer, proposal, blockNumber, signerAddress, api }) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const orderedData = [
+    { Text: 'wt_submit_external_proposal' },
+    { AccountId: relayer },
+    { ProposalRequest: proposal },
+    { BlockNumber: blockNumber }
+  ];
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
+async function signProxyWatchtowerVote({ relayer, proposalId, inFavor, blockNumber, signerAddress, api }) {
+  relayer = AccountUtils.convertToPublicKeyIfNeeded(relayer);
+  const orderedData = [
+    { Text: 'wt_submit_vote' },
+    { AccountId: relayer },
+    { H256: proposalId },
+    { bool: inFavor },
+    { BlockNumber: blockNumber }
+  ];
+
+  const encodedDataToSign = encodeOrderedData(orderedData);
+  return await signData(api, signerAddress, encodedDataToSign);
+}
+
 function encodeOrderedData(data: object[]) {
   const encodedDataToSign = data.map(d => {
     const [type, value] = Object.entries(d)[0];
@@ -774,6 +838,7 @@ function encodeRoyalties(royalties: Royalty[]) {
 // handle hex and bytes return types here.
 async function signData(api: AvnApiConfig, signerAddress: string, encodedDataToSign: string | Uint8Array) {
   encodedDataToSign = Utils.convertToHexIfNeeded(encodedDataToSign);
+  log.debug(new Date(), ` Encoded data to sign: ${encodedDataToSign}. Signer: ${signerAddress}`);
   const signature = await api.sign(encodedDataToSign, signerAddress);
   return Utils.convertToHexIfNeeded(signature);
 }
