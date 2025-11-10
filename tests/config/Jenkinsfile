@@ -1,0 +1,261 @@
+import groovy.json.JsonSlurper
+
+pipeline {
+    agent {
+        docker {
+            image 'node:16'
+            label 'dind-agent'
+        }
+    }
+    environment {
+        NPM_CONFIG_CACHE = "${WORKSPACE}/.npm"
+
+        GATEWAY_TESTS_CONFIG = credentials('functional_tests_jenkins_config');
+        SECRET_DEV_FILE = credentials('dev_gateway_tests_config');
+        SECRET_TESTNET_FILE = credentials('public_testnet_gateway_tests_config');
+        SECRET_VOW_FILE = credentials('vow_gateway_tests_config');
+        SECRET_TRUTH_DEV_FILE = credentials('truth_dev_gateway_tests_config');
+        SECRET_TRUTH_TESTNET_FILE = credentials('truth_testnet_gateway_tests_config');
+    }
+    triggers {
+        cron('0 0 * * 0')
+    }
+    parameters {
+        string(name: 'Report_name', defaultValue: '', description: 'Give a descriptive name to your test run');
+        choice(name: 'Chain', choices: ['truth_testnet', 'vow', 'dev', 'public_testnet', 'truth_dev'], description: 'Choose which chain to test');
+        string(name: 'Avn_Api_branch', defaultValue: 'main', description: 'avn-api branch');
+        booleanParam(name: 'All', defaultValue: true, description: 'Run all tests');
+        booleanParam(name: 'configurationTests', defaultValue: false);
+        booleanParam(name: 'apiOffline', defaultValue: false);
+        booleanParam(name: 'accessTests', defaultValue: false);
+        booleanParam(name: 'awtTest', defaultValue: false);
+        booleanParam(name: 'utilsTest', defaultValue: false);
+        booleanParam(name: 'pollApiTest', defaultValue: false);
+        booleanParam(name: 'proxyApiTest', defaultValue: false);
+        booleanParam(name: 'queryApiTest', defaultValue: false);
+        booleanParam(name: 'sendApiTest', defaultValue: false);
+        booleanParam(name: 'relayerFees', defaultValue: false);
+        booleanParam(name: 'splitFees', defaultValue: false);
+        booleanParam(name: 'remoteSignerTests', defaultValue: false);
+        booleanParam(name: 'predictionMarketTests', defaultValue: false);
+    }
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    def configFile = readFile "${GATEWAY_TESTS_CONFIG}"
+                    def config = new JsonSlurper().parseText(configFile)
+
+                    env.SCHEDULED_TESTS_GITHUB_CREDS = config.githubCreds
+                    env.GOOGLE_DRIVE_SHARED_DRIVE_ID = config.googleDriveSharedId
+                    env.SLACK_WEBHOOK_URL = config.slackWebUrl
+                    env.GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY = config.googleDriveServiceAccountKey
+                }
+
+                sh 'rm -rf node_modules'
+                sh 'rm -f package-lock.json'
+                sh 'npm cache clean --force'
+                sh "npm install git+https://${SCHEDULED_TESTS_GITHUB_CREDS}@github.com/Aventus-Network-Services/avn-lib-slackTestNotifications.git"
+                sh "npm install git+https://${SCHEDULED_TESTS_GITHUB_CREDS}@github.com/Aventus-Network-Services/avn-lib-googleDriveUploadService.git"
+                sh "npm install git+https://${SCHEDULED_TESTS_GITHUB_CREDS}@github.com/Aventus-Network-Services/avn-api.git#${params.Avn_Api_branch}"
+                sh 'npm install'
+                sh 'npm install --save-dev mochawesome'
+                sh 'npm install mochawesome-merge --save-dev'
+                script {
+                    if (params.Chain == 'vow') {
+                        env.TESTS_CONFIG = env.SECRET_VOW_FILE
+                    } else if (params.Chain == 'public_testnet') {
+                        env.TESTS_CONFIG = env.SECRET_TESTNET_FILE
+                    } else if (params.Chain == 'dev') {
+                        env.TESTS_CONFIG = env.SECRET_DEV_FILE
+                    } else if (params.Chain == 'truth_dev') {
+                        env.TESTS_CONFIG = env.SECRET_TRUTH_DEV_FILE
+                    } else if (params.Chain == 'truth_testnet') {
+                        env.TESTS_CONFIG = env.SECRET_TRUTH_TESTNET_FILE
+                    } else {
+                        sh 'echo "No chain selected"'
+                    }
+                }
+            }
+        }
+        stage('Gateway tests') {
+            steps {
+                script {
+                    withEnv(["CHAIN=${params.Chain}", "TESTS_CONFIG=${env.TESTS_CONFIG}"]) {
+                        if(!params.All) {
+                            if (params.configurationTests) {
+                                stage('Configuration') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run configurationTests "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=configurationTestsReport;'
+                                    }
+                                }
+                            }
+                            if (params.remoteSignerTests) {
+                                stage('Remote signer') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run remoteSignerTests "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=remoteSignerTestsReport;'
+                                    }
+                                }
+                            }
+                            if (params.accessTests) {
+                                stage('Access') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run accessTests "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=accessReport;'
+                                    }
+                                }
+                            }
+                            if (params.apiOffline) {
+                                stage('Api offline') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run apiOffline "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=apiOfflineReport;'
+                                    }
+                                }
+                            }
+                            if (params.awtTest) {
+                                stage('awt') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run awtTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=awtTestReport;'
+                                    }
+                                }
+                            }
+                            if (params.utilsTest) {
+                                stage('utils') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run utilsTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=utilsTestReport'
+                                    }
+                                }
+                            }
+                            if (params.pollApiTest) {
+                                stage('Poll api') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run pollApiTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=pollApiTestReport;'
+                                    }
+                                }
+                            }
+                            if (params.proxyApiTest) {
+                                stage('Proxy api') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run proxyApiTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=proxyApiTestReport;'
+                                    }
+                                }
+                            }
+                            if (params.queryApiTest) {
+                                stage('Query api') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run queryApiTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=queryApiTestReport;'
+                                    }
+                                }
+                            }
+                            if (params.sendApiTest) {
+                                stage('Send api') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run sendApiTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=sendApiTestReport;'
+                                    }
+                                }
+                            }
+                            if (params.relayerFees) {
+                                stage('Relayer fees') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run relayerFees "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=relayerFeesReport;'
+                                    }
+                                }
+                            }
+                            if (params.splitFees) {
+                                stage('Split fees') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run splitFees "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=splitFeesReport;'
+                                    }
+                                }
+                            }
+                            if (params.predictionMarketTests) {
+                                stage('Prediction Market') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run predictionMarketTests "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=predictionMarketReport;'
+                                    }
+                                }
+                            }
+                        } else {
+                            echo "Running nightly tests on ${params.chain}"
+                            stage('Configuration') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run configurationTests "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=configurationTestsReport;'
+                                }
+                            }
+                            stage('Access') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run accessTests "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=accessReport;'
+                                }
+                            }
+                            stage('Remote signer') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run remoteSignerTests "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=remoteSignerTestsReport;'
+                                }
+                            }
+                            stage('utils') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run utilsTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=utilsTestReport'
+                                }
+                            }
+                            stage('awt') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run awtTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=awtTestReport;'
+                                }
+                            }
+                            stage('Api offline') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run apiOffline "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=apiOfflineReport;'
+                                }
+                            }
+                            stage('Relayer fees') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run relayerFees "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=relayerFeesReport;'
+                                }
+                            }
+                            stage('Poll api') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run pollApiTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=pollApiTestReport;'
+                                }
+                            }
+                            stage('Query api') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run queryApiTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=queryApiTestReport;'
+                                }
+                            }
+                            stage('Proxy api') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run proxyApiTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=proxyApiTestReport;'
+                                }
+                            }
+                            stage('Send api') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run sendApiTest "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=sendApiTestReport;'
+                                }
+                            }
+                            stage('Split fees') {
+                                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    sh 'npm run splitFees "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=splitFeesReport;'
+                                }
+                            }
+                            if (['truth_dev', 'truth_testnet', 'vow'].contains(params.Chain)) {
+                                stage('Prediction Market') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh 'npm run predictionMarketTests "$CHAIN" -- --tests_config="$TESTS_CONFIG" --reporter mochawesome --reporter-options reportDir=reportDir,reportFilename=predictionMarketReport;'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    stage('Generate report') {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh "npx mochawesome-merge ./reportDir/*.json -o finalReport.json"
+                            sh "npx mochawesome-report-generator finalReport.json --reportDir ./ --inline"
+                            sh "npm run upload ${params.Chain} -- --test_descriptive=${params.Descriptive_name}"
+                            sh "npm run slack ${params.Chain}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

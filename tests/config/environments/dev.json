@@ -1,0 +1,23 @@
+{
+  "gateway": "https://gateway.dev.aventus.io/",
+  "token": "0xEA5DA4FD16Cc61ffC4235874d6fF05216E3E038e",
+  "avt": "0x93ba86ecfddd9caaac29be83ace5a3188ac47730",
+  "splitFeeConfig": {
+    "baseUrl": "https://admin-portal-api.dev.aventus.io",
+    "username": "micaelffranco@hotmail.com",
+    "password": "A9v#tL2@mX!q",
+    "payerId": "18"
+  },
+  "nfts": {
+    "user": {
+      "owner_address": "5HMYezk4gRAoed54DD76TEyrx57Wv5jZ98XQp7DGZM8rSTyf",
+      "listedNft": "0x80e7dfc2b0e545167b06a570bbd86c8329fd0a644df84d7ce956fb733396355a",
+      "unlistedNft": "0xb83a61bd8903b0b5acc46eaf5960a0b13c11f460c61c5e40e2c7d512f3afa7bf"
+    },
+    "otherUser": {
+      "owner_address": "5HgmduT2woE1sm5maoXR3Ya3xiSeGxqgDpR1qDtYyVHKDuc3",
+      "listedNft": "0x0dd08eaef7832d27cad7d60a40e8901f2979d9cc10351ff2efab298618457c3d",
+      "unlistedNft": "0x074d15a542f846cd3d341a5f35c0b8ec5721487e4e7696ed7b38d0ce884144d8"
+    }
+  }
+}

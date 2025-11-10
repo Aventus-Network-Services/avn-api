@@ -1,0 +1,43 @@
+{
+  "accounts": {
+    "relayer": {
+      "seed": "0xa343da434e14c8cef7c474551a63e7e4c0cb4670a2374368ee01e670ab0d2464",
+      "address": "5FbUQ2kJWLoqHuSTSNNqBwKwdQnBVe4HF3TeGyu6UoZaryTh",
+      "publicKey": "0x9c2bfffc466eb9c1bad0d8393df93770468ee54b0a0f05232e4b5dde6960b004"
+    },
+    "user": {
+      "seed": "0x0000268c7a292d0aefc25c9f37f8bbd5f172757861f41db4a4638a7ce40674a6",
+      "address": "5F2Gan1YQrmUzG9AqDofxf6vvyKHzuH3Hv4bZP97pCGD788N",
+      "publicKey": "0x82d921332e8da82a1af068ba2fe1989fce48702f4a3f74e1bd3e68c29ac4877c"
+    },
+    "otherUser": {
+      "seed": "0xc6d7eb5f8f6bcae9bdc01f24d672fee331d1540f2902812fd2ba93ffb89887c7",
+      "address": "5HgmduT2woE1sm5maoXR3Ya3xiSeGxqgDpR1qDtYyVHKDuc3",
+      "publicKey": "0xf8aeb9e9dc54ccc50aef0c6389f1be774e3f3ea80ec842f7c76ba91a4eb0cc2e"
+    },
+    "splitFeeUser": {
+      "seed": "0x68efd4a5b4e518f26fafdc33c8967ae5fcede5250a473ccfe40d72ad24889b14",
+      "address": "5DQ3J7ucXdUtjR876Hi8qHLTajZzn2dTFqfQoQuKLbKnHj99",
+      "publicKey": "0x3afb55405ed2c6b677dae44a4c56027d6963fc8e7dc8f4695688580e67ccf011"
+    },
+    "avnValidator": {
+      "mnemonic": "swing sauce apology chase pair pave gauge craft device east holiday siege",
+      "seed": "0x45680fd8785cff03bd24fe81e2eabc331816a0b470397d5240bfc829dde32570",
+      "address": "5CotT1vYBQZjDey7YETH6Z121ohzVztURs5bAcXgAtM1wx3W",
+      "publicKey": "0x20ef357ca657d8cce8fcfc2e230871347fc68b1451a575eaedb9797616101608"
+    },
+    "bank": {
+      "mnemonic": "depend pelican pulse knock rely program blanket blanket pioneer slight crush energy",
+      "seed": "0x45680fd8785cff03bd24fe81e2eabc331816a0b470397d5240bfc829dde32570",
+      "address": "5ECK71TeMYwhQz5DhUFhLAMW3VZdE9krGukXrvUjzaEadAUf",
+      "publicKey": "0x5e45d6682a718a8b6af49a21ef82556d154e96a8db045ed842604b113bc85b5e"
+    },
+    "payer": {
+      "address": "5EAYNqcSe4hvyYkUHZfQEFi2LKcihLBeJnrnW21C3pRupL1D",
+      "publicKey": "0x5cec070399336ceb6d8177e8816e084a2be4d94e816528cc9f4c8785c0e91241"
+    },
+    "rewardPayer": {
+      "address": "5EYCAe5fjFpowfFbMhiZM6vdW1nzdr91vZDVLnrBf2E28x2Y"
+    }
+  }
+}
