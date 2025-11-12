@@ -1,0 +1,1 @@
+require('./queryApiTest/contractAddress.js');

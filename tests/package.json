@@ -1,0 +1,19 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "apiTests": "mocha --timeout 20000000 'apiTests.js' ${baselineCmd} --gateway",
+    "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{js,json}\"",
+    "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{js,json}\"",
+    "format": "npm run pretty:fix"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "avn-api": "^5.7.0",
+    "chai": "^4.3.4"
+  }
+}
