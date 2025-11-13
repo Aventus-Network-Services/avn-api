@@ -3,8 +3,7 @@ const helper = require('../helper.js');
 const accounts = helper.ACCOUNTS;
 
 describe('Query api calls:', async () => {
-  let api,user;
- 
+  let api, user;
 
   before(async () => {
     const avnApi = await helper.avnApi({
@@ -14,9 +13,8 @@ describe('Query api calls:', async () => {
     user = accounts.user;
   });
 
-
- describe('getChainInfo', async () => {
-    it('@NO_BASELINE can get the current chain information', async () => {
+  describe('getChainInfo', async () => {
+    it('can get the current chain information', async () => {
       let chainInfo = await api.query.getChainInfo();
       assert(chainInfo.hasOwnProperty('name'));
       assert(chainInfo.hasOwnProperty('version'));
@@ -28,10 +26,8 @@ describe('Query api calls:', async () => {
   describe('AccountInfo', async () => {
     it('returns correct data for user by address', async () => {
       const returnedData = await api.query.getAccountInfo(user.address);
-      // console.log('AccountInfo →', returnedData);
       assert(returnedData.freeBalance);
       assert(returnedData.totalBalance);
     });
   });
-
-  });
+});

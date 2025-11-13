@@ -6,8 +6,8 @@ const royalties = [];
 const dummyT1Authority = '0xd6ae8250b8348c94847280928c79fb3b63ca453e';
 
 describe('Query api calls:', async () => {
-  let api,user;
- 
+  let api, user;
+
   before(async () => {
     const avnApi = await helper.avnApi({
       suri: accounts.user.seed
@@ -15,7 +15,7 @@ describe('Query api calls:', async () => {
     api = await avnApi.apis();
     user = accounts.user;
   });
-  
+
   describe('getOwnedNfts', async () => {
     async function mint() {
       const externalRef = 'avn-gateway-test-' + new Date().toISOString();
@@ -36,7 +36,6 @@ describe('Query api calls:', async () => {
   });
 
   describe('NFT data', async () => {
-
     describe('NFT data', async () => {
       let externalRef, nftId;
 

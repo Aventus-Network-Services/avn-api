@@ -3,7 +3,7 @@ const helper = require('../helper');
 const accounts = helper.ACCOUNTS;
 
 describe('Query api calls:', async () => {
-  let api,user,newUser;
+  let api, user, newUser;
 
   before(async () => {
     const avnApi = await helper.avnApi({
@@ -12,10 +12,10 @@ describe('Query api calls:', async () => {
     api = await avnApi.apis();
     user = accounts.user;
     newUser = avnApi.accountUtils.generateNewAccount();
-     token = helper.token;
+    token = helper.token;
   });
- 
- describe('getOutstandingLowersForAccount', async () => {
+
+  describe('getOutstandingLowersForAccount', async () => {
     it('returns data', async () => {
       const ethDevAddress = '0xDE7E1091cDE63c05Aa4D82C62e4C54eDbC701B22';
       const returnedData = await api.query.getOutstandingLowersForAccount(ethDevAddress);
@@ -41,5 +41,4 @@ describe('Query api calls:', async () => {
       helper.bnEquals(await api.query.getTokenBalance(newUser.publicKey, token), 0);
     });
   });
-
 });

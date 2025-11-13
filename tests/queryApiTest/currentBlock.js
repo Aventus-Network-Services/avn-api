@@ -12,12 +12,10 @@ describe('Query api calls:', async () => {
     api = await avnApi.apis();
   });
 
-
   describe('getCurrentBlock', async () => {
     it('returns the current block', async () => {
       let currentBlock = await api.query.getCurrentBlock();
       assert(parseInt(currentBlock) > 0);
     });
   });
-
-  });
+});

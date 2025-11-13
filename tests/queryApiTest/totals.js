@@ -7,19 +7,15 @@ const BN_ZERO = new BN(0);
 describe('Query api calls:', async () => {
   let api, token;
   before(async () => {
-    
-     const avnApi = await helper.avnApi({
+    const avnApi = await helper.avnApi({
       suri: accounts.user.seed
     });
-     api = await avnApi.apis();
-     token = helper.token;
-    
+    api = await avnApi.apis();
+    token = helper.token;
   });
-
 
   describe('get totals', async () => {
     it('returns total AVT', async () => {
-      //let avt = await api.query.getAvtContractAddress();
       assert(new BN(await api.query.getTotalAvt()).gt(BN_ZERO));
     });
 
@@ -35,7 +31,4 @@ describe('Query api calls:', async () => {
       helper.bnEquals(await api.query.getTotalToken(nonExistentToken), 0);
     });
   });
-
 });
-
-

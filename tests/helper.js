@@ -9,13 +9,13 @@ const argv = yargs(hideBin(process.argv))
   .usage('Run smoke tests using a given Gateway environment')
   .help('h')
   .alias('h', 'help')
-  .demandOption('c')  
+  .demandOption('c')
   .describe('c', 'Configuration file with gateway parameters')
   .string('c')
   .alias('c', 'gateway')
   .parse();
 
-  let gatewayFile = argv.gateway;
+const gatewayFile = argv.gateway;
 
 const testConfig = argv.tests_config
   ? require(argv.tests_config)
@@ -65,7 +65,6 @@ async function confirmStatus(pollApi, requestId, expectedStatus, optionalTimeout
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
 
 // keep alphabetical
 module.exports = {

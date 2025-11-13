@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    
     "apiTests": "mocha --timeout 20000000 \"apiTests.js\" --gateway",
     "apiTests:dev": "mocha --timeout 20000000 \"apiTests.js\" -- --gateway dev",
-    "apiTests:baseline": "baselineCmd=\"--invert --grep @NO_BASELINE\" npm run apiTests",
     "test": "npm run apiTests",
     "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{js,json}\"",
     "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{js,json}\"",

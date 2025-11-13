@@ -3,7 +3,7 @@ const helper = require('../helper.js');
 const accounts = helper.ACCOUNTS;
 
 describe('Query api calls:', async () => {
-  let api,user,newUser;
+  let api, user, newUser;
 
   before(async () => {
     const avnApi = await helper.avnApi({
@@ -14,8 +14,7 @@ describe('Query api calls:', async () => {
     newUser = avnApi.accountUtils.generateNewAccount();
   });
 
-
- describe('getNonce', async () => {
+  describe('getNonce', async () => {
     it('returns the same token nonce by address as by public key', async () => {
       const nonce = await api.query.getUserNonce(user.address, 'token');
       assert.equal(nonce, await api.query.getUserNonce(user.publicKey, 'token'));
@@ -38,13 +37,11 @@ describe('Query api calls:', async () => {
   });
 
   describe('getNonce', async () => {
-      it('returns correct account nonce for specific user by address', async () => {
-        helper.bnEquals(await api.query.getUserNonce(newUser.address, 'token'), 0);
-      });
-      it('returns correct account nonce for specific user by publicKey', async () => {
-        helper.bnEquals(await api.query.getUserNonce(newUser.publicKey, 'token'), 0);
-      });
+    it('returns correct account nonce for specific user by address', async () => {
+      helper.bnEquals(await api.query.getUserNonce(newUser.address, 'token'), 0);
     });
-
+    it('returns correct account nonce for specific user by publicKey', async () => {
+      helper.bnEquals(await api.query.getUserNonce(newUser.publicKey, 'token'), 0);
+    });
   });
-
+});
