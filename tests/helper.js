@@ -27,6 +27,9 @@ const testConfig = argv.tests_config
 const { gateway, token, accounts, avt } = testConfig || {};
 console.log(`*** Test Configuration: ***\nGateway: ${gateway} - ERC20 Token: ${token}`);
 
+const MAX_WAIT_TIME_IN_MINUTES = 5;
+const WAIT_INTERVAL_IN_SECS = 1;
+
 async function avnApi(options) {
   options = options ?? {};
   const api = new AvnApi(gateway, options);
@@ -39,6 +42,31 @@ function bnEquals(a, b) {
   return assert.equal(new BN(a).toString(), new BN(b).toString());
 }
 
+async function confirmStatus(pollApi, requestId, expectedStatus, optionalTimeoutInMinutes) {
+  console.log(`   - max polling wait: [${optionalTimeoutInMinutes ?? MAX_WAIT_TIME_IN_MINUTES}] minutes`);
+  if (!requestId) throw new Error('RequestId cannot be null');
+  let response, status;
+
+  for (i = 0; i < ((optionalTimeoutInMinutes ?? MAX_WAIT_TIME_IN_MINUTES) * 60) / WAIT_INTERVAL_IN_SECS; i++) {
+    await sleep(WAIT_INTERVAL_IN_SECS * 1000);
+    response = await pollApi.requestState(requestId);
+    status = response.status;
+    // TODO: Remove " && status !== undefined" once dev env is reset
+    if (!['Pending', 'AwaitingToSend', 'Validating', 'Transaction not found', undefined].includes(status)) {
+      assert.equal(status, expectedStatus);
+      console.log('   - Finished in ', i * WAIT_INTERVAL_IN_SECS, ' sec');
+      return response;
+    }
+  }
+
+  assert.equal(status, expectedStatus);
+}
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
 // keep alphabetical
 module.exports = {
   ACCOUNTS: accounts,
@@ -47,5 +75,7 @@ module.exports = {
   avt,
   bnEquals,
   BN,
+  confirmStatus,
+  sleep,
   token
 };
