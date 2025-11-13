@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "apiTests": "mocha --timeout 20000000 'apiTests.js' ${baselineCmd} --gateway",
+    
+    "apiTests": "mocha --timeout 20000000 \"apiTests.js\" --gateway",
+    "apiTests:dev": "mocha --timeout 20000000 \"apiTests.js\" -- --gateway dev",
+    "apiTests:baseline": "baselineCmd=\"--invert --grep @NO_BASELINE\" npm run apiTests",
+    "test": "npm run apiTests",
     "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{js,json}\"",
     "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{js,json}\"",
     "format": "npm run pretty:fix"
@@ -14,6 +18,9 @@
   "type": "commonjs",
   "dependencies": {
     "avn-api": "^5.7.0",
-    "chai": "^4.3.4"
+    "chai": "^4.5.0"
+  },
+  "devDependencies": {
+    "mocha": "^11.7.5"
   }
 }

@@ -1,0 +1,43 @@
+{
+  "accounts": {
+    "relayer": {
+      "seed": "seed",
+      "address": "address",
+      "publicKey": "publicKey"
+    },
+    "user": {
+      "seed": "seed",
+      "address": "address",
+      "publicKey": "publicKey"
+    },
+    "otherUser": {
+      "seed": "seed",
+      "address": "address",
+      "publicKey": "publicKey"
+    },
+    "splitFeeUser": {
+      "seed": "seed",
+      "address": "address",
+      "publicKey": "publicKey"
+    },
+    "avnValidator": {
+      "mnemonic": "mnemonic",
+      "seed": "seed",
+      "address": "address",
+      "publicKey": "publicKey"
+    },
+    "bank": {
+      "mnemonic": "mnemonic",
+      "seed": "seed",
+      "address": "address",
+      "publicKey": "publicKey"
+    },
+    "payer": {
+      "address": "address",
+      "publicKey": "publicKey"
+    },
+    "rewardPayer": {
+      "address": "address"
+    }
+  }
+}

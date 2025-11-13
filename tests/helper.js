@@ -1,18 +1,21 @@
 const { AvnApi } = require('avn-api');
 const assert = require('chai').assert;
-const yargs = require('yargs');
 const path = require('path');
+const BN = require('bn.js');
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 
-let argv = yargs
+const argv = yargs(hideBin(process.argv))
   .usage('Run smoke tests using a given Gateway environment')
   .help('h')
   .alias('h', 'help')
-  .demandOption('c')
+  .demandOption('c')  
   .describe('c', 'Configuration file with gateway parameters')
   .string('c')
-  .alias('c', 'gateway').argv;
+  .alias('c', 'gateway')
+  .parse();
 
-let gatewayFile = argv.gateway;
+  let gatewayFile = argv.gateway;
 
 const testConfig = argv.tests_config
   ? require(argv.tests_config)
@@ -32,12 +35,17 @@ async function avnApi(options) {
   return api;
 }
 
+function bnEquals(a, b) {
+  return assert.equal(new BN(a).toString(), new BN(b).toString());
+}
+
 // keep alphabetical
 module.exports = {
   ACCOUNTS: accounts,
   assert,
   avnApi,
   avt,
-  sleep,
+  bnEquals,
+  BN,
   token
 };
