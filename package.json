@@ -31,6 +31,7 @@
     "prepare": "npm run build",
     "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{ts,json}\"",
     "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{ts,json}\"",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "test": "ts-node ./test/nonceUtils.test.ts"
   }
 }
