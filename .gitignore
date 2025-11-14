@@ -3,3 +3,7 @@ build
 node_modules
 .env
 .idea
+tests/config/accounts/*
+tests/config/environments/*
+!tests/config/accounts/accounts_template.json
+!tests/config/environments/accounts_template.json

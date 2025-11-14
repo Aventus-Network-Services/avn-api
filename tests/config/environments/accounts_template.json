@@ -1,0 +1,11 @@
+{
+  "gateway": "gateway",
+  "token": "token",
+  "avt": "avt",
+  "splitFeeConfig": {
+    "baseUrl": "baseUrl",
+    "username": "username",
+    "password": "password",
+    "payerId": "payerId"
+  }
+}
