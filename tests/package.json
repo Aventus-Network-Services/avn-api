@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "apiTests": "mocha --timeout 20000000 \"apiTests.js\" --gateway",
-    "apiTests:dev": "mocha --timeout 20000000 \"apiTests.js\" -- --gateway dev",
-    "test": "npm run apiTests",
+    "queryTests": "mocha --timeout 20000000 \"queryTests.js\" --gateway",
+    "queryTests:dev": "mocha --timeout 20000000 \"queryTests.js\" -- --gateway dev",
+    "test": "npm run queryTests",
     "pretty": "prettier --config ./.prettierrc.json --check \"**/*.{js,json}\"",
     "pretty:fix": "prettier --config ./.prettierrc.json --write \"**/*.{js,json}\"",
     "format": "npm run pretty:fix"
